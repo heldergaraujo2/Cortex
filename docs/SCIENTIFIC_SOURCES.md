@@ -1,7 +1,7 @@
 # Fontes científicas e decisão inicial de dataset
 
 **Atualizado:** 2026-10-28  
-**Estado:** seleção para o primeiro protótipo decidida documentalmente; os arquivos de dados ainda não foram baixados nem inspecionados.
+**Estado:** seleção do dataset e circuito piloto concluída; três produtos FAFB v783 foram baixados, enviados para um PR e validados por GitHub Actions. A análise estrutural inicial encontrou registos para os pares de tipos L1→Mi1, L1→Tm3, Mi1→T4 e Tm3→T4. O importador de produção e a simulação ainda não existem.
 
 ## 1. Decisão para o primeiro protótipo
 
@@ -95,3 +95,44 @@ A seleção final do primeiro circuito só será concluída após inspecionar os
 O depósito Zenodo de conectividade FAFB v783 (DOI 10.5281/zenodo.10676866) descreve o esquema dos arquivos feather e indica um arquivo de conexões proofread de aproximadamente 852 MB e um array de root IDs de aproximadamente 1,1 MB: https://zenodo.org/records/10676866. Esse depósito é um produto distinto dos CSVs estáticos sincronizados no portal Codex. Não assumir que os termos de licença, esquema ou contagens são idênticos entre os dois produtos.
 
 As orientações públicas FlyWire para o lançamento FAFB v783 indicam CC BY-NC 4.0, enquanto depósitos derivados ou arquivos publicados separadamente podem apresentar metadados de licença próprios. Por prudência, o Cortex tratará os produtos do Codex como não comerciais e exigindo atribuição, e verificará os termos mostrados para cada arquivo exato antes de redistribuição ou uso. Em caso de conflito entre metadados do depósito e orientação do projeto, não redistribuir os dados; documentar a divergência e solicitar esclarecimento ao FlyWire.
+
+
+## 8. Resultados reais da primeira inspeção dos produtos (2026-10-28)
+
+Os arquivos enviados à branch \`data/fafb-v783-inputs\` foram lidos integralmente por GitHub Actions. Workflow de validação: https://github.com/heldergaraujo2/Cortex/actions/runs/40785935250 (execução da versão que preserva a agregação por neuropilo; verificar o estado final antes de aceitar resultados derivados). A primeira execução concluída com sucesso reportou:
+
+| Produto | Registos de dados | Colunas |
+|---|---:|---|
+| \`consolidated_cell_types.csv.gz\` | 138.327 | \`root_id\`, \`primary_type\`, \`additional_type(s)\` |
+| \`connections_princeton.csv.gz\` | 5.342.446 | \`pre_root_id\`, \`post_root_id\`, \`neuropil\`, \`syn_count\`, \`nt_type\` |
+| \`coordinates.csv.gz\` | 238.909 | \`root_id\`, \`position\`, \`supervoxel_id\` |
+
+SHA-256 calculados no GitHub Actions:
+- \`consolidated_cell_types.csv.gz\`: \`8aba246d71dc40361677493629972ce3883048c3d02010adc42bda22962a1a2d\`
+- \`connections_princeton.csv.gz\`: \`445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b\`
+- \`coordinates.csv.gz\`: \`14337121f451f98c2576cee72c24409ada5aaf7948b7c7ca8de9040296840e05\`
+
+A primeira análise de tipo celular encontrou:
+- L1: 1.775;
+- Mi1: 1.581;
+- Tm3: 1.756;
+- T4a: 1.457; T4b: 1.507; T4c: 1.710; T4d: 1.569.
+
+A primeira análise da tabela de conectividade encontrou registos de tabela para todos os quatro pares de tipos do piloto:
+- L1 → Mi1: 1.620 linhas da tabela;
+- L1 → Tm3: 6.706 linhas;
+- Mi1 → T4: 21.159 linhas;
+- Tm3 → T4: 10.458 linhas.
+
+**Importante:** \`connections_princeton\` é uma tabela por par pré/pós e neuropilo. O número de linhas não é o número de pares neuronais únicos; um par pode aparecer em mais de um neuropilo. Não somar \`syn_count\` entre neuropilos sem explicitar a regra. Os valores acima são linhas observadas na tabela, não uma contagem deduplicada de arestas.
+
+A primeira versão da análise também encontrou 11.355 IDs classificados como L1/Mi1/Tm3/T4 e correspondência de coordenadas para todos eles no arquivo \`coordinates\`. A versão atual do script foi corrigida para preservar a agregação por neuropilo e distinguir linhas da tabela de pares \`(pre_root_id, post_root_id)\` únicos. A saída desta versão corrigida deve ser a referência final antes de aceitar os números de pares únicos.
+
+**Evidência:**
+- **CONFIRMADO:** os três arquivos podem ser lidos como gzip/CSV; a primeira execução completa terminou com 3/3 arquivos e zero erros.
+- **CONFIRMADO:** a primeira varredura identificou registos para os quatro pares de tipos de interesse.
+- **FORTEMENTE INDICADO:** os produtos escolhidos são suficientes para iniciar a extração estrutural do subcircuito.
+- **DESCONHECIDO:** completude funcional do circuito, correspondência de colunas visuais com T4, pesos fisiológicos, atrasos e seletividade direcional do modelo.
+- **DESCONHECIDO:** números finais de pares únicos por tipo e neuropilo até a execução da versão corrigida do script terminar e ser inspecionada.
+
+A licença pública declarada pelo FlyWire para o lançamento FAFB v783 é CC BY-NC 4.0. A proveniência e as orientações de citação estão registadas em \`data/raw/fafb_v783/README.md\`; verifique novamente os termos oficiais antes de qualquer uso comercial ou redistribuição derivada.
