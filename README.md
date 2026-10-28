@@ -39,6 +39,8 @@ Esta arquitetura é uma decisão de planeamento, ainda não implementada nem val
 - [Arquitetura híbrida e Cortex coletivo](docs/ARCHITECTURE.md)
 - [Contratos técnicos iniciais](docs/CONTRATOS_TECNICOS.md) — contratos de mensagens C1–C4 e requisitos da memória/simulador.
 - [Fontes científicas e dataset](docs/SCIENTIFIC_SOURCES.md) — comparação inicial BANC/FAFB, proveniência e licença.
+- [Fase 2 — circuito inicial](docs/FASE_2_CIRCUITO_INICIAL.md) — via ON L1→Mi1/Tm3→T4, tarefa piloto, baselines e limites.
+- [Manifesto do piloto FAFB v783](data/manifests/fafb_v783_t4_on_pilot.json) — seleção reprodutível sem dados brutos ou IDs inventados.
 
 ## Estado atual
 
