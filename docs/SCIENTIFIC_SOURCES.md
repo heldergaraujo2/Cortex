@@ -88,3 +88,10 @@ Não guardar datasets brutos grandes no Git. Manter manifesto, scripts e fixture
 **DESCONHECIDO:** o circuito inicial exato, a compatibilidade dos produtos de download com o importador ainda inexistente, o custo de simulação e o esquema efetivo dos arquivos ainda não descarregados.
 
 A seleção final do primeiro circuito só será concluída após inspecionar os metadados reais, escolher uma tarefa testável e verificar que há dados suficientes para sustentar essa tarefa.
+
+
+## 7. Nota de cautela sobre licenças de depósitos relacionados
+
+O depósito Zenodo de conectividade FAFB v783 (DOI 10.5281/zenodo.10676866) descreve o esquema dos arquivos feather e indica um arquivo de conexões proofread de aproximadamente 852 MB e um array de root IDs de aproximadamente 1,1 MB: https://zenodo.org/records/10676866. Esse depósito é um produto distinto dos CSVs estáticos sincronizados no portal Codex. Não assumir que os termos de licença, esquema ou contagens são idênticos entre os dois produtos.
+
+As orientações públicas FlyWire para o lançamento FAFB v783 indicam CC BY-NC 4.0, enquanto depósitos derivados ou arquivos publicados separadamente podem apresentar metadados de licença próprios. Por prudência, o Cortex tratará os produtos do Codex como não comerciais e exigindo atribuição, e verificará os termos mostrados para cada arquivo exato antes de redistribuição ou uso. Em caso de conflito entre metadados do depósito e orientação do projeto, não redistribuir os dados; documentar a divergência e solicitar esclarecimento ao FlyWire.
