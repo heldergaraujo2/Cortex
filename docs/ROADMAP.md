@@ -410,3 +410,18 @@ Cada tarefa de engenharia deve registrar:
 - FAQ oficial do Codex: https://codex.flywire.ai/faq
 - Dorkenwald et al., “Neuronal wiring diagram of an adult brain”, Nature (2024): https://www.nature.com/articles/s41586-024-07558-y
 - Tutoriais FlyConnectome: https://github.com/seung-lab/FlyConnectome
+
+
+## Aditivo de arquitetura — quatro cérebros e memória coletiva (2026-10-28)
+
+A arquitetura experimental passa a prever quatro instâncias completas do connectoma de referência, com estados neurais independentes e especializações por tarefa:
+- C1: coordenação e consolidação;
+- C2: percepção;
+- C3: aprendizagem/plasticidade;
+- C4: ação/comportamento.
+
+As quatro instâncias consultarão uma memória coletiva versionada, com proveniência e gestão explícita de conflitos. O estado neural dinâmico e os parâmetros plásticos permanecem independentes inicialmente. Um orquestrador determinístico de software cuidará de contratos, registos, timeouts e recuperação, sem ser contado como cérebro adicional.
+
+Esta decisão altera o desenho futuro das fases 9–11 e exige testes de memória partilhada, concorrência, coordenação, falha e ablação. Não antecipa a implementação: a Fase 1 (auditoria do ambiente) continua a ser o próximo passo, e qualquer escalada para quatro instâncias deve esperar por medições de custo e validação do simulador mínimo.
+
+Critério de avaliação: comparar quatro instâncias isoladas, cooperação sem coordenador, cooperação com C1, e memória partilhada ligada/desligada. A hipótese de melhoria coletiva só será aceite se as métricas a sustentarem.
