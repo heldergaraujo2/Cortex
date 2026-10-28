@@ -482,8 +482,8 @@ A Fase 3 começa com a aquisição autorizada dos produtos mínimos, verificaç�
 **Estado:** próxima fase; não iniciada.
 
 ### Objetivos
-- Verificar se o arquivo oficial \`column_assignment.csv.gz\` associa de forma rastreável os neurónios do piloto a colunas/posições visuais adequadas.
-- Documentar o significado e as unidades de \`coordinates.position\`; não inferir que a coordenada disponível é soma, centroide ou ponto funcional sem fonte.
+- Verificar se o arquivo oficial `column_assignment.csv.gz` associa de forma rastreável os neurónios do piloto a colunas/posições visuais adequadas.
+- Documentar o significado e as unidades de `coordinates.position`; não inferir que a coordenada disponível é soma, centroide ou ponto funcional sem fonte.
 - Construir uma extração espacial pequena e rastreável que preserve os IDs, subtipos T4a–T4d, hemisfério/neuropilo quando disponível e proveniência.
 - Definir primeiro uma baseline sintética sem pretensão biológica e uma baseline topológica que não afirme seletividade direcional.
 - Só depois, se o mapeamento sustentar a tarefa, especificar dinâmica temporal, parâmetros, métricas e controlos.
