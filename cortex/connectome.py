@@ -48,6 +48,10 @@ class PilotConnectome:
     total_connection_rows: int
     total_coordinate_rows: int
     coordinate_root_ids: int
+    connection_rows_with_pre_id_in_cell_type_table: int
+    connection_rows_with_post_id_in_cell_type_table: int
+    connection_rows_with_both_ids_in_cell_type_table: int
+    duplicate_pilot_connection_keys: int
 
     def summary(self) -> dict[str, object]:
         pilot_counts = Counter(
@@ -101,7 +105,11 @@ class PilotConnectome:
                 len(rows) for rows in self.coordinates_by_root_id.values()
             ),
             "connection_table_rows_total": self.total_connection_rows,
+            "connection_rows_with_pre_id_in_cell_type_table": self.connection_rows_with_pre_id_in_cell_type_table,
+            "connection_rows_with_post_id_in_cell_type_table": self.connection_rows_with_post_id_in_cell_type_table,
+            "connection_rows_with_both_ids_in_cell_type_table": self.connection_rows_with_both_ids_in_cell_type_table,
             "pilot_connection_rows": len(self.connections),
+            "duplicate_pilot_pre_post_neuropil_keys": self.duplicate_pilot_connection_keys,
             "pilot_type_pairs": pair_summary,
             "aggregation_rule": (
                 "Rows are retained per neuropil. Distinct directed neuron pairs are counted by "
@@ -204,6 +212,9 @@ def load_pilot_connectome(data_dir: str | Path) -> PilotConnectome:
 
     connections: list[PilotConnection] = []
     total_connection_rows = 0
+    mapped_pre_rows = mapped_post_rows = mapped_both_rows = 0
+    seen_pilot_keys: set[tuple[str, str, str]] = set()
+    duplicate_pilot_connection_keys = 0
     with gzip.open(paths[CONNECTIONS_FILE], "rt", encoding="utf-8-sig", newline="") as stream:
         reader = csv.DictReader(stream)
         _require_columns(
@@ -219,6 +230,9 @@ def load_pilot_connectome(data_dir: str | Path) -> PilotConnectome:
                 raise ValueError(f"{CONNECTIONS_FILE}:{line_number}: empty pre/post root_id")
             pre_type = cell_types.get(pre_id)
             post_type = cell_types.get(post_id)
+            mapped_pre_rows += bool(pre_type)
+            mapped_post_rows += bool(post_type)
+            mapped_both_rows += bool(pre_type and post_type)
             if not pre_type or not post_type or not (
                 is_pilot_type(pre_type) and is_pilot_type(post_type)
             ):
@@ -231,6 +245,11 @@ def load_pilot_connectome(data_dir: str | Path) -> PilotConnectome:
                 ) from exc
             if syn_count < 0:
                 raise ValueError(f"{CONNECTIONS_FILE}:{line_number}: negative syn_count")
+            connection_key = (pre_id, post_id, (row.get("neuropil") or "").strip())
+            if connection_key in seen_pilot_keys:
+                duplicate_pilot_connection_keys += 1
+            else:
+                seen_pilot_keys.add(connection_key)
             connections.append(PilotConnection(
                 pre_root_id=pre_id,
                 post_root_id=post_id,
@@ -252,4 +271,8 @@ def load_pilot_connectome(data_dir: str | Path) -> PilotConnectome:
         total_connection_rows=total_connection_rows,
         total_coordinate_rows=total_coordinate_rows,
         coordinate_root_ids=len(coordinate_root_ids),
+        connection_rows_with_pre_id_in_cell_type_table=mapped_pre_rows,
+        connection_rows_with_post_id_in_cell_type_table=mapped_post_rows,
+        connection_rows_with_both_ids_in_cell_type_table=mapped_both_rows,
+        duplicate_pilot_connection_keys=duplicate_pilot_connection_keys,
     )
