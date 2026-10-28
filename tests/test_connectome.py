@@ -151,3 +151,11 @@ def test_duplicate_pilot_connection_key_is_reported_and_rows_preserved(tmp_path)
 
     assert len(graph.connections) == 2
     assert summary["duplicate_pilot_pre_post_neuropil_keys"] == 1
+
+
+
+def test_corrupted_gzip_is_rejected(tmp_path):
+    _make_data_dir(tmp_path)
+    (tmp_path / "connections_princeton.csv.gz").write_bytes(b"not a gzip stream")
+    with pytest.raises(OSError):
+        load_pilot_connectome(tmp_path)
