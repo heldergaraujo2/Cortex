@@ -4,10 +4,10 @@
 
 **Última atualização:** 2026-10-28  
 **Versão:** 1.5 — gate de importação estrutural do piloto concluído  
-**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo verificado. Fase 2 — seleção e desenho experimental concluídos. Fase 3 — três produtos FAFB v783 foram validados; o importador real executou no GitHub Actions, gerou manifesto com hashes e 59.218 linhas de conexões do subgrafo piloto, e a CI do pacote passou em Python 3.11–3.13 com 22 testes antes do último teste adicional de gzip. A última revisão da CI está em andamento para confirmar esse teste. Nenhuma simulação neural foi implementada.  
+**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo verificado. Fase 2 — seleção e desenho experimental concluídos. Fase 3 — três produtos FAFB v783 foram validados; o importador real executou no GitHub Actions, gerou manifesto com hashes e 59.218 linhas de conexões do subgrafo piloto. A CI passou em Python 3.11–3.13 com 23 testes, incluindo rejeição de gzip corrompido. Nenhuma simulação neural foi implementada.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Política de execução:** GitHub-first; usar o PC apenas quando necessário para profiling ou validação de desempenho local.  
-**Próximo passo:** confirmar o teste adicional de gzip na CI mais recente e depois iniciar a Fase 4: verificar `column_assignment.csv.gz` e a correspondência espacial/colunar antes de qualquer baseline de movimento.
+**Próximo passo:** iniciar a Fase 4: verificar `column_assignment.csv.gz`, a semântica/unidades das coordenadas e a correspondência espacial/colunar antes de qualquer baseline de movimento.
 
 ---
 
@@ -455,16 +455,16 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Interpretação:** **CONFIRMADO** que a tabela de conectividade contém registos dirigidos para os quatro pares de tipos selecionados. **FORTEMENTE INDICADO** que estes produtos bastam para extrair um subgrafo estrutural inicial. **DESCONHECIDO** se o subgrafo, por si só, reproduz seletividade direcional ou movimento visual; faltam mapeamento espacial/colunar validado, dinâmica e comparação experimental.
 - **Regra de agregação:** `connections_princeton` tem linhas por par pré/pós e neuropilo. Um par pode aparecer em mais de um neuropilo. A versão atual do script reporta linhas, pares únicos deduplicados e `syn_count` apenas dentro de cada neuropilo; não soma silenciosamente valores entre neuropilos.
 - **Código adicionado:** `cortex/connectome.py` implementa carregamento estrito do subgrafo piloto, valida cabeçalhos/IDs/contagens/posições, preserva registos por neuropilo e múltiplas coordenadas. `tests/test_connectome.py` testa ingestão, separação por neuropilo, IDs não mapeados, duplicatas e dados inválidos. `scripts/import_fafb_pilot.py` gera manifesto JSON; `docs/IMPORTADOR_FAFB.md` documenta uso e limites.
-- **CI confirmada para a revisão anterior:** `Cortex CI` run 57 passou em Python 3.11, 3.12 e 3.13 com 22 testes; o workflow de dados run 19 executou com sucesso a inspeção e o importador real, publicando os relatórios como artefato. Uma verificação adicional de gzip foi adicionada depois e ainda deve ser confirmada na CI mais recente.
-- **Próximo passo único:** confirmar a CI mais recente e então iniciar a Fase 4, sem implementar ainda a dinâmica direcional.
+- **CI confirmada:** `Cortex CI` run 61 passou em Python 3.11, 3.12 e 3.13 com 23 testes, incluindo a verificação adicional de gzip corrompido. O workflow de dados run 23 executou com sucesso a inspeção e o importador real, publicando os relatórios como artefato.
+- **Próximo passo único:** iniciar a Fase 4, verificando `column_assignment.csv.gz` e o significado espacial das coordenadas antes de implementar qualquer dinâmica direcional.
 
 
 ## 7.12 Fecho do gate de importação estrutural do piloto (2026-10-28)
 
-- **Workflow de dados:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786393103 — sucesso; inspeção dos três arquivos e importação real concluídas.
-- **Artefato de validação e manifesto:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786393103/artifacts/12859366979. Inclui \`fafb_v783_validation_report.json\` e \`fafb_v783_pilot_manifest.json\`.
-- **CI do pacote:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786393111 — sucesso em Python 3.11, 3.12 e 3.13. O log do Python 3.11 registou 22 testes passados; o teste de gzip corrompido foi adicionado num commit subsequente e aguarda confirmação da execução mais recente.
+- **Workflow de dados:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786637746 — sucesso; inspeção dos três arquivos e importação real concluídas.
+- **Artefato de validação e manifesto:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786637746/artifacts/12858733924. Inclui `fafb_v783_validation_report.json` e `fafb_v783_pilot_manifest.json`.
+- **CI do pacote:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786637777 — sucesso em Python 3.11, 3.12 e 3.13; 23 testes passaram, incluindo o teste de gzip corrompido.
 - **Importação real:** 11.355 IDs piloto, todos com pelo menos uma linha de coordenadas; 59.218 linhas de conexão mantidas no subgrafo L1/Mi1/Tm3/T4. Tamanho e SHA-256 dos três produtos constam do manifesto.
-- **Pares únicos dirigidos entre tipos principais:** L1→Mi1 1.620; L1→Tm3 6.706; Mi1→T4 21.157; Tm3→T4 10.351. Os números são pares \`(pre_root_id, post_root_id)\` deduplicados entre neuropilos; os registos e as contagens \`syn_count\` continuam preservados por neuropilo no subgrafo.
+- **Pares únicos dirigidos entre tipos principais:** L1→Mi1 1.620; L1→Tm3 6.706; Mi1→T4 21.157; Tm3→T4 10.351. Os números são pares `(pre_root_id, post_root_id)` deduplicados entre neuropilos; os registos e as contagens `syn_count` continuam preservados por neuropilo no subgrafo.
 - **Conclusão da fase:** Fase 3 concluída para o importador estrutural reduzido do piloto. Não significa conectoma completo nem simulação funcional. A tabela de coordenadas não confirma sozinha o mapeamento coluna/posição visual.
-- **Próxima fase:** Fase 4 — validar \`column_assignment.csv.gz\`, unidades e semântica das coordenadas, cobertura por subtipo T4 e só depois definir baseline espacial/dinâmica.
+- **Próxima fase:** Fase 4 — validar `column_assignment.csv.gz`, unidades e semântica das coordenadas, cobertura por subtipo T4 e só depois definir baseline espacial/dinâmica.
