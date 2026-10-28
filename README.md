@@ -44,6 +44,6 @@ Esta arquitetura é uma decisão de planeamento, ainda não implementada nem val
 
 O repositório já contém um scaffold Python mínimo, contratos tipados para mensagens entre instâncias, testes unitários e workflow de CI para Python 3.11–3.13. Isso ainda não é um simulador neural: não existe importador de connectoma, dinâmica neuronal, plasticidade nem memória coletiva implementada.
 
-O dataset candidato principal para estudo é BANC v888, provisoriamente, devido à cobertura de cérebro e cordão nervoso. FAFB v783 permanece como alternativa/controle com licença pública FlyWire explicitamente documentada como CC BY-NC 4.0. Nenhum dataset foi baixado. A decisão final exige verificar licença e metadados dos arquivos exatos e selecionar um circuito pequeno.
+O dataset selecionado para o primeiro protótipo é FlyWire FAFB v783 (cérebro adulto feminino completo, incluindo lobos ópticos; sem cordão nervoso), com licença pública CC BY-NC 4.0 e atribuição obrigatória. BANC v888 fica como possível extensão futura para circuitos cérebro–cordão nervoso. Nenhum dataset foi baixado; antes disso, serão verificados os metadados e os produtos concretos necessários para um circuito pequeno.
 
 A auditoria do PC será feita quando a execução local for necessária para validar recursos reais; existe agora um diagnóstico de leitura apenas em `python -m cortex.diagnostics`, que não instala nada nem escreve arquivos.
