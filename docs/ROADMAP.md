@@ -453,7 +453,7 @@ A investigação de fontes públicas selecionou o núcleo exploratório da via O
 
 ### Gate de dados que antecede o importador
 
-O FAQ oficial confirma que os downloads em lote devem usar CSVs estáticos e fornece o exemplo oficial com `consolidated_cell_types` e `connections_princeton`. Também declara que conexões são dirigidas, podem ter várias linhas por neuropilo e que o limiar padrão FAFB é 5+ sinapses por par. A FAQ oficial atual descreve downloads estáticos públicos via `api/download` e `api/download_resource`; token CAVE/FlyWire é necessário para operações específicas ao vivo/protegidas. A acessibilidade concreta dos endpoints deve ser testada, sem presumir que downloads estáticos exijam token. Nenhum segredo foi pedido ou armazenado.
+O FAQ oficial confirma que os downloads em lote devem usar CSVs estáticos e fornece o exemplo oficial com `consolidated_cell_types` e `connections_princeton`. Também declara que conexões são dirigidas, podem ter várias linhas por neuropilo e que o limiar padrão FAFB é 5+ sinapses por par. A FAQ oficial descreve os produtos estáticos como disponíveis a usuários públicos, mas o exemplo programático de `api/download_resource` inclui `api_token`. Distinguir o token de API Codex do token CAVE/FlyWire para operações ao vivo/protegidas. Acesso interativo e resposta efetiva dos endpoints ainda devem ser verificados; nenhum segredo foi pedido ou armazenado.
 
 Assim, a seleção documental do circuito e o desenho da tarefa estão concluídos, mas a extração real continua bloqueada até os produtos exatos, cabeçalhos, tamanhos, licença por produto e correspondência espacial serem verificados. O motor não deve usar a métrica direcional como válida até ser demonstrado que a correspondência espacial está disponível. A fase seguinte começa com este gate de aquisição/validação, não com a implementação prematura da dinâmica.
 
@@ -470,6 +470,6 @@ Entregáveis concluídos:
 - manifesto JSON, especificação tipada e testes adicionados;
 - três testes da especificação passaram no ambiente temporário de validação.
 
-Limite explícito: root IDs concretos, número real de células/arestas, cabeçalhos/tamanhos exatos dos produtos Codex e mapeamento espacial de colunas ainda não foram verificados. A FAQ oficial consultada descreve os downloads estáticos como públicos e reserva o token CAVE/FlyWire para operações específicas ao vivo/protegidas. A acessibilidade dos endpoints concretos ainda não foi confirmada neste ambiente. Não foi descarregado dado bruto.
+Limite explícito: root IDs concretos, número real de células/arestas, cabeçalhos/tamanhos exatos dos produtos Codex e mapeamento espacial de colunas ainda não foram verificados. A FAQ oficial descreve downloads de produtos estáticos para usuários públicos, mas o exemplo de download programático inclui `api_token`. Esse token de API Codex é distinto do token CAVE/FlyWire usado para operações ao vivo/protegidas. O acesso interativo e os endpoints concretos ainda não foram testados com credenciais válidas. Não foi descarregado dado bruto.
 
 A Fase 3 começa com a aquisição autorizada dos produtos mínimos, verificação dos metadados/licença/cabeçalhos e extração real do circuito. Se a correspondência espacial não estiver disponível no produto selecionado, a tarefa direcional deve ser reduzida a validação topológica até existir uma fonte adequada.
