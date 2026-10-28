@@ -456,3 +456,20 @@ A investigação de fontes públicas selecionou o núcleo exploratório da via O
 O FAQ oficial confirma que os downloads em lote devem usar CSVs estáticos e fornece o exemplo oficial com `consolidated_cell_types` e `connections_princeton`. Também declara que conexões são dirigidas, podem ter várias linhas por neuropilo e que o limiar padrão FAFB é 5+ sinapses por par. O portal requer um token de conta para obter os recursos. Nenhum token foi pedido ou armazenado.
 
 Assim, a seleção documental do circuito e o desenho da tarefa estão concluídos, mas a extração real continua bloqueada até os produtos exatos, cabeçalhos, tamanhos, licença por produto e correspondência espacial serem verificados. O motor não deve usar a métrica direcional como válida até ser demonstrado que a correspondência espacial está disponível. A fase seguinte começa com este gate de aquisição/validação, não com a implementação prematura da dinâmica.
+
+
+### Fecho da Fase 2 — seleção e desenho experimental (2026-10-28)
+
+**Estado:** concluída no âmbito de seleção e desenho, com gate de dados explicitamente bloqueado e transferido para a Fase 3.
+
+Entregáveis concluídos:
+- dataset/snapshot FAFB v783 selecionado;
+- circuito exploratório reproduzível `L1 → Mi1/Tm3 → T4` definido por tipos e arestas dirigidas;
+- tarefa sintética proposta com duas direções, flash estático e condição sem estímulo;
+- métrica candidata, baselines, ablações e limitações documentadas;
+- manifesto JSON, especificação tipada e testes adicionados;
+- três testes da especificação passaram no ambiente temporário de validação.
+
+Limite explícito: root IDs concretos, número real de células/arestas, cabeçalhos/tamanhos exatos dos produtos Codex e mapeamento espacial de colunas ainda não foram verificados. O portal de recursos requer um token de conta e não se deve pedir nem guardar esse segredo em conversa/Git. Não foi descarregado dado bruto.
+
+A Fase 3 começa com a aquisição autorizada dos produtos mínimos, verificação dos metadados/licença/cabeçalhos e extração real do circuito. Se a correspondência espacial não estiver disponível no produto selecionado, a tarefa direcional deve ser reduzida a validação topológica até existir uma fonte adequada.
