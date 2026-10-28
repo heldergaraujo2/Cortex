@@ -3,7 +3,7 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-10-28  
-**Versão:** 1.0 inicial  
+**Versão:** 1.1 — arquitetura coletiva aprovada como hipótese  
 **Estado geral:** Fase 0 — documentação fundacional criada; auditoria técnica e implementação ainda não realizadas.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Clone informado:** https://github.com/heldergaraujo2/Cortex.git  
@@ -107,6 +107,18 @@ Versionar scripts, manifestos, metadados úteis e fixtures pequenos. Evitar dump
 ### D-010 — Mudanças seguras
 Inspecionar antes de editar. Não remover dados ou arquivos preexistentes sem autorização e justificativa. Não alegar que testes passaram se não foram executados.
 
+### D-011 — Quatro instâncias completas com especializações experimentais
+O Cortex deverá permitir quatro instâncias completas e independentes do connectoma de referência, inicialmente designadas C1 Coordenador, C2 Percepção, C3 Aprendizagem e C4 Ação. Os papéis são hipóteses de engenharia e devem ser ajustados à luz do dataset/circuitos escolhidos. Esta arquitetura ainda não foi implementada.
+
+### D-012 — Cérebro coordenador com orquestração de segurança
+C1 coordena tarefas e consolida resultados, mas não é a única fonte de verdade. Um orquestrador convencional cuida de contratos, timeouts, registos e recuperação; não é contado como um quinto cérebro. A utilidade do coordenador precisa de ser comparada com cooperação sem coordenador e com agregação simples.
+
+### D-013 — Memória coletiva partilhada
+As quatro instâncias consultam uma memória explícita comum com proveniência, versionamento e resolução de conflitos. Estado neural dinâmico e parâmetros plásticos permanecem independentes inicialmente. Partilha de experiências/informações é distinta de fundir os estados neurais. O benefício da memória partilhada será medido por ablações.
+
+### D-014 — Escala para quatro apenas depois de benchmarks
+Não executar quatro instâncias completas antes de validar um circuito mínimo e medir o custo no hardware real. A sequência obrigatória continua a ser auditoria, seleção de dataset/circuito, protótipo, profiling e só depois escalada.
+
 ## 5. Fontes científicas iniciais verificadas
 
 ### Fonte primária de dados: FlyWire Codex
@@ -152,6 +164,24 @@ Um conjunto de 139 mil neurônios não significa que o sistema já tenha dinâmi
 Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 
 ## 7. Registro de alterações desta sessão
+
+### Alteração 1.0 — Decisão da arquitetura híbrida coletiva (2026-10-28)
+- **Objetivo:** converter as preferências do responsável em decisões arquiteturais documentadas.
+- **Motivação/hipótese:** investigar se quatro instâncias completas, especializadas e cooperantes, com memória partilhada e um coordenador, melhoram tarefas comparadas com uma instância isolada.
+- **Arquivos alterados:** README.md; docs/ROADMAP.md; docs/PLANEJAMENTO_DO_PROJETO.md; docs/CONTINUIDADE.md; docs/ARCHITECTURE.md.
+- **Fontes e dados usados:** decisões de arquitetura fornecidas na conversa; nenhuma nova fonte científica ou dataset foi consultado nesta alteração.
+- **Comandos executados:** nenhum comando local; alterações documentais realizadas diretamente no GitHub.
+- **Testes executados:** nenhum teste de software; o projeto continua sem código funcional.
+- **Resultados reais:** documento de arquitetura criado; papéis C1–C4, memória coletiva versionada, riscos do coordenador, critérios de ablação e sequência incremental registados. Ainda não existe implementação nem benchmark.
+- **Falhas e limitações:** papéis não validados biologicamente; custo de execução desconhecido; memória coletiva e coordenação ainda não implementadas.
+- **Classificação da evidência:** CONFIRMADO para a decisão documental; HIPÓTESE para benefícios de especialização, coordenação e memória partilhada.
+- **Commit/branch/SHA:** os SHAs das atualizações devem ser lidos dos resultados de escrita do GitHub e não presumidos nesta entrada.
+- **Impacto no roadmap:** fases 9–11 precisarão contemplar memória coletiva, múltiplas instâncias, coordenação e ablações; Fase 1 continua prioritária.
+- **Decisões tomadas ou alteradas:** quatro cérebros em vez de cinco; um dos quatro assume coordenação; memória explícita coletiva; estados neurais e parâmetros plásticos separados inicialmente.
+- **Próximo passo único:** executar a auditoria da Fase 1 do repositório e do ambiente real.
+- **Critério de aceitação do próximo passo:** caminho/estado do clone, branch, commit, arquivos locais, sistema, Python/Git, RAM, GPU/VRAM e espaço em disco documentados sem apagar ou sobrescrever dados.
+
+## 7.1 Registro de alterações anterior
 
 ### Alteração 0.1 — Inicialização documental (2026-10-28)
 **Objetivo:** estabelecer a intenção, roadmap, planejamento e mecanismo de continuidade antes de criar código ou importar dados.
