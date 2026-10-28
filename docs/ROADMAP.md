@@ -42,40 +42,53 @@ O projeto não deve afirmar que reproduz a consciência, a inteligência geral o
 - A continuidade identifica explicitamente o que foi e o que não foi verificado.
 - O responsável confirma que a direção do projeto está alinhada.
 
-## Fase 1 — Auditoria do repositório e ambiente
+## Fase 1 — Auditoria remota, bootstrap reproduzível e diagnóstico seguro
+
+**Estado:** implementação inicial no GitHub concluída; aguarda resultado verificável do workflow CI para fechar o gate remoto. A medição do PC fica adiada até ser necessária para profiling ou importação de dados.
 
 ### Objetivos
-- Verificar a árvore real do repositório, branch padrão, histórico, arquivos existentes, licenças e configurações.
-- Identificar sistema operacional, Python, Git, disponibilidade de GPU/CPU, memória RAM e espaço em disco do ambiente de execução.
-- Não presumir que o computador atual corresponde a ambientes de outros projetos.
-- Definir comandos reprodutíveis de instalação e teste.
+- Auditar o estado visível do repositório remoto sem presumir estado local.
+- Estabelecer estrutura Python mínima, dependências de desenvolvimento e testes reproduzíveis.
+- Criar um diagnóstico local de leitura apenas para recolher capacidades quando houver necessidade real de execução no PC.
+- Definir a regra de não guardar dados científicos brutos nem artefactos grandes no Git.
+- Formalizar contratos iniciais entre as quatro instâncias e o estado de evidência.
 
-### Atividades
-1. Listar arquivos e histórico sem apagar ou sobrescrever nada.
-2. Verificar se existem arquivos ignorados, dados locais ou alterações não commitadas.
-3. Escolher uma versão suportada do Python e documentar a decisão após testar as dependências.
-4. Definir ambiente virtual e dependências mínimas.
-5. Criar um diagnóstico de ambiente que registre versões e capacidades sem incluir dados pessoais.
-6. Estabelecer política para grandes datasets, caches, checkpoints e artefatos.
+### Atividades concluídas no remoto
+1. Confirmar repositório público, branch padrão `main` e permissão de escrita via integração GitHub.
+2. Confirmar que antes do scaffold não existiam `pyproject.toml`, `.gitignore`, pacote Python, testes ou workflow CI.
+3. Criar configuração Python compatível com 3.11–3.13, pacote `cortex`, testes e GitHub Actions.
+4. Criar contratos tipados iniciais para C1–C4, tarefas, resultados e estado epistémico.
+5. Criar diagnóstico local que não altera o ambiente nem grava ficheiros.
+6. Definir exclusões de dados brutos, bases processadas, checkpoints e resultados gerados no `.gitignore`.
+
+### Atividades pendentes para a etapa de dados/execução
+- Verificar o resultado real do workflow CI e corrigir falhas caso existam.
+- Quando o primeiro teste com dados reais ou profiling for necessário, executar `python -m cortex.diagnostics` no PC e registar sistema, Python, Git, CPU, RAM, espaço livre e GPU disponível.
+- Não confundir o diagnóstico remoto de GitHub Actions com as capacidades do PC do responsável.
 
 ### Entregáveis
-- Relatório de auditoria em docs ou logs de engenharia.
-- Configuração de dependências mínima.
-- Guia de instalação inicial.
-- Teste de saúde do projeto.
+- `pyproject.toml` e `.gitignore`.
+- Pacote `cortex` e testes iniciais.
+- Workflow `.github/workflows/tests.yml`.
+- `docs/CONTRATOS_TECNICOS.md`.
+- Diagnóstico seguro `cortex.diagnostics`.
+- Relatório remoto de auditoria e registo explícito das incógnitas locais em `docs/CONTINUIDADE.md`.
 
-### Critérios de saída
-- Instalação reproduzível em ambiente limpo.
-- Testes iniciais executáveis.
-- Nenhum dado preexistente foi removido.
-- Limitações do ambiente documentadas.
+### Critérios de saída do gate remoto
+- Instalação limpa e testes passam no CI em Python 3.11, 3.12 e 3.13.
+- Contratos rejeitam campos inválidos e preservam origem/estado de evidência.
+- Dados grandes e configurações locais não são incluídos por omissão.
+- A continuidade separa claramente factos remotos de factos locais não verificados.
+
+**Nota de escopo:** o inventário físico do PC não bloqueia a construção documental nem os testes de contrato. Será obrigatório antes de decisões de escala e profiling, não será inventado nesta fase.
 
 ## Fase 2 — Revisão científica e escolha do dataset
 
 ### Objetivos
-- Selecionar dataset e snapshot de connectoma com origem verificável.
+- Confirmar ou rejeitar a escolha provisória documentada em `docs/SCIENTIFIC_SOURCES.md`.
+- Selecionar dataset, snapshot e produtos de download com origem verificável.
 - Entender formato, cobertura, critérios de filtragem, campos, unidades, limiar de conexão e licenças/citações.
-- Distinguir número de neurônios, sinapses individuais e pares de neurônios conectados.
+- Distinguir número de neurónios, sinapses individuais e pares de neurónios conectados.
 
 ### Atividades
 1. Consultar o portal FlyWire Codex e sua FAQ oficial.
