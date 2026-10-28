@@ -3,11 +3,11 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-10-28  
-**Versão:** 1.4 — produtos FAFB v783 adquiridos e primeira evidência estrutural registada  
-**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo disponível. Fase 2 — seleção e desenho experimental concluídos. Fase 3 — três produtos reais FAFB v783 foram enviados à branch `data/fafb-v783-inputs`, validados por GitHub Actions, e a análise estrutural identificou registos para as quatro ligações de tipo do piloto; importador e testes específicos foram adicionados e aguardam confirmação final de CI. Nenhuma simulação neural foi implementada.  
+**Versão:** 1.5 — gate de importação estrutural do piloto concluído  
+**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo verificado. Fase 2 — seleção e desenho experimental concluídos. Fase 3 — três produtos FAFB v783 foram validados; o importador real executou no GitHub Actions, gerou manifesto com hashes e 59.218 linhas de conexões do subgrafo piloto, e a CI do pacote passou em Python 3.11–3.13 com 22 testes antes do último teste adicional de gzip. A última revisão da CI está em andamento para confirmar esse teste. Nenhuma simulação neural foi implementada.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
-**Política de execução:** GitHub-first; usar o PC apenas quando necessário para profiling, inspeção que não caiba no CI ou validação de desempenho local.  
-**Próximo passo:** confirmar CI para `cortex/connectome.py` e `tests/test_connectome.py`, rever o relatório final da análise por neuropilo e só então concluir o gate de importação estrutural.
+**Política de execução:** GitHub-first; usar o PC apenas quando necessário para profiling ou validação de desempenho local.  
+**Próximo passo:** confirmar o teste adicional de gzip na CI mais recente e depois iniciar a Fase 4: verificar `column_assignment.csv.gz` e a correspondência espacial/colunar antes de qualquer baseline de movimento.
 
 ---
 
@@ -437,22 +437,34 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 
 ## 7.11 Evidência estrutural real, proveniência e importador inicial (2026-10-28)
 
-- **Branch/PR:** \`data/fafb-v783-inputs\`; https://github.com/heldergaraujo2/Cortex/pull/1. O PR continua aberto e não foi integrado em \`main\`.
-- **Proveniência/licença:** o arquivo \`data/raw/fafb_v783/README.md\` regista origem no FlyWire Codex, snapshot FAFB v783, data de download declarada pelo responsável e licença pública indicada pelo FlyWire como CC BY-NC 4.0. Fonte oficial: https://join.flywire.ai/guidelines. O uso deve permanecer não comercial e com atribuição, sujeito às orientações oficiais.
-- **Validação de dados:** execução completa do workflow FAFB v783 Data Validation, run https://github.com/heldergaraujo2/Cortex/actions/runs/40785935250, terminou com \`FILES_OK: 3/3\` e \`ERRORS: 0\`. A execução seguinte da mesma versão de inspeção também foi acionada na CI do PR.
+- **Branch/PR:** `data/fafb-v783-inputs`; https://github.com/heldergaraujo2/Cortex/pull/1. O PR continua aberto e não foi integrado em `main`.
+- **Proveniência/licença:** o arquivo `data/raw/fafb_v783/README.md` regista origem no FlyWire Codex, snapshot FAFB v783, data de download declarada pelo responsável e licença pública indicada pelo FlyWire como CC BY-NC 4.0. Fonte oficial: https://join.flywire.ai/guidelines. O uso deve permanecer não comercial e com atribuição, sujeito às orientações oficiais.
+- **Validação de dados:** execução completa do workflow FAFB v783 Data Validation, run https://github.com/heldergaraujo2/Cortex/actions/runs/40785935250, terminou com `FILES_OK: 3/3` e `ERRORS: 0`. A execução seguinte da mesma versão de inspeção também foi acionada na CI do PR.
 - **Produtos e hashes confirmados pelo workflow:**
-  - \`consolidated_cell_types.csv.gz\`: 901.707 bytes; 138.327 linhas de dados; colunas \`root_id\`, \`primary_type\`, \`additional_type(s)\`; SHA-256 \`8aba246d71dc40361677493629972ce3883048c3d02010adc42bda22962a1a2d\`.
-  - \`connections_princeton.csv.gz\`: 68.456.801 bytes; 5.342.446 linhas; colunas \`pre_root_id\`, \`post_root_id\`, \`neuropil\`, \`syn_count\`, \`nt_type\`; SHA-256 \`445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b\`.
-  - \`coordinates.csv.gz\`: 5.314.546 bytes; 238.909 linhas; colunas \`root_id\`, \`position\`, \`supervoxel_id\`; SHA-256 \`14337121f451f98c2576cee72c24409ada5aaf7948b7c7ca8de9040296840e05\`.
+  - `consolidated_cell_types.csv.gz`: 901.707 bytes; 138.327 linhas de dados; colunas `root_id`, `primary_type`, `additional_type(s)`; SHA-256 `8aba246d71dc40361677493629972ce3883048c3d02010adc42bda22962a1a2d`.
+  - `connections_princeton.csv.gz`: 68.456.801 bytes; 5.342.446 linhas; colunas `pre_root_id`, `post_root_id`, `neuropil`, `syn_count`, `nt_type`; SHA-256 `445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b`.
+  - `coordinates.csv.gz`: 5.314.546 bytes; 238.909 linhas; colunas `root_id`, `position`, `supervoxel_id`; SHA-256 `14337121f451f98c2576cee72c24409ada5aaf7948b7c7ca8de9040296840e05`.
 - **Contagens de tipos primários:** L1=1.775; Mi1=1.581; Tm3=1.756; T4a=1.457; T4b=1.507; T4c=1.710; T4d=1.569. Total de IDs classificados no conjunto piloto L1/Mi1/Tm3/T4: 11.355.
-- **Ligações dirigidas observadas na tabela** (pares \`(pre_root_id, post_root_id)\` distintos no conjunto todo, deduplicados entre neuropilos):
+- **Ligações dirigidas observadas na tabela** (pares `(pre_root_id, post_root_id)` distintos no conjunto todo, deduplicados entre neuropilos):
   - L1 → Mi1: 1.620 pares distintos.
   - L1 → Tm3: 6.706 pares distintos.
   - Mi1 → T4: 21.157 pares distintos.
   - Tm3 → T4: 10.351 pares distintos.
-- **Cobertura de coordenadas:** 11.355/11.355 IDs do conjunto piloto têm pelo menos uma linha no arquivo de coordenadas. O arquivo tem 238.909 linhas e 139.255 IDs únicos; alguns IDs têm múltiplas linhas, que não devem ser colapsadas arbitrariamente. As unidades/semântica física de \`position\` não foram inferidas.
+- **Cobertura de coordenadas:** 11.355/11.355 IDs do conjunto piloto têm pelo menos uma linha no arquivo de coordenadas. O arquivo tem 238.909 linhas e 139.255 IDs únicos; alguns IDs têm múltiplas linhas, que não devem ser colapsadas arbitrariamente. As unidades/semântica física de `position` não foram inferidas.
 - **Mapeamento global de IDs nas conexões:** das 5.342.446 linhas, 5.318.409 têm ambos os IDs presentes no índice de tipos primários; isso não significa que os restantes estejam inválidos, pois os arquivos de anotação podem não cobrir todos os IDs da tabela.
 - **Interpretação:** **CONFIRMADO** que a tabela de conectividade contém registos dirigidos para os quatro pares de tipos selecionados. **FORTEMENTE INDICADO** que estes produtos bastam para extrair um subgrafo estrutural inicial. **DESCONHECIDO** se o subgrafo, por si só, reproduz seletividade direcional ou movimento visual; faltam mapeamento espacial/colunar validado, dinâmica e comparação experimental.
-- **Regra de agregação:** \`connections_princeton\` tem linhas por par pré/pós e neuropilo. Um par pode aparecer em mais de um neuropilo. A versão atual do script reporta linhas, pares únicos deduplicados e \`syn_count\` apenas dentro de cada neuropilo; não soma silenciosamente valores entre neuropilos.
-- **Código adicionado:** \`cortex/connectome.py\` implementa carregamento estrito do subgrafo piloto, valida cabeçalhos/IDs/contagens/posições, preserva registos por neuropilo e múltiplas coordenadas. \`tests/test_connectome.py\` testa ingestão, deduplicação para estatísticas, separação por neuropilo e rejeição de dados inválidos. **Estado dos testes desta alteração:** aguardar o resultado final da execução CI em curso; não afirmar aprovação até a execução terminar.
-- **Próximo passo único:** confirmar o resultado do CI (Python 3.11–3.13 e workflow de dados), corrigir qualquer falha, e depois documentar o critério de saída da etapa de importação antes de iniciar o simulador.
+- **Regra de agregação:** `connections_princeton` tem linhas por par pré/pós e neuropilo. Um par pode aparecer em mais de um neuropilo. A versão atual do script reporta linhas, pares únicos deduplicados e `syn_count` apenas dentro de cada neuropilo; não soma silenciosamente valores entre neuropilos.
+- **Código adicionado:** `cortex/connectome.py` implementa carregamento estrito do subgrafo piloto, valida cabeçalhos/IDs/contagens/posições, preserva registos por neuropilo e múltiplas coordenadas. `tests/test_connectome.py` testa ingestão, separação por neuropilo, IDs não mapeados, duplicatas e dados inválidos. `scripts/import_fafb_pilot.py` gera manifesto JSON; `docs/IMPORTADOR_FAFB.md` documenta uso e limites.
+- **CI confirmada para a revisão anterior:** `Cortex CI` run 57 passou em Python 3.11, 3.12 e 3.13 com 22 testes; o workflow de dados run 19 executou com sucesso a inspeção e o importador real, publicando os relatórios como artefato. Uma verificação adicional de gzip foi adicionada depois e ainda deve ser confirmada na CI mais recente.
+- **Próximo passo único:** confirmar a CI mais recente e então iniciar a Fase 4, sem implementar ainda a dinâmica direcional.
+
+
+## 7.12 Fecho do gate de importação estrutural do piloto (2026-10-28)
+
+- **Workflow de dados:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786393103 — sucesso; inspeção dos três arquivos e importação real concluídas.
+- **Artefato de validação e manifesto:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786393103/artifacts/12859366979. Inclui \`fafb_v783_validation_report.json\` e \`fafb_v783_pilot_manifest.json\`.
+- **CI do pacote:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786393111 — sucesso em Python 3.11, 3.12 e 3.13. O log do Python 3.11 registou 22 testes passados; o teste de gzip corrompido foi adicionado num commit subsequente e aguarda confirmação da execução mais recente.
+- **Importação real:** 11.355 IDs piloto, todos com pelo menos uma linha de coordenadas; 59.218 linhas de conexão mantidas no subgrafo L1/Mi1/Tm3/T4. Tamanho e SHA-256 dos três produtos constam do manifesto.
+- **Pares únicos dirigidos entre tipos principais:** L1→Mi1 1.620; L1→Tm3 6.706; Mi1→T4 21.157; Tm3→T4 10.351. Os números são pares \`(pre_root_id, post_root_id)\` deduplicados entre neuropilos; os registos e as contagens \`syn_count\` continuam preservados por neuropilo no subgrafo.
+- **Conclusão da fase:** Fase 3 concluída para o importador estrutural reduzido do piloto. Não significa conectoma completo nem simulação funcional. A tabela de coordenadas não confirma sozinha o mapeamento coluna/posição visual.
+- **Próxima fase:** Fase 4 — validar \`column_assignment.csv.gz\`, unidades e semântica das coordenadas, cobertura por subtipo T4 e só depois definir baseline espacial/dinâmica.
