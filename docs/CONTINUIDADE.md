@@ -206,35 +206,35 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 
 **Próximo passo:** Fase 1 — auditar repositório e ambiente.
 
-## 8. Próxima tarefa prioritária: Fase 1 — auditoria
+## 8. Próxima tarefa prioritária: Fase 2 — circuito real pequeno e tarefa mensurável
 
 ### Objetivo
-Estabelecer um retrato confiável do estado real antes de criar a estrutura de código.
+Escolher um circuito do dataset FAFB v783 e uma tarefa que permita testar comportamento observável antes de implementar um simulador completo ou descarregar dados grandes.
 
 ### Sequência recomendada
-1. Verificar no GitHub os arquivos e o commit atual.
-2. Confirmar o caminho do clone local ou orientar a clonagem apenas se ainda não existir.
-3. No clone, inspecionar branch, commit atual, status, arquivos rastreados e não rastreados. Não descartar mudanças locais.
-4. Verificar versão do sistema operacional, Python, Git, RAM, GPU/VRAM e espaço disponível, sem expor informação pessoal desnecessária.
-5. Conferir se existem arquivos locais que não aparecem no estado remoto e preservá-los.
-6. Escolher versão de Python e estratégia de ambiente somente depois de confirmar compatibilidade.
-7. Criar um relatório da auditoria, registrando comandos e saídas relevantes.
-8. Atualizar este arquivo com o estado observado e o próximo passo.
+1. Rever no Codex os produtos de download compactos disponíveis para FAFB v783 e confirmar metadados/licença dos arquivos concretos.
+2. Identificar candidatos a circuitos com anotações suficientes e uma função/tarefa que possa ser operacionalizada; usar literatura primária e fontes de dados rastreáveis.
+3. Comparar candidatos por tamanho, completude, anotação, disponibilidade de estímulos/saídas e custo provável.
+4. Definir a tarefa, entradas, saídas, baseline simples, métrica primária, controlos e critério de sucesso antes de treinar.
+5. Só depois criar o manifesto de dados e importar o menor subconjunto necessário.
+6. Atualizar este arquivo com a decisão e o que foi verificado.
 
 ### Critérios de aceitação
-- Caminho e estado do clone local conhecidos, se houver.
-- Branch e commit registrados.
-- Arquivos locais não commitados e não rastreados identificados.
-- Ambiente e recursos documentados.
-- Nenhum arquivo foi apagado ou sobrescrito.
-- Próximo passo baseado em evidências.
+- Dataset/snapshot e produtos de origem identificados.
+- Circuito delimitado por IDs ou regras reproduzíveis.
+- Tarefa observável com entrada, saída e métrica definidas.
+- Baseline/controlos definidos antes do treino.
+- Licença, citação, esquema e proveniência registados.
+- Nenhum dataset bruto grande foi adicionado ao Git por acidente.
 
 ### Não fazer nesta fase
-- Não baixar o connectoma inteiro.
-- Não instalar frameworks pesados de simulação antes de definir a necessidade.
-- Não implementar aprendizagem antes de ter circuito e tarefa definidos.
-- Não mover ou renomear arquivos existentes sem inventário.
-- Não presumir que o ambiente de outro projeto é o ambiente do Cortex.
+- Não importar os 139.255 neurónios só porque estão disponíveis.
+- Não escolher pesos, sinais, atrasos ou plasticidade como se fossem dados confirmados quando são estimativas.
+- Não alegar aprendizagem sem avaliação em condições de teste e comparação com baseline.
+- Não iniciar quatro simulações completas antes de validar um circuito pequeno.
+
+### Estado local
+O caminho/estado do clone do responsável e as capacidades físicas do PC continuam desconhecidos. Não são necessários para investigar metadados e definir o circuito; devem ser recolhidos quando o primeiro teste local ou profiling exigir.
 
 ## 9. Formato obrigatório para atualizações futuras
 
