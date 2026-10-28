@@ -146,6 +146,6 @@ O workflow [FAFB v783 Data Validation, run 19](https://github.com/heldergaraujo2
 - O subgrafo importado contém 59.218 linhas de conexão entre neurónios cujos tipos primários pertencem ao conjunto piloto, preservando a separação por neuropilo.
 - Os quatro pares principais têm os seguintes números de pares dirigidos únicos (deduplicados entre neuropilos): L1→Mi1 = 1.620; L1→Tm3 = 6.706; Mi1→T4 = 21.157; Tm3→T4 = 10.351.
 - O manifesto regista tamanho e SHA-256 de cada arquivo de entrada.
-- O workflow de testes [Cortex CI, run 57](https://github.com/heldergaraujo2/Cortex/actions/runs/40786393111) passou em Python 3.11, 3.12 e 3.13. A execução antes da última adição de um teste de gzip reportou 22 testes; a CI da revisão mais recente deve confirmar também esse teste adicional antes de considerar o conjunto final estabilizado.
+- O workflow de testes [Cortex CI, run 61](https://github.com/heldergaraujo2/Cortex/actions/runs/40786637777) passou em Python 3.11, 3.12 e 3.13 com 23 testes, incluindo a rejeição de gzip corrompido.
 
 **Conclusão científica limitada:** a presença de conexões estruturais para os quatro pares é confirmada nos produtos usados. Não se demonstrou que esse subgrafo reproduz movimento visual, seletividade direcional ou uma dinâmica biológica. A correspondência espacial/colunar continua pendente; `coordinates.csv.gz` não substitui a validação de `column_assignment.csv.gz`.
