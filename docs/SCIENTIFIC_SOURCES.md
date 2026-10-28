@@ -140,7 +140,7 @@ A licença pública declarada pelo FlyWire para o lançamento FAFB v783 é CC BY
 
 ## 9. Fecho do gate de importação estrutural do piloto (2026-10-28)
 
-O workflow [FAFB v783 Data Validation, run 19](https://github.com/heldergaraujo2/Cortex/actions/runs/40786393103) terminou com sucesso. Executou a inspeção integral dos três CSVs comprimidos e, depois, executou o importador real sobre os mesmos arquivos. O artefato \`fafb-v783-validation-report\` contém \`fafb_v783_validation_report.json\` e \`fafb_v783_pilot_manifest.json\`.
+O workflow [FAFB v783 Data Validation, run 19](https://github.com/heldergaraujo2/Cortex/actions/runs/40786393103) terminou com sucesso. Executou a inspeção integral dos três CSVs comprimidos e, depois, executou o importador real sobre os mesmos arquivos. O artefato `fafb-v783-validation-report` contém `fafb_v783_validation_report.json` e `fafb_v783_pilot_manifest.json`.
 
 - O importador carregou 11.355 IDs do conjunto L1/Mi1/Tm3/T4 e encontrou coordenadas para 11.355/11.355 IDs.
 - O subgrafo importado contém 59.218 linhas de conexão entre neurónios cujos tipos primários pertencem ao conjunto piloto, preservando a separação por neuropilo.
@@ -148,4 +148,4 @@ O workflow [FAFB v783 Data Validation, run 19](https://github.com/heldergaraujo2
 - O manifesto regista tamanho e SHA-256 de cada arquivo de entrada.
 - O workflow de testes [Cortex CI, run 57](https://github.com/heldergaraujo2/Cortex/actions/runs/40786393111) passou em Python 3.11, 3.12 e 3.13. A execução antes da última adição de um teste de gzip reportou 22 testes; a CI da revisão mais recente deve confirmar também esse teste adicional antes de considerar o conjunto final estabilizado.
 
-**Conclusão científica limitada:** a presença de conexões estruturais para os quatro pares é confirmada nos produtos usados. Não se demonstrou que esse subgrafo reproduz movimento visual, seletividade direcional ou uma dinâmica biológica. A correspondência espacial/colunar continua pendente; \`coordinates.csv.gz\` não substitui a validação de \`column_assignment.csv.gz\`.
+**Conclusão científica limitada:** a presença de conexões estruturais para os quatro pares é confirmada nos produtos usados. Não se demonstrou que esse subgrafo reproduz movimento visual, seletividade direcional ou uma dinâmica biológica. A correspondência espacial/colunar continua pendente; `coordinates.csv.gz` não substitui a validação de `column_assignment.csv.gz`.
