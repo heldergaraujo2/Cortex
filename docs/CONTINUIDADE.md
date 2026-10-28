@@ -3,11 +3,11 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-10-28  
-**Versão:** 1.2 — scaffold Python/CI e revisão científica inicial  
-**Estado geral:** Fase 1 — auditoria remota e bootstrap reproduzível concluídos no escopo disponível; 11 testes passaram em ambiente isolado Python 3.13 e instalação editável passou. Workflow CI multi-versão configurado, mas o resultado remoto não é visível pelo conector atual. Dataset inicial selecionado documentalmente; nenhum dataset foi baixado e nenhum simulador neural existe ainda.  
+**Versão:** 1.3 — Fase 3 iniciada; correção do acesso aos downloads estáticos Codex  
+**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo disponível; 11 testes passaram em ambiente isolado Python 3.13 e instalação editável passou. Fase 2 — seleção e desenho do circuito concluídos documentalmente. Fase 3 — iniciada; produtos reais ainda não baixados nem inspecionados, e nenhum simulador neural existe. A FAQ oficial atual descreve downloads estáticos públicos; a acessibilidade concreta dos endpoints ainda não foi confirmada neste ambiente.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
-**Política de execução:** GitHub-first; usar o PC quando necessário para inspeção dos dados reais, profiling ou validação local.  
-**Próximo passo:** verificar o resultado do CI; depois concluir a seleção do snapshot/produtos e delimitar o primeiro circuito pequeno.
+**Política de execução:** GitHub-first; usar o PC apenas quando necessário para baixar/inspecionar dados ou validar desempenho local.  
+**Próximo passo:** obter e validar os metadados/produtos estáticos oficiais FAFB v783, sem presumir que seja necessário token CAVE para esses downloads.
 
 ---
 
@@ -362,3 +362,20 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Gate transferido para a Fase 3:** a extração empírica requer produtos concretos (mínimo: `consolidated_cell_types`, `connections_princeton`, mais fonte espacial/colunas verificada), cabeçalhos, tamanhos, hashes, licenças e IDs/contagens reais. O portal oficial exige token para obter recursos; nenhum token foi solicitado ou armazenado. Os arquivos ainda não foram baixados.
 - **Estado da fase:** Fase 2 encerrada quanto à seleção e ao desenho experimental; gate de dados não está aprovado e não deve ser descrito como concluído.
 - **Próximo passo único:** iniciar Fase 3 com aquisição autorizada e validação dos dados mínimos, antes de qualquer importador que os consuma ou simulador.
+
+
+## 7.6 Início da Fase 3 — revisão do acesso a dados e correção de premissa (2026-10-28)
+
+- **Objetivo:** iniciar a aquisição/validação sem depender do PC antes de esgotar o trabalho possível no repositório e nas fontes públicas.
+- **Arquivos inspecionados:** `docs/CONTINUIDADE.md`, `docs/ROADMAP.md`, `docs/SCIENTIFIC_SOURCES.md`, `docs/FASE_2_CIRCUITO_INICIAL.md`, `data/manifests/fafb_v783_t4_on_pilot.json` e `README.md`.
+- **Fonte oficial reconsultada:** FAQ Codex https://codex.flywire.ai/faq; guia de licença https://flywire.ai/guidelines; portal https://codex.flywire.ai/api/download?dataset=fafb.
+- **Achado documental:** a FAQ atual descreve os produtos estáticos públicos e exemplifica os endpoints `api/download` e `api/download_resource`, usando `consolidated_cell_types` e `connections_princeton`. Ela diz que token CAVE/FlyWire é necessário para operações de permissões do projeto ao vivo, como mapear root IDs e consultar histórico, não afirma que todo download estático exija token.
+- **Correção:** a formulação anterior que dizia que o portal de downloads exigia token foi demasiado abrangente e foi corrigida em `docs/FASE_2_CIRCUITO_INICIAL.md`. A autenticação para os produtos estáticos não deve ser presumida; a acessibilidade real precisa ser testada.
+- **Tentativa de acesso ao endpoint:** a ferramenta web não conseguiu abrir o endpoint do recurso diretamente; uma tentativa HTTP no ambiente de execução também falhou por indisponibilidade de resolução DNS. Isso é uma limitação do ambiente de validação, não evidência de que o serviço exija token ou esteja indisponível para o utilizador.
+- **Dados baixados:** nenhum. Cabeçalhos, tamanhos, linhas, hashes dos arquivos concretos e root IDs continuam **DESCONHECIDOS**. Nenhum segredo foi solicitado ou armazenado.
+- **Testes executados:** nenhum teste de software; alteração documental apenas.
+- **Classificação da evidência:** **CONFIRMADO** para o texto atual da FAQ e para a alteração remota do documento; **DESCONHECIDO** para a disponibilidade efetiva dos endpoints neste ambiente e para os metadados dos produtos concretos.
+- **Commit:** `docs/FASE_2_CIRCUITO_INICIAL.md` atualizado no commit `35c706a0ccfda887697949db179bc57e07ec06a0`. O SHA desta atualização de continuidade será o commit que grava esta entrada.
+- **Impacto no roadmap:** Fase 3 continua aberta. O primeiro passo é verificar os metadados públicos e tentar acesso legítimo aos recursos estáticos; só depois decidir se é necessário usar o PC do responsável ou solicitar arquivos obtidos por ele. Acesso ao CAVE ao vivo continua sujeito a autorização própria.
+- **Próximo passo único:** inspecionar os metadados e testar o endpoint oficial de download dos produtos FAFB v783 sem credenciais, mantendo o resultado como não verificado se o ambiente continuar sem acesso de rede.
+- **Critério de aceitação:** registar nomes/URLs dos produtos, resposta HTTP efetiva, formato, tamanhos e termos aplicáveis; não marcar a aquisição como concluída até ter os arquivos e calcular SHA-256, cabeçalhos e contagens reais.
