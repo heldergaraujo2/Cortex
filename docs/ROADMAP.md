@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** Fase 0 — fundação documental criada; auditoria técnica ainda pendente.  
+**Status global:** Fase 1 — bootstrap remoto e auditoria do escopo GitHub concluídos; Fase 2 — revisão do dataset e seleção do circuito inicial por começar.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
