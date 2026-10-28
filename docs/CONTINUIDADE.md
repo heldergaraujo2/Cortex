@@ -4,10 +4,10 @@
 
 **Última atualização:** 2026-10-28  
 **Versão:** 1.3 — Fase 3 iniciada; correção do acesso aos downloads estáticos Codex  
-**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo disponível; 11 testes passaram em ambiente isolado Python 3.13 e instalação editável passou. Fase 2 — seleção e desenho do circuito concluídos documentalmente. Fase 3 — iniciada; produtos reais ainda não baixados nem inspecionados, e nenhum simulador neural existe. A FAQ oficial atual descreve downloads estáticos públicos; a acessibilidade concreta dos endpoints ainda não foi confirmada neste ambiente.  
+**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo disponível; 11 testes passaram em ambiente isolado Python 3.13 e instalação editável passou. Fase 2 — seleção e desenho do circuito concluídos documentalmente. Fase 3 — iniciada; produtos reais ainda não baixados nem inspecionados, e nenhum simulador neural existe. A FAQ oficial descreve produtos estáticos para usuários públicos, mas o exemplo de download programático inclui `api_token`; o acesso interativo e a resposta dos endpoints não foram verificados neste ambiente.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Política de execução:** GitHub-first; usar o PC apenas quando necessário para baixar/inspecionar dados ou validar desempenho local.  
-**Próximo passo:** obter e validar os metadados/produtos estáticos oficiais FAFB v783, sem presumir que seja necessário token CAVE para esses downloads.
+**Próximo passo:** obter os metadados/produtos estáticos FAFB v783 pelo fluxo oficial, usando o token de API Codex localmente se necessário e sem o compartilhar; depois validar cabeçalhos, tamanhos, hashes e licença.
 
 ---
 
@@ -392,3 +392,17 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Classificação:** **CONFIRMADO** para a atualização dos documentos e o conteúdo publicado da FAQ; **DESCONHECIDO** para download efetivo, cabeçalhos, tamanhos, hashes, licenças específicas por arquivo e mapeamento espacial.
 - **Próximo passo único:** validar a resposta real do endpoint estático oficial e obter os metadados dos produtos FAFB v783.
 - **Critério de aceitação:** resposta do endpoint observada e metadados concretos registrados; não iniciar importador de produção nem simulação antes da validação do esquema.
+
+
+## 7.8 Correção de precisão — token de API Codex versus token CAVE (2026-10-28)
+
+- **Motivo:** a leitura detalhada da FAQ (linhas 41–48) revelou uma nuance não capturada no registo 7.6: o exemplo programático oficial de `api/download_resource` inclui `api_token` e orienta a copiar o token da conta Codex. A FAQ descreve separadamente o token CAVE/FlyWire para operações de permissões ao vivo, como mapear root IDs e consultar histórico.
+- **Correção factual:** não afirmar que o download programático pode ocorrer sem token. Os produtos estáticos são oferecidos a usuários públicos, mas o fluxo de API documentado inclui um token de API Codex. Esse token é distinto do token CAVE/FlyWire; a necessidade de autenticação no portal interativo ainda não foi testada aqui.
+- **Arquivos atualizados nesta correção:** `docs/FASE_2_CIRCUITO_INICIAL.md` e `docs/ROADMAP.md`; commits `3e0ed36050bf51b376cb1f05e08eed6c91df6f72` e `ce507c406924e7436118ae52d080c5d8899d69cb`.
+- **Fonte:** FAQ oficial https://codex.flywire.ai/faq, especialmente o exemplo de download programático e a distinção de tokens.
+- **Acesso testado:** a ferramenta web consegue ler a FAQ, mas não abrir o recurso binário; a tentativa HTTP direta no ambiente de execução falhou por DNS. Não foi feita tentativa autenticada. **Nenhum arquivo de dados foi baixado.**
+- **Segurança:** não solicitar nem colar token no chat; não o commitar nem registrar em logs. Se a autenticação for necessária, o token deve ser configurado e usado localmente pelo responsável.
+- **Testes:** nenhum teste de software; documentação apenas.
+- **Evidência:** **CONFIRMADO** para a instrução de uso de `api_token` no exemplo oficial; **DESCONHECIDO** para a autenticação exigida no portal interativo e para o sucesso do download real.
+- **Próximo passo único:** obter os metadados e os dois produtos mínimos por um fluxo oficial autorizado, com token Codex mantido localmente se o endpoint programático o exigir.
+- **Critério de aceitação:** arquivos reais recebidos e inspecionados, com tamanho, SHA-256, cabeçalhos, contagem de linhas, licença/citação e proveniência registados; só então implementar o importador de produção.
