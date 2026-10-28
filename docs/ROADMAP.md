@@ -439,3 +439,20 @@ As quatro instâncias consultarão uma memória coletiva versionada, com proveni
 Esta decisão altera o desenho futuro das fases 9–11 e exige testes de memória partilhada, concorrência, coordenação, falha e ablação. Não antecipa a implementação: a Fase 1 (auditoria do ambiente) continua a ser o próximo passo, e qualquer escalada para quatro instâncias deve esperar por medições de custo e validação do simulador mínimo.
 
 Critério de avaliação: comparar quatro instâncias isoladas, cooperação sem coordenador, cooperação com C1, e memória partilhada ligada/desligada. A hipótese de melhoria coletiva só será aceite se as métricas a sustentarem.
+
+
+## Aditivo 2026-10-28 — Fase 2: circuito piloto selecionado documentalmente
+
+A investigação de fontes públicas selecionou o núcleo exploratório da via ON de movimento `L1 → Mi1/Tm3 → T4` em FAFB v783. A literatura descreve Mi1 e Tm3 como entradas importantes para T4, mas também identifica entradas adicionais e incertezas sobre a operação funcional. O núcleo é deliberadamente parcial e não deve ser apresentado como reconstrução completa do circuito.
+
+- Documento experimental: `docs/FASE_2_CIRCUITO_INICIAL.md`.
+- Manifesto versionado: `data/manifests/fafb_v783_t4_on_pilot.json`.
+- Especificação tipada e validação de metadados: `cortex/experiments/motion_t4.py`.
+- Testes da especificação: `tests/test_motion_t4_spec.py`.
+- Teste executado em ambiente temporário isolado: **3 passed in 0.05s**. O teste valida apenas a especificação de software, não os dados biológicos.
+
+### Gate de dados que antecede o importador
+
+O FAQ oficial confirma que os downloads em lote devem usar CSVs estáticos e fornece o exemplo oficial com `consolidated_cell_types` e `connections_princeton`. Também declara que conexões são dirigidas, podem ter várias linhas por neuropilo e que o limiar padrão FAFB é 5+ sinapses por par. O portal requer um token de conta para obter os recursos. Nenhum token foi pedido ou armazenado.
+
+Assim, a seleção documental do circuito e o desenho da tarefa estão concluídos, mas a extração real continua bloqueada até os produtos exatos, cabeçalhos, tamanhos, licença por produto e correspondência espacial serem verificados. O motor não deve usar a métrica direcional como válida até ser demonstrado que a correspondência espacial está disponível. A fase seguinte começa com este gate de aquisição/validação, não com a implementação prematura da dinâmica.
