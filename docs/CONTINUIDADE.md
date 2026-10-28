@@ -63,7 +63,7 @@ A direção de longo prazo contempla aprendizagem e resolução de tarefas concr
 1. README.md — commit SHA 5f271baf5a025a76959693ef934cb5a0b4f20522.
 2. docs/ROADMAP.md — commit SHA bdcea06ab7538be9995c5e771dd9e1d4f7ccb156.
 3. docs/PLANEJAMENTO_DO_PROJETO.md — commit SHA 9918496c60fe0e45cc41852c9b2bf7b38240636c.
-4. Este arquivo está sendo criado após os três anteriores; seu SHA precisa ser registrado após confirmar o resultado da criação.
+4. docs/CONTINUIDADE.md — commit SHA a72670a6dc79fe9e8305cb5da6f92aa7f223d850.
 
 Esses SHAs são referências de alterações documentais no remoto; não afirmam que houve clone, pull, execução local ou teste de código.
 
