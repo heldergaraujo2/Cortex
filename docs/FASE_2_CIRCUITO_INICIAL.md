@@ -81,7 +81,7 @@ O FAQ oficial do Codex recomenda os downloads CSV estáticos para processamento 
 
 Portal: https://codex.flywire.ai/api/download?dataset=fafb  
 FAQ e notebook de acesso programático: https://codex.flywire.ai/faq  
-A obtenção de recursos requer um token de conta Codex; não guardar token em Git, logs, testes ou memória do projeto.
+A FAQ oficial consultada em 2026-10-28 descreve downloads estáticos públicos via `api/download` e `api/download_resource`; ela reserva o token CAVE/FlyWire para operações que exigem permissões de projeto ao vivo, como mapear root IDs e consultar histórico. Portanto, não presumir que um token seja necessário para baixar os CSVs estáticos. A acessibilidade efetiva dos endpoints e dos produtos concretos ainda precisa ser testada; nunca guardar tokens em Git, logs, testes ou memória do projeto.
 
 Antes da importação, confirmar no portal os produtos exatos, tamanhos, cabeçalhos, citações e termos aplicáveis. A licença geral publicada para FAFB v783 é CC BY-NC 4.0: atribuição obrigatória e uso não comercial. Confirmar as condições no produto concreto no momento da obtenção.
 
