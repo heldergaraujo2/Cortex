@@ -471,3 +471,22 @@ A contribuição da memória coletiva será avaliada com condições comparávei
 Não assumir que quatro instâncias custam exatamente quatro vezes o recurso de uma: estruturas imutáveis podem ser compartilhadas, mas estados e cálculos independentes têm custo próprio. O valor real exige profiling no hardware medido.
 
 Ver também [docs/ARCHITECTURE.md](ARCHITECTURE.md) para contratos e critérios detalhados.
+
+
+## Aditivo 2026-10-28 — execução GitHub-first
+
+A primeira implementação remota estabeleceu:
+- Python `>=3.11`, sem dependências de runtime inicialmente;
+- `pytest` como dependência de desenvolvimento;
+- testes no GitHub Actions para Python 3.11, 3.12 e 3.13;
+- contratos de mensagem imutáveis no nível do objeto para tarefas e resultados;
+- IDs estáveis C1–C4 e enum de evidência;
+- diagnóstico local de leitura apenas, executável com `python -m cortex.diagnostics`.
+
+Esta escolha reduz dependências até ser possível justificar bibliotecas numéricas ou de simulação com base no circuito escolhido. O diagnóstico não substitui profiling real, não prova que o PC consegue executar o simulador e não instala nem modifica nada.
+
+### Decisão científica provisória
+O BANC v888 é o candidato principal para investigação de circuitos cérebro–cordão nervoso; FAFB v783 fica como alternativa e possível baseline. A escolha permanece provisória até serem verificados os metadados, licença dos arquivos exatos, esquema e disponibilidade de um circuito pequeno adequado à tarefa. Não baixar dados brutos grandes nem fixar dependências de processamento antes dessa inspeção.
+
+### Estado de validação
+O código e os testes foram escritos no GitHub, mas não foram executados neste ambiente de conversa. O workflow CI foi configurado para execução automática; só se deve declarar sucesso após consultar o resultado real do GitHub Actions. Nenhum teste local do PC foi executado.
