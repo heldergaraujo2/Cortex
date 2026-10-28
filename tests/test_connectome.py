@@ -123,3 +123,31 @@ def test_required_headers_are_checked(tmp_path):
     )
     with pytest.raises(ValueError, match="missing required columns"):
         load_pilot_connectome(tmp_path)
+
+
+
+def test_unmapped_connection_ids_are_counted_not_silently_hidden(tmp_path):
+    _make_data_dir(tmp_path, connections=[
+        ["999", "2", "ME_L", "5", "ACH"],
+        ["1", "2", "ME_L", "6", "ACH"],
+    ])
+    graph = load_pilot_connectome(tmp_path)
+    summary = graph.summary()
+
+    assert summary["connection_table_rows_total"] == 2
+    assert summary["connection_rows_with_pre_id_in_cell_type_table"] == 1
+    assert summary["connection_rows_with_post_id_in_cell_type_table"] == 2
+    assert summary["connection_rows_with_both_ids_in_cell_type_table"] == 1
+    assert summary["pilot_connection_rows"] == 1
+
+
+def test_duplicate_pilot_connection_key_is_reported_and_rows_preserved(tmp_path):
+    _make_data_dir(tmp_path, connections=[
+        ["1", "2", "ME_L", "5", "ACH"],
+        ["1", "2", "ME_L", "5", "ACH"],
+    ])
+    graph = load_pilot_connectome(tmp_path)
+    summary = graph.summary()
+
+    assert len(graph.connections) == 2
+    assert summary["duplicate_pilot_pre_post_neuropil_keys"] == 1
