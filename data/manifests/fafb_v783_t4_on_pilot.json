@@ -1,0 +1,81 @@
+{
+  "manifest_schema_version": "0.1",
+  "dataset": {
+    "name": "FlyWire FAFB",
+    "snapshot": "v783",
+    "snapshot_date": "2023-10",
+    "source_catalog": "https://codex.flywire.ai/",
+    "download_portal": "https://codex.flywire.ai/api/download?dataset=fafb",
+    "license": "CC BY-NC 4.0",
+    "license_url": "https://flywire.ai/guidelines",
+    "license_verification": "dataset-level public guidance checked; exact downloaded products still require verification",
+    "data_downloaded": false
+  },
+  "pilot": {
+    "id": "fafb-v783-t4-on-motion-core-v0",
+    "name": "L1-Mi1/Tm3-T4 ON motion pathway core",
+    "status": "documented_candidate_not_yet_extracted",
+    "cell_type_filters": ["L1", "Mi1", "Tm3", "T4"],
+    "directed_edge_type_pairs": [
+      ["L1", "Mi1"],
+      ["L1", "Tm3"],
+      ["Mi1", "T4"],
+      ["Tm3", "T4"]
+    ],
+    "minimum_synapses_per_pair": 5,
+    "minimum_synapses_source": "Codex FAQ default threshold for FAFB",
+    "preserve_neuropil_rows": true,
+    "individual_root_ids_recorded": false,
+    "coverage_report_required": true
+  },
+  "task": {
+    "id": "synthetic-on-motion-direction-discrimination-v0",
+    "status": "task_definition_pending_spatial_mapping_validation",
+    "conditions": [
+      "motion_direction_a",
+      "motion_direction_b",
+      "static_flash",
+      "no_stimulus"
+    ],
+    "primary_metric": "normalized difference in T4 response between opposite motion directions",
+    "metric_applicability_gate": "requires verified mapping between visual position and the selected neuron/column input",
+    "plasticity_enabled": false
+  },
+  "required_products": [
+    {
+      "product": "consolidated_cell_types",
+      "purpose": "resolve neuron type annotations",
+      "official_example": true,
+      "downloaded": false
+    },
+    {
+      "product": "connections_princeton",
+      "purpose": "directed pair connectivity and synapse counts",
+      "official_example": true,
+      "downloaded": false
+    }
+  ],
+  "products_to_verify_before_import": [
+    "classification",
+    "neurons",
+    "column_assignment or another authoritative spatial/column mapping product"
+  ],
+  "provenance_fields_required_after_download": [
+    "original_filename",
+    "data_product",
+    "download_timestamp_utc",
+    "source_url_without_token",
+    "file_size_bytes",
+    "sha256",
+    "observed_columns",
+    "row_count",
+    "license_terms",
+    "citation",
+    "parser_version"
+  ],
+  "limitations": [
+    "This core excludes known additional T4 inputs including Mi4, Mi9, C3, TmY15, and CT1.",
+    "Connectivity alone does not specify physiological synaptic signs, weights, delays, or neuron dynamics.",
+    "No biological root IDs, counts, or simulation results have been fabricated."
+  ]
+}
