@@ -93,6 +93,8 @@ class PilotConnectome:
             "dataset": self.dataset,
             "cell_type_counts": dict(sorted(pilot_counts.items())),
             "pilot_neuron_ids": len(pilot_ids),
+            "coordinate_rows_total": self.total_coordinate_rows,
+            "coordinate_root_ids_total": self.coordinate_root_ids,
             "pilot_neuron_ids_with_coordinates": len(pilot_ids & coordinate_ids),
             "pilot_neuron_ids_without_coordinates": len(pilot_ids - coordinate_ids),
             "coordinate_rows_for_pilot_neurons": sum(
