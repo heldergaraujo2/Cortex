@@ -1,6 +1,6 @@
 # Fase 2 — circuito inicial e tarefa experimental
 
-**Estado:** circuito candidato selecionado documentalmente; IDs individuais, contagem efetiva e colunas/entradas espaciais dependem de inspeção dos produtos FAFB v783 descarregados. Não confundir seleção reproduzível por tipo celular com extração validada de dados.
+**Estado:** Fase 2 de seleção e desenho experimental concluída. Circuito e tarefa foram selecionados por regra reproduzível; extração/validação de dados permanece como gate explícito da Fase 3. Não confundir seleção reproduzível por tipo celular com extração validada de dados.
 
 ## 1. Decisão
 
