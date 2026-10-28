@@ -1,7 +1,7 @@
 # Fontes científicas e decisão inicial de dataset
 
 **Atualizado:** 2026-10-28  
-**Estado:** seleção do dataset e circuito piloto concluída; três produtos FAFB v783 foram baixados, enviados para um PR e validados por GitHub Actions. A análise estrutural inicial encontrou registos para os pares de tipos L1→Mi1, L1→Tm3, Mi1→T4 e Tm3→T4. O importador de produção e a simulação ainda não existem.
+**Estado:** seleção do dataset/circuito, aquisição dos três produtos, validação estrutural e importador inicial do subgrafo piloto concluídos e verificados por GitHub Actions. Não existe ainda simulador funcional.
 
 ## 1. Decisão para o primeiro protótipo
 
@@ -99,18 +99,18 @@ As orientações públicas FlyWire para o lançamento FAFB v783 indicam CC BY-NC
 
 ## 8. Resultados reais da primeira inspeção dos produtos (2026-10-28)
 
-Os arquivos enviados à branch \`data/fafb-v783-inputs\` foram lidos integralmente por GitHub Actions. Workflow de validação: https://github.com/heldergaraujo2/Cortex/actions/runs/40785935250 (execução da versão que preserva a agregação por neuropilo; verificar o estado final antes de aceitar resultados derivados). A primeira execução concluída com sucesso reportou:
+Os arquivos enviados à branch `data/fafb-v783-inputs` foram lidos integralmente por GitHub Actions. Workflow de validação: https://github.com/heldergaraujo2/Cortex/actions/runs/40785935250 (execução da versão que preserva a agregação por neuropilo; verificar o estado final antes de aceitar resultados derivados). A primeira execução concluída com sucesso reportou:
 
 | Produto | Registos de dados | Colunas |
 |---|---:|---|
-| \`consolidated_cell_types.csv.gz\` | 138.327 | \`root_id\`, \`primary_type\`, \`additional_type(s)\` |
-| \`connections_princeton.csv.gz\` | 5.342.446 | \`pre_root_id\`, \`post_root_id\`, \`neuropil\`, \`syn_count\`, \`nt_type\` |
-| \`coordinates.csv.gz\` | 238.909 | \`root_id\`, \`position\`, \`supervoxel_id\` |
+| `consolidated_cell_types.csv.gz` | 138.327 | `root_id`, `primary_type`, `additional_type(s)` |
+| `connections_princeton.csv.gz` | 5.342.446 | `pre_root_id`, `post_root_id`, `neuropil`, `syn_count`, `nt_type` |
+| `coordinates.csv.gz` | 238.909 | `root_id`, `position`, `supervoxel_id` |
 
 SHA-256 calculados no GitHub Actions:
-- \`consolidated_cell_types.csv.gz\`: \`8aba246d71dc40361677493629972ce3883048c3d02010adc42bda22962a1a2d\`
-- \`connections_princeton.csv.gz\`: \`445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b\`
-- \`coordinates.csv.gz\`: \`14337121f451f98c2576cee72c24409ada5aaf7948b7c7ca8de9040296840e05\`
+- `consolidated_cell_types.csv.gz`: `8aba246d71dc40361677493629972ce3883048c3d02010adc42bda22962a1a2d`
+- `connections_princeton.csv.gz`: `445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b`
+- `coordinates.csv.gz`: `14337121f451f98c2576cee72c24409ada5aaf7948b7c7ca8de9040296840e05`
 
 A primeira análise de tipo celular encontrou:
 - L1: 1.775;
@@ -124,15 +124,28 @@ A primeira análise da tabela de conectividade encontrou registos de tabela para
 - Mi1 → T4: 21.159 linhas;
 - Tm3 → T4: 10.458 linhas.
 
-**Importante:** \`connections_princeton\` é uma tabela por par pré/pós e neuropilo. O número de linhas não é o número de pares neuronais únicos; um par pode aparecer em mais de um neuropilo. Não somar \`syn_count\` entre neuropilos sem explicitar a regra. Os valores acima são linhas observadas na tabela, não uma contagem deduplicada de arestas.
+**Importante:** `connections_princeton` é uma tabela por par pré/pós e neuropilo. O número de linhas não é o número de pares neuronais únicos; um par pode aparecer em mais de um neuropilo. Não somar `syn_count` entre neuropilos sem explicitar a regra. Os valores acima são linhas observadas na tabela, não uma contagem deduplicada de arestas.
 
-A primeira versão da análise também encontrou 11.355 IDs classificados como L1/Mi1/Tm3/T4 e correspondência de coordenadas para todos eles no arquivo \`coordinates\`. A versão atual do script foi corrigida para preservar a agregação por neuropilo e distinguir linhas da tabela de pares \`(pre_root_id, post_root_id)\` únicos. A saída desta versão corrigida deve ser a referência final antes de aceitar os números de pares únicos.
+A primeira versão da análise também encontrou 11.355 IDs classificados como L1/Mi1/Tm3/T4 e correspondência de coordenadas para todos eles no arquivo `coordinates`. A versão corrigida do script preserva a agregação por neuropilo e distingue linhas da tabela de pares `(pre_root_id, post_root_id)` únicos. A execução completa da versão corrigida terminou com sucesso no workflow https://github.com/heldergaraujo2/Cortex/actions/runs/40786393103.
 
 **Evidência:**
 - **CONFIRMADO:** os três arquivos podem ser lidos como gzip/CSV; a primeira execução completa terminou com 3/3 arquivos e zero erros.
 - **CONFIRMADO:** a primeira varredura identificou registos para os quatro pares de tipos de interesse.
 - **FORTEMENTE INDICADO:** os produtos escolhidos são suficientes para iniciar a extração estrutural do subcircuito.
 - **DESCONHECIDO:** completude funcional do circuito, correspondência de colunas visuais com T4, pesos fisiológicos, atrasos e seletividade direcional do modelo.
-- **DESCONHECIDO:** números finais de pares únicos por tipo e neuropilo até a execução da versão corrigida do script terminar e ser inspecionada.
+- **CONFIRMADO:** a execução da versão corrigida calculou os pares únicos e preservou os totais por neuropilo; o relatório JSON foi publicado como artefato do workflow.
 
-A licença pública declarada pelo FlyWire para o lançamento FAFB v783 é CC BY-NC 4.0. A proveniência e as orientações de citação estão registadas em \`data/raw/fafb_v783/README.md\`; verifique novamente os termos oficiais antes de qualquer uso comercial ou redistribuição derivada.
+A licença pública declarada pelo FlyWire para o lançamento FAFB v783 é CC BY-NC 4.0. A proveniência e as orientações de citação estão registadas em `data/raw/fafb_v783/README.md`; verifique novamente os termos oficiais antes de qualquer uso comercial ou redistribuição derivada.
+
+
+## 9. Fecho do gate de importação estrutural do piloto (2026-10-28)
+
+O workflow [FAFB v783 Data Validation, run 19](https://github.com/heldergaraujo2/Cortex/actions/runs/40786393103) terminou com sucesso. Executou a inspeção integral dos três CSVs comprimidos e, depois, executou o importador real sobre os mesmos arquivos. O artefato \`fafb-v783-validation-report\` contém \`fafb_v783_validation_report.json\` e \`fafb_v783_pilot_manifest.json\`.
+
+- O importador carregou 11.355 IDs do conjunto L1/Mi1/Tm3/T4 e encontrou coordenadas para 11.355/11.355 IDs.
+- O subgrafo importado contém 59.218 linhas de conexão entre neurónios cujos tipos primários pertencem ao conjunto piloto, preservando a separação por neuropilo.
+- Os quatro pares principais têm os seguintes números de pares dirigidos únicos (deduplicados entre neuropilos): L1→Mi1 = 1.620; L1→Tm3 = 6.706; Mi1→T4 = 21.157; Tm3→T4 = 10.351.
+- O manifesto regista tamanho e SHA-256 de cada arquivo de entrada.
+- O workflow de testes [Cortex CI, run 57](https://github.com/heldergaraujo2/Cortex/actions/runs/40786393111) passou em Python 3.11, 3.12 e 3.13. A execução antes da última adição de um teste de gzip reportou 22 testes; a CI da revisão mais recente deve confirmar também esse teste adicional antes de considerar o conjunto final estabilizado.
+
+**Conclusão científica limitada:** a presença de conexões estruturais para os quatro pares é confirmada nos produtos usados. Não se demonstrou que esse subgrafo reproduz movimento visual, seletividade direcional ou uma dinâmica biológica. A correspondência espacial/colunar continua pendente; \`coordinates.csv.gz\` não substitui a validação de \`column_assignment.csv.gz\`.
