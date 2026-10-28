@@ -4,7 +4,7 @@
 
 **Última atualização:** 2026-10-28  
 **Versão:** 1.2 — scaffold Python/CI e revisão científica inicial  
-**Estado geral:** fundação documental e bootstrap remoto implementados; CI precisa ser verificado; nenhum dataset foi baixado e nenhum simulador neural existe ainda.  
+**Estado geral:** Fase 1 — auditoria remota e bootstrap reproduzível concluídos no escopo disponível; 11 testes passaram em ambiente isolado Python 3.13 e instalação editável passou. Workflow CI multi-versão configurado, mas o resultado remoto não é visível pelo conector atual. Dataset inicial selecionado documentalmente; nenhum dataset foi baixado e nenhum simulador neural existe ainda.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Política de execução:** GitHub-first; usar o PC quando necessário para inspeção dos dados reais, profiling ou validação local.  
 **Próximo passo:** verificar o resultado do CI; depois concluir a seleção do snapshot/produtos e delimitar o primeiro circuito pequeno.
@@ -70,7 +70,7 @@ Esses SHAs são referências de alterações documentais no remoto; não afirmam
 ### 3.3 Código, dados e testes
 - **CONFIRMADO:** desde a atualização de 2026-10-28, existe um scaffold Python e contratos de mensagens; nenhum código funcional de simulador neural foi criado.
 - **CONFIRMADO:** nenhum dataset do FlyWire foi baixado para este projeto durante esta etapa.
-- **CONFIRMADO:** os testes foram escritos e configurados no GitHub Actions; resultado do workflow ainda precisa ser consultado. Nenhum teste local do PC foi executado.
+- **CONFIRMADO:** 11 testes passaram em ambiente isolado Python 3.13 com os ficheiros recuperados do GitHub; a instalação editável do pacote também passou. Workflow GitHub Actions configurado para Python 3.11, 3.12 e 3.13, mas seu resultado não foi verificável pelo conector. Nenhum teste foi executado no PC do responsável.
 - **CONFIRMADO:** não existe ainda evidência de dinâmica neuronal, plasticidade, memória funcional, treino ou tarefa aprendida.
 - **CONFIRMADO:** a árvore remota inclui documentação, pacote `cortex`, testes, `pyproject.toml`, `.gitignore` e workflow CI. **DESCONHECIDO:** árvore e estado do clone local, caso exista.
 - **DESCONHECIDO:** dependências e compatibilidade do ambiente de desenvolvimento.
@@ -303,8 +303,8 @@ Cortex está na etapa de fundação documental. O repositório estava vazio na p
 - **Commits remotos desta alteração:** configuração `pyproject.toml` c1556eb7b7b6640dd57e496bb53810ef35e86d2f; `.gitignore` 3358b7403d91d64284a88ebe4bded33d15f7a050; pacote `cortex/__init__.py` 7d4abccecc5d80b36ee5a0a5a8d4da1d7a136665; contratos 9ffaa20092ab9715c1443f04082d7221e803010d; testes de contratos a563305d6c13c658e8de2e25496081925a21d2ef; workflow CI 2313f7b88e39b4eb1704765cad8131ba6da0481d; fontes 95ae02c3506faf902f5901573d680f13648308f0; contratos técnicos d6354de72974d8ba2944dec5f9681aa2b49232b7; diagnóstico a68a39467a2406ecec1ba608dd1c9ad39c5018c3; teste de diagnóstico f8c4b6df89c65f180b407d38c043260d048a39ec3. Commits dos documentos atualizados serão confirmados depois desta escrita.
 - **Impacto no roadmap:** Fase 1 passa a separar o gate remoto verificável do profiling físico; Fase 2 deve confirmar o dataset e selecionar circuito após inspecionar metadados reais.
 - **Decisões tomadas ou alteradas:** estratégia GitHub-first; Python 3.11+; nenhuma dependência de runtime inicial; BANC v888 como candidato principal provisório e FAFB v783 como alternativa/controle; não baixar dados grandes antes de delimitar o circuito.
-- **Próximo passo único:** consultar o estado real do workflow CI do commit mais recente e corrigir quaisquer falhas antes de fechar o gate remoto.
-- **Critério de aceitação:** testes passam nos três Python do matrix, sem declarar execução local inexistente; depois atualizar o estado com links/IDs de execução reais.
+- **Próximo passo único:** iniciar a Fase 2 com inspeção dos metadados oficiais do FAFB v783 e escolher um circuito pequeno com tarefa observável.
+- **Critério de aceitação:** circuito e tarefa têm IDs/limites explícitos, dados necessários identificados, fonte/licença registadas e baseline/medidas definidas antes de importar ou simular.
 
 ## 8.1 Execução local segura quando necessária
 
@@ -316,3 +316,17 @@ Quando o projeto exigir validação local, após atualizar o clone sem descartar
 5. registar versões, resultados e limitações, sem assumir que o CI representa a GPU/RAM do PC.
 
 O diagnóstico apenas lê informação do host e não escreve ficheiros. A instalação deve ser feita explicitamente pelo responsável no ambiente escolhido.
+
+
+## 7.3 Fecho da Fase 1 — auditoria remota e bootstrap (2026-10-28)
+
+- **Objetivo:** fechar a base remota de engenharia sem depender do PC antes de haver uma necessidade real de profiling.
+- **Resultado:** pacote Python mínimo, contratos iniciais, diagnóstico de leitura apenas, configuração de instalação, testes e CI foram criados e verificados no GitHub.
+- **Teste executado fora do GitHub Actions:** os ficheiros de código/testes recuperados do GitHub foram executados numa área isolada do ambiente de validação do assistente com Python 3.13. Resultado: `11 passed in 0.10s`. Também foi executada instalação editável com `pip install --no-deps --no-build-isolation -e .` no fixture de validação, que concluiu com `Successfully installed cortex-connectome-0.1.0`.
+- **Limite de evidência:** estes resultados não são uma execução no PC do responsável e não confirmam a matriz Python 3.11/3.12/3.13 do GitHub Actions. A consulta de estado de commit devolveu `statuses: []`, e o conector não disponibiliza uma listagem geral das execuções push do workflow. Não declarar o CI remoto como aprovado sem observar uma execução real.
+- **Auditoria remota:** repositório público `heldergaraujo2/Cortex`, branch padrão `main`, permissão de escrita confirmada; antes do scaffold não existiam configuração Python, pacote, testes nem workflow CI. Estado local do clone permanece desconhecido.
+- **Seleção científica inicial:** FAFB v783 foi escolhido documentalmente para o primeiro protótipo por ser um conectoma do cérebro adulto feminino (inclui lobos ópticos, não inclui cordão nervoso), bem documentado e com licença pública CC BY-NC 4.0 declarada pelo guia oficial FlyWire. BANC v888 fica como possível extensão futura. A seleção do dataset não substitui a seleção do circuito e da tarefa.
+- **Critérios cumpridos:** scaffold, contratos, teste unitário, instalação isolada, política de dados e diagnóstico seguro criados; 11 testes passaram no ambiente de validação.
+- **Pendências não bloqueantes para iniciar a Fase 2:** confirmar execução GitHub Actions quando possível; estado do PC/clonagem local desconhecido; dados não descarregados; circuito real ainda não escolhido.
+- **Decisão de fase:** Fase 1 encerrada para o escopo remoto disponível. O perfil físico do PC fica deliberadamente adiado até que o importador, a simulação ou o profiling o tornem necessário.
+- **Próxima fase:** Fase 2 — revisão dos produtos de dados FAFB v783, seleção de circuito real pequeno, definição de tarefa e baseline mensuráveis.
