@@ -3,11 +3,11 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-10-28  
-**Versão:** 1.1 — arquitetura coletiva aprovada como hipótese  
-**Estado geral:** Fase 0 — documentação fundacional criada; auditoria técnica e implementação ainda não realizadas.  
+**Versão:** 1.2 — scaffold Python/CI e revisão científica inicial  
+**Estado geral:** fundação documental e bootstrap remoto implementados; CI precisa ser verificado; nenhum dataset foi baixado e nenhum simulador neural existe ainda.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
-**Clone informado:** https://github.com/heldergaraujo2/Cortex.git  
-**Próximo passo:** Fase 1 — auditar repositório e ambiente real, sem apagar ou sobrescrever nada.
+**Política de execução:** GitHub-first; usar o PC quando necessário para inspeção dos dados reais, profiling ou validação local.  
+**Próximo passo:** verificar o resultado do CI; depois concluir a seleção do snapshot/produtos e delimitar o primeiro circuito pequeno.
 
 ---
 
@@ -68,11 +68,11 @@ A direção de longo prazo contempla aprendizagem e resolução de tarefas concr
 Esses SHAs são referências de alterações documentais no remoto; não afirmam que houve clone, pull, execução local ou teste de código.
 
 ### 3.3 Código, dados e testes
-- **CONFIRMADO:** nenhum código funcional do simulador foi criado nesta etapa documental.
+- **CONFIRMADO:** desde a atualização de 2026-10-28, existe um scaffold Python e contratos de mensagens; nenhum código funcional de simulador neural foi criado.
 - **CONFIRMADO:** nenhum dataset do FlyWire foi baixado para este projeto durante esta etapa.
-- **CONFIRMADO:** nenhum teste de software ou benchmark do Cortex foi executado.
+- **CONFIRMADO:** os testes foram escritos e configurados no GitHub Actions; resultado do workflow ainda precisa ser consultado. Nenhum teste local do PC foi executado.
 - **CONFIRMADO:** não existe ainda evidência de dinâmica neuronal, plasticidade, memória funcional, treino ou tarefa aprendida.
-- **DESCONHECIDO:** árvore atual do repositório após a criação dos documentos, a ser verificada na Fase 1.
+- **CONFIRMADO:** a árvore remota inclui documentação, pacote `cortex`, testes, `pyproject.toml`, `.gitignore` e workflow CI. **DESCONHECIDO:** árvore e estado do clone local, caso exista.
 - **DESCONHECIDO:** dependências e compatibilidade do ambiente de desenvolvimento.
 
 ## 4. Decisões e princípios estabelecidos
@@ -286,3 +286,33 @@ Estas questões não bloqueiam a auditoria inicial; devem ser resolvidas na fase
 ## 12. Resumo de retomada em poucas linhas
 
 Cortex está na etapa de fundação documental. O repositório estava vazio na primeira inspeção e recebeu README, roadmap, planejamento e continuidade. A missão é investigar um núcleo neural inspirado em connectoma real de mosca, começando pequeno, separando estrutura/dinâmica/aprendizagem, medindo resultados e sem usar um LLM convencional como núcleo inicial. Nenhum código funcional foi implementado, nenhum dataset foi baixado e nenhum teste foi executado. O próximo passo é auditar o estado real do repositório e do ambiente, preservar qualquer alteração local e só então iniciar a seleção técnica do dataset e do circuito.
+
+
+## 7.2 Registro de alterações 1.2 — bootstrap remoto e revisão de fontes (2026-10-28)
+
+- **Objetivo:** avançar o projeto sem depender do PC, estabelecer base Python testável e comparar fontes científicas para o connectoma.
+- **Motivação/hipótese:** um scaffold sem dependências de runtime reduz riscos enquanto o circuito inicial não foi escolhido; BANC pode ser útil para tarefas sensório-motoras por incluir cérebro e cordão nervoso.
+- **Arquivos criados:** `pyproject.toml`, `.gitignore`, `cortex/__init__.py`, `cortex/contracts.py`, `cortex/diagnostics.py`, `tests/test_contracts.py`, `tests/test_diagnostics.py`, `.github/workflows/tests.yml`, `docs/CONTRATOS_TECNICOS.md`, `docs/SCIENTIFIC_SOURCES.md`.
+- **Arquivos atualizados:** `README.md`, `docs/ROADMAP.md`, `docs/PLANEJAMENTO_DO_PROJETO.md`, este arquivo.
+- **Fontes científicas consultadas:** Codex e FAQ oficiais, orientações de licença/citação FlyWire, artigos Nature sobre FAFB e BANC, depósito estático BANC e FlyConnectome.
+- **Comandos executados:** nenhum comando local. Alterações e commits realizados via integração GitHub.
+- **Testes executados:** nenhum teste executado pelo assistente nesta sessão. Workflow CI configurado para Python 3.11, 3.12 e 3.13; resultado precisa de verificação real antes de declarar sucesso.
+- **Resultados reais:** repositório remoto confirmado como público, branch padrão `main`; configuração de pacote e contratos criados; diagnóstico não destrutivo criado; documentação de fonte/dataset e contratos criada.
+- **Falhas e limitações:** sem resultado CI verificado até este registo; sem dataset descarregado/inspecionado; sem importador, circuito real, simulador, dinâmica, plasticidade ou memória coletiva funcional; ambiente físico local desconhecido.
+- **Classificação da evidência:** CONFIRMADO para os ficheiros/commits remotos e conteúdo dos documentos oficiais consultados; FORTEMENTE INDICADO para BANC v888 como candidato de cobertura sensório-motora; HIPÓTESE para vantagem do BANC no Cortex; DESCONHECIDO para o circuito inicial, desempenho e recursos do PC.
+- **Commits remotos desta alteração:** configuração `pyproject.toml` c1556eb7b7b6640dd57e496bb53810ef35e86d2f; `.gitignore` 3358b7403d91d64284a88ebe4bded33d15f7a050; pacote `cortex/__init__.py` 7d4abccecc5d80b36ee5a0a5a8d4da1d7a136665; contratos 9ffaa20092ab9715c1443f04082d7221e803010d; testes de contratos a563305d6c13c658e8de2e25496081925a21d2ef; workflow CI 2313f7b88e39b4eb1704765cad8131ba6da0481d; fontes 95ae02c3506faf902f5901573d680f13648308f0; contratos técnicos d6354de72974d8ba2944dec5f9681aa2b49232b7; diagnóstico a68a39467a2406ecec1ba608dd1c9ad39c5018c3; teste de diagnóstico f8c4b6df89c65f180b407d38c043260d048a39ec3. Commits dos documentos atualizados serão confirmados depois desta escrita.
+- **Impacto no roadmap:** Fase 1 passa a separar o gate remoto verificável do profiling físico; Fase 2 deve confirmar o dataset e selecionar circuito após inspecionar metadados reais.
+- **Decisões tomadas ou alteradas:** estratégia GitHub-first; Python 3.11+; nenhuma dependência de runtime inicial; BANC v888 como candidato principal provisório e FAFB v783 como alternativa/controle; não baixar dados grandes antes de delimitar o circuito.
+- **Próximo passo único:** consultar o estado real do workflow CI do commit mais recente e corrigir quaisquer falhas antes de fechar o gate remoto.
+- **Critério de aceitação:** testes passam nos três Python do matrix, sem declarar execução local inexistente; depois atualizar o estado com links/IDs de execução reais.
+
+## 8.1 Execução local segura quando necessária
+
+Quando o projeto exigir validação local, após atualizar o clone sem descartar alterações locais:
+1. executar `python -m cortex.diagnostics` no ambiente do Cortex;
+2. guardar o relatório fora do Git ou remover dados pessoais/identificadores desnecessários antes de o partilhar;
+3. executar `python -m pip install -e ".[dev]"` num ambiente virtual próprio;
+4. executar `python -m pytest`;
+5. registar versões, resultados e limitações, sem assumir que o CI representa a GPU/RAM do PC.
+
+O diagnóstico apenas lê informação do host e não escreve ficheiros. A instalação deve ser feita explicitamente pelo responsável no ambiente escolhido.
