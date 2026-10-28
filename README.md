@@ -37,9 +37,13 @@ O projeto seguirá uma arquitetura híbrida que poderá executar **quatro instâ
 Esta arquitetura é uma decisão de planeamento, ainda não implementada nem validada. Os ganhos de cooperação, especialização e memória partilhada precisam de ser demonstrados por comparação com baselines. A anatomia real e os circuitos selecionados poderão exigir ajustes nos papéis.
 
 - [Arquitetura híbrida e Cortex coletivo](docs/ARCHITECTURE.md)
+- [Contratos técnicos iniciais](docs/CONTRATOS_TECNICOS.md) — contratos de mensagens C1–C4 e requisitos da memória/simulador.
+- [Fontes científicas e dataset](docs/SCIENTIFIC_SOURCES.md) — comparação inicial BANC/FAFB, proveniência e licença.
 
-## Estado inicial
+## Estado atual
 
-O repositório foi informado pelo responsável como https://github.com/heldergaraujo2/Cortex.git. Na primeira inspeção via integração GitHub, a API informou que o repositório estava vazio. Portanto, os documentos iniciais estabelecem a direção do projeto, mas nenhum código de simulação, dataset, experimento ou teste funcional foi confirmado como existente.
+O repositório já contém um scaffold Python mínimo, contratos tipados para mensagens entre instâncias, testes unitários e workflow de CI para Python 3.11–3.13. Isso ainda não é um simulador neural: não existe importador de connectoma, dinâmica neuronal, plasticidade nem memória coletiva implementada.
 
-A primeira fase de execução é auditar o estado real do repositório e do ambiente de desenvolvimento antes de implementar o núcleo.
+O dataset candidato principal para estudo é BANC v888, provisoriamente, devido à cobertura de cérebro e cordão nervoso. FAFB v783 permanece como alternativa/controle com licença pública FlyWire explicitamente documentada como CC BY-NC 4.0. Nenhum dataset foi baixado. A decisão final exige verificar licença e metadados dos arquivos exatos e selecionar um circuito pequeno.
+
+A auditoria do PC será feita quando a execução local for necessária para validar recursos reais; existe agora um diagnóstico de leitura apenas em `python -m cortex.diagnostics`, que não instala nada nem escreve arquivos.
