@@ -1,21 +1,21 @@
 # Fontes científicas e decisão inicial de dataset
 
 **Atualizado:** 2026-10-28  
-**Estado:** revisão documental inicial; os arquivos de dados ainda não foram baixados nem inspecionados.
+**Estado:** seleção para o primeiro protótipo decidida documentalmente; os arquivos de dados ainda não foram baixados nem inspecionados.
 
-## 1. Decisão provisória
+## 1. Decisão para o primeiro protótipo
 
-**Dataset candidato principal: FlyWire BANC v888 (snapshot de 20 de maio de 2026), com confirmação de licença e dos produtos de download antes de qualquer importação.**
+**Dataset selecionado: FlyWire FAFB v783 (snapshot de outubro de 2023), representando o cérebro adulto feminino completo, incluindo os lobos ópticos e sem o cordão nervoso.** Esta escolha vale para o primeiro protótipo e para circuitos iniciais dentro do cérebro; não obriga o projeto a usar FAFB em todas as fases.
 
 Motivos:
-- Abrange cérebro adulto feminino e cordão nervoso, favorecendo futuras experiências sensório-motoras sem combinar, por engano, animais diferentes.
-- O Codex identifica v888 como snapshot público mais recente do BANC.
-- O artigo de referência descreve recursos de conectividade, anotações e arquivos estáticos; a versão exata deve ser fixada no manifesto.
-- A licença declarada no depósito estático e as condições de cada arquivo precisam ser conferidas no momento da obtenção.
+- O âmbito corresponde diretamente à primeira meta: trabalhar com um conectoma de cérebro, sem adicionar já o cordão nervoso.
+- A versão tem documentação científica extensa e é utilizada em análises e modelos publicados.
+- O guia oficial FlyWire identifica explicitamente o lançamento público FAFB v783 como CC BY-NC 4.0, permitindo planear a atribuição e o uso não comercial com clareza.
+- O snapshot fixo melhora a reprodutibilidade face a depender apenas de uma base de dados viva.
 
-**Alternativa/controle: FlyWire FAFB v783.** É uma referência amplamente documentada do cérebro adulto feminino, incluindo lobos ópticos, mas não inclui o cordão nervoso. O guia oficial FlyWire declara a licença CC BY-NC 4.0 para o lançamento público FAFB v783; uso não comercial e atribuição são obrigatórios.
+**Alternativa para uma fase posterior: BANC v888**, que inclui cérebro e cordão nervoso e poderá ser mais adequado a circuitos sensório-motores integrados. A licença e os produtos concretos do BANC deverão ser confirmados no depósito antes de o importar.
 
-Esta decisão não autoriza baixar o dataset completo nem significa que BANC é sempre superior. A escolha final para o primeiro circuito depende da disponibilidade de dados compactos, anotação suficiente para delimitar um circuito pequeno, proveniência, licença específica e viabilidade do teste.
+Esta escolha não autoriza baixar o dataset completo. O primeiro download deve limitar-se aos produtos compactos necessários para inspecionar o esquema e selecionar um circuito pequeno, depois de verificar os metadados e a licença dos arquivos concretos.
 
 ## 2. Fontes primárias/oficiais
 
@@ -52,8 +52,8 @@ Esta decisão não autoriza baixar o dataset completo nem significa que BANC é 
 | Contagem no Codex consultado | 158.262 neurónios; 3.037.361 conexões | 139.255 neurónios; 3.732.460 conexões |
 | Limiar padrão no Codex | 3+ sinapses por par | 5+ sinapses por par |
 | Licença | Confirmar no depósito e nos arquivos selecionados antes de uso | Guia oficial FlyWire: CC BY-NC 4.0 |
-| Utilidade provável | Integração sensório-motora e circuito cérebro–cordão | Baselines e comparação com literatura do cérebro completo |
-| Estado da decisão | Candidato principal provisório | Alternativa/controle |
+| Utilidade provável | Fase posterior para circuitos cérebro–cordão | Primeiro protótipo de cérebro e comparação com literatura |
+| Estado da decisão | Alternativa futura; licença dos arquivos concretos a confirmar | **Selecionado para o primeiro protótipo** |
 
 Os números acima são contagens do catálogo, não uma garantia de que o arquivo de conexões escolhido tenha exatamente o mesmo número de linhas. Agregação por neuropilo, autapses, limiares e versão podem mudar a contagem.
 
@@ -82,8 +82,9 @@ Não guardar datasets brutos grandes no Git. Manter manifesto, scripts e fixture
 ## 6. Estado e próximos critérios
 
 **CONFIRMADO:** fontes oficiais consultadas documentam snapshots FAFB e BANC e recomendam downloads estáticos para análise em lote.  
-**FORTEMENTE INDICADO:** BANC v888 é um candidato relevante para o objetivo sensório-motor por incluir cérebro e cordão nervoso.  
-**HIPÓTESE:** a cobertura adicional de BANC permitirá melhores circuitos iniciais para as tarefas Cortex.  
-**DESCONHECIDO:** o melhor circuito inicial, a compatibilidade exata dos produtos de download com o importador ainda inexistente, o custo de simulação e a licença exata dos arquivos a usar.
+**CONFIRMADO:** a orientação oficial FlyWire declara CC BY-NC 4.0 para o lançamento público FAFB v783 e o Codex documenta o snapshot e os contadores apresentados acima.  
+**FORTEMENTE INDICADO:** FAFB v783 é a opção mais controlável para o primeiro protótipo centrado no cérebro, dada a documentação e a licença explícita.  
+**HIPÓTESE:** a escolha de FAFB v783 reduzirá a complexidade inicial de integração face a começar por um dataset que também contém o cordão nervoso.  
+**DESCONHECIDO:** o circuito inicial exato, a compatibilidade dos produtos de download com o importador ainda inexistente, o custo de simulação e o esquema efetivo dos arquivos ainda não descarregados.
 
 A seleção final do primeiro circuito só será concluída após inspecionar os metadados reais, escolher uma tarefa testável e verificar que há dados suficientes para sustentar essa tarefa.
