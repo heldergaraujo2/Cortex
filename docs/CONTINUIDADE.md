@@ -379,3 +379,16 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Impacto no roadmap:** Fase 3 continua aberta. O primeiro passo é verificar os metadados públicos e tentar acesso legítimo aos recursos estáticos; só depois decidir se é necessário usar o PC do responsável ou solicitar arquivos obtidos por ele. Acesso ao CAVE ao vivo continua sujeito a autorização própria.
 - **Próximo passo único:** inspecionar os metadados e testar o endpoint oficial de download dos produtos FAFB v783 sem credenciais, mantendo o resultado como não verificado se o ambiente continuar sem acesso de rede.
 - **Critério de aceitação:** registar nomes/URLs dos produtos, resposta HTTP efetiva, formato, tamanhos e termos aplicáveis; não marcar a aquisição como concluída até ter os arquivos e calcular SHA-256, cabeçalhos e contagens reais.
+
+
+## 7.7 Alinhamento do roadmap com o gate de acesso (2026-10-28)
+
+- **Objetivo:** garantir que o roadmap não perpetue a premissa demasiado ampla de que todo download Codex exige token.
+- **Arquivo atualizado:** `docs/ROADMAP.md`.
+- **Alteração:** o aditivo da Fase 2/Fase 3 agora distingue downloads estáticos públicos das operações CAVE/FlyWire ao vivo/protegidas e deixa a acessibilidade real dos endpoints como item por verificar.
+- **Fonte:** FAQ oficial do Codex https://codex.flywire.ai/faq, consultada nesta sessão.
+- **Testes/comandos:** nenhum teste de software executado; alteração documental remota.
+- **Resultado real:** commit do roadmap `7b3b91b70a1786822fa3f7d4c46d9edefab87776`; continuidade anterior sobre acesso corrigido no commit `90ae69c69c9a8850b2391805419923df9783d39a`; correção da frase no documento experimental em `35c706a0ccfda887697949db179bc57e07ec06a0`.
+- **Classificação:** **CONFIRMADO** para a atualização dos documentos e o conteúdo publicado da FAQ; **DESCONHECIDO** para download efetivo, cabeçalhos, tamanhos, hashes, licenças específicas por arquivo e mapeamento espacial.
+- **Próximo passo único:** validar a resposta real do endpoint estático oficial e obter os metadados dos produtos FAFB v783.
+- **Critério de aceitação:** resposta do endpoint observada e metadados concretos registrados; não iniciar importador de produção nem simulação antes da validação do esquema.
