@@ -175,7 +175,7 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 - **Resultados reais:** documento de arquitetura criado; papéis C1–C4, memória coletiva versionada, riscos do coordenador, critérios de ablação e sequência incremental registados. Ainda não existe implementação nem benchmark.
 - **Falhas e limitações:** papéis não validados biologicamente; custo de execução desconhecido; memória coletiva e coordenação ainda não implementadas.
 - **Classificação da evidência:** CONFIRMADO para a decisão documental; HIPÓTESE para benefícios de especialização, coordenação e memória partilhada.
-- **Commit/branch/SHA:** os SHAs das atualizações devem ser lidos dos resultados de escrita do GitHub e não presumidos nesta entrada.
+- **Commit/branch/SHA (branch main):** docs/ARCHITECTURE.md commit `ca7d70c81c38c60317c784916497d4b9c51d2382`; README.md commit `6187ce00a6b022f43543a493ff781c651914d576`; docs/ROADMAP.md commit `26eb8841623b544706e66b3ccc60a3a7f898e985`; docs/PLANEJAMENTO_DO_PROJETO.md commit `4c1e2bf37ee196cd582bf1f2d09602f5e2332fe3`; docs/CONTINUIDADE.md primeira atualização desta decisão `c71f3b7e40d5496413fd99de59036986d6a28f86`. Este registro final de SHA será atualizado pelo próprio commit desta alteração.
 - **Impacto no roadmap:** fases 9–11 precisarão contemplar memória coletiva, múltiplas instâncias, coordenação e ablações; Fase 1 continua prioritária.
 - **Decisões tomadas ou alteradas:** quatro cérebros em vez de cinco; um dos quatro assume coordenação; memória explícita coletiva; estados neurais e parâmetros plásticos separados inicialmente.
 - **Próximo passo único:** executar a auditoria da Fase 1 do repositório e do ambiente real.
