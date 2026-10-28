@@ -347,3 +347,18 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Gate bloqueado:** o portal oficial requer token de conta para obter os recursos. A ferramenta de navegação conseguiu ler a documentação pública, mas não inspecionar metadados autenticados, tamanho/cabeçalhos dos arquivos concretos ou a correspondência espacial. Não pedir nem guardar token em chat ou Git. O gate será resolvido por acesso autorizado aos produtos ou por ficheiros obtidos pelo responsável e partilhados sem credenciais.
 - **Estado da Fase 2:** seleção documental do dataset, circuito e desenho experimental concluídos; extração/validação empírica de dados pendente e explicitamente bloqueada por acesso aos produtos. Não declarar a fase de dados completa.
 - **Próximo passo único:** obter por via autorizada os metadados e os CSVs mínimos `consolidated_cell_types` e `connections_princeton`, mais uma fonte validada de mapeamento espacial/colunas; registar cabeçalhos, tamanhos, hashes e termos de cada produto antes de construir o importador.
+
+
+## 7.5 Fecho da Fase 2 — desenho concluído, gate de dados transferido (2026-10-28)
+
+- **Objetivo:** escolher um dataset/snapshot, circuito inicial reproduzível e tarefa mensurável.
+- **Decisão de dataset:** FlyWire FAFB v783, com BANC v888 reservado como extensão possível.
+- **Decisão de circuito:** núcleo exploratório `L1 → Mi1/Tm3 → T4` da via ON de movimento, com regra de seleção por tipos e pares de arestas. O núcleo é parcial; entradas adicionais de T4 estão documentadas.
+- **Decisão experimental:** estímulos sintéticos de movimento em direções opostas, flash estático e ausência de estímulo; métrica candidata baseada na diferença de resposta T4 entre direções, condicionada à existência de um mapeamento espacial validado.
+- **Entregáveis:** documento de circuito, manifesto JSON, especificação tipada e três testes; documentação e continuidade atualizadas.
+- **Validação:** 3 testes passaram em 0,05s no ambiente temporário isolado. Não houve simulação neural nem leitura de dados biológicos.
+- **Fontes:** Codex FAQ/portal, Takemura et al. 2013, Shinomiya et al. 2017, Dorkenwald et al. 2024, depósito Zenodo 10.5281/zenodo.10676866.
+- **Cuidado de licença:** as orientações FlyWire para FAFB v783 declaram CC BY-NC 4.0. Depósitos distintos podem ter metadados próprios; verificar os termos do produto exato e não redistribuir se houver conflito não resolvido.
+- **Gate transferido para a Fase 3:** a extração empírica requer produtos concretos (mínimo: `consolidated_cell_types`, `connections_princeton`, mais fonte espacial/colunas verificada), cabeçalhos, tamanhos, hashes, licenças e IDs/contagens reais. O portal oficial exige token para obter recursos; nenhum token foi solicitado ou armazenado. Os arquivos ainda não foram baixados.
+- **Estado da fase:** Fase 2 encerrada quanto à seleção e ao desenho experimental; gate de dados não está aprovado e não deve ser descrito como concluído.
+- **Próximo passo único:** iniciar Fase 3 com aquisição autorizada e validação dos dados mínimos, antes de qualquer importador que os consuma ou simulador.
