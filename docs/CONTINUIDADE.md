@@ -420,3 +420,16 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Privacidade/segurança:** os arquivos são dados científicos públicos conforme a origem declarada pelo utilizador, mas a licença/citação específica dos produtos ainda deve ser verificada. Não há tokens incluídos no repositório.
 - **Próximo passo único:** consultar a execução do workflow e analisar o relatório gerado; então verificar a correspondência de tipos e IDs para L1, Mi1, Tm3 e T4 e registrar evidências antes de implementar simulação.
 - **Critério de aceitação:** relatório do GitHub Actions disponível, três arquivos lidos integralmente sem erro de gzip/CSV, cabeçalhos e contagens conhecidos, hashes registados e limitações/licença anotadas.
+
+
+## 7.10 Primeira validação estrutural dos arquivos FAFB (2026-10-28)
+
+- **Execução:** GitHub Actions FAFB v783 Data Validation, run 2, ID 40766311959; job inspect-data concluído com sucesso.
+- **Resultado confirmado:** os três arquivos abriram como gzip e CSV sem erro; FILES_OK: 3/3, ERRORS: 0.
+- **consolidated_cell_types.csv.gz:** 901.707 bytes; 138.327 registos de dados; colunas root_id, primary_type, additional_type(s); SHA-256 8aba246d71dc40361677493629972ce3883048c3d02010adc42bda22962a1a2d.
+- **connections_princeton.csv.gz:** 68.456.801 bytes; 5.342.446 registos de dados; colunas pre_root_id, post_root_id, neuropil, syn_count, nt_type; SHA-256 445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b.
+- **coordinates.csv.gz:** 5.314.546 bytes; 238.909 registos de dados; colunas root_id, position, supervoxel_id; SHA-256 14337121f451f98c2576cee72c24409ada5aaf7948b7c7ca8de9040296840e05.
+- **Relatório:** artefato fafb-v783-validation-report, run https://github.com/heldergaraujo2/Cortex/actions/runs/40766311959.
+- **Limite da conclusão:** isto confirma integridade de leitura gzip/CSV e estrutura básica, não valida a licença específica, correspondência de todos os IDs, presença de arestas L1→Mi1/Tm3→T4, nem mecanismo funcional de seletividade direcional.
+- **Análise ampliada adicionada:** o script scripts/inspect_fafb_data.py foi expandido para contar tipos primários L1/Mi1/Tm3/T4, procurar pares dirigidos entre esses grupos na tabela de conexões e medir cobertura de coordenadas. A nova execução do workflow ainda estava em andamento quando este registo foi escrito.
+- **Próximo passo:** ler o resultado ampliado e verificar quais arestas e IDs estão realmente presentes antes de desenhar o importador ou a simulação.
