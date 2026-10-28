@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** Fase 1 — bootstrap remoto concluído; Fase 2 — seleção do circuito e desenho experimental concluídos; Fase 3 — aquisição e validação dos dados reais por iniciar (gate de acesso aos produtos).  
+**Status global:** Fase 1 — bootstrap remoto concluído; Fase 2 — seleção do circuito e desenho experimental concluídos; Fase 3 — dados reais adquiridos e primeira validação estrutural feita; importador de produção, testes de integridade aprofundados e manifesto reproduzível ainda pendentes.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -113,6 +113,8 @@ O projeto não deve afirmar que reproduz a consciência, a inteligência geral o
 - Dados brutos grandes não são commitados inadvertidamente.
 
 ## Fase 3 — Importação, normalização e integridade do connectoma
+
+**Estado:** iniciada. Três produtos reais FAFB v783 foram carregados para a branch de trabalho, lidos por GitHub Actions e analisados preliminarmente. A existência de registos de tabela para os quatro pares de tipos piloto foi observada; isso não conclui a importação nem a validação funcional. Ver `docs/SCIENTIFIC_SOURCES.md` e `docs/CONTINUIDADE.md`.
 
 ### Objetivos
 - Construir um pipeline de importação robusto e testável, independente do simulador.
