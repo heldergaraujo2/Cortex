@@ -424,3 +424,50 @@ Se a continuidade estiver desatualizada, o novo chat deve primeiro inspecionar o
 ## 17. Critério de sucesso de longo prazo
 
 O sucesso não será definido por ter muitos arquivos, neurônios simulados ou uma demonstração convincente. Será definido por um conjunto crescente de experimentos reproduzíveis que mostrem, com limites claros, quais tarefas o sistema resolve, como aprende, quanto generaliza, quais componentes são necessários e qual é o custo computacional. A hipótese de que o núcleo possa contribuir para tarefas mais complexas será mantida aberta até que evidências comparativas a sustentem.
+
+
+## 18. Arquitetura híbrida de quatro cérebros e memória coletiva
+
+A decisão inicial passa a contemplar quatro instâncias completas do connectoma escolhido, em vez de começar o desenho coletivo com cinco. Cada instância tem estado neural próprio. A mesma estrutura anatómica pode ser carregada por cada uma, mas a memória dinâmica e os parâmetros plásticos não serão fundidos por padrão.
+
+### 18.1 Papéis experimentais
+- **C1 — Coordenador:** distribui tarefas, organiza prioridades e sintetiza resultados sem apagar desacordos.
+- **C2 — Percepção:** especializa-se experimentalmente em tarefas de interpretação de estímulos.
+- **C3 — Aprendizagem:** investiga plasticidade, retenção e transferência de experiência.
+- **C4 — Ação:** investiga seleção de respostas e avaliação de consequências.
+
+Os papéis são hipóteses de engenharia, não uma afirmação de que o connectoma da mosca possua essas quatro divisões funcionais. Devem ser revistos após a seleção do dataset e do circuito. Especialização tem de ser demonstrada por métricas, não presumida a partir do nome da instância.
+
+### 18.2 Avaliação do cérebro coordenador
+A coordenação central pode reduzir duplicação, organizar tarefas e consolidar respostas. Também pode criar gargalo, ponto único de falha, viés de autoridade ou perda de diversidade. Por isso, C1 será coordenador, mas não fonte exclusiva de verdade. Um orquestrador convencional de software validará contratos, limites, timeouts e registos; ele não será contado como um quinto cérebro e não deverá substituir o núcleo neural nas avaliações.
+
+Comparações obrigatórias:
+1. instâncias individuais;
+2. quatro instâncias independentes;
+3. cooperação com agregação sem coordenador;
+4. cooperação com C1 coordenador;
+5. coordenação com falha simulada de C1 e recuperação segura.
+
+### 18.3 Memória coletiva partilhada
+As quatro instâncias utilizarão um repositório comum de memória explícita do software. Ele poderá conter memória de trabalho, episódios, conhecimento consolidado, artefactos versionados e registo de conflitos. Cada entrada terá proveniência e estado epistémico (observação, hipótese, conclusão ou desconhecido).
+
+A memória deve usar escrita versionada, operações atómicas, registo de origem e preservação de versões anteriores. Informações contraditórias não podem ser sobrescritas silenciosamente: devem permanecer rastreáveis até serem resolvidas por evidência ou marcadas como não resolvidas. A consolidação proposta por C1 precisa preservar a fonte e as alternativas.
+
+**Memória compartilhada não significa estado neural compartilhado.** Inicialmente, as instâncias partilham informações e experiências registadas, mas conservam estados dinâmicos e parâmetros plásticos individuais. A sincronização de pesos ou estados será uma hipótese separada, pois pode reduzir diversidade ou provocar interferência catastrófica.
+
+A contribuição da memória coletiva será avaliada com condições comparáveis: sem memória partilhada, memória apenas de leitura, memória com escrita versionada e memória congelada. Medir desempenho, conflitos, retenção, interferência, custo e reprodutibilidade.
+
+### 18.4 Ordem de implementação
+1. Auditar repositório e hardware.
+2. Selecionar dataset e circuito com base em evidência.
+3. Implementar e validar um circuito mínimo.
+4. Medir RAM, VRAM, CPU, latência e throughput.
+5. Implementar persistência e proveniência de memória.
+6. Demonstrar duas instâncias independentes.
+7. Testar memória partilhada com leituras e escritas concorrentes.
+8. Escalar para quatro instâncias apenas após os passos anteriores.
+9. Comparar especialização, coordenação e memória coletiva por ablação.
+
+Não assumir que quatro instâncias custam exatamente quatro vezes o recurso de uma: estruturas imutáveis podem ser compartilhadas, mas estados e cálculos independentes têm custo próprio. O valor real exige profiling no hardware medido.
+
+Ver também [docs/ARCHITECTURE.md](ARCHITECTURE.md) para contratos e critérios detalhados.
