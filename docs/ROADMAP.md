@@ -44,7 +44,7 @@ O projeto não deve afirmar que reproduz a consciência, a inteligência geral o
 
 ## Fase 1 — Auditoria remota, bootstrap reproduzível e diagnóstico seguro
 
-**Estado:** implementação inicial no GitHub concluída; aguarda resultado verificável do workflow CI para fechar o gate remoto. A medição do PC fica adiada até ser necessária para profiling ou importação de dados.
+**Estado:** bootstrap remoto implementado; 11 testes passaram num ambiente isolado Python 3.13 e instalação editável do pacote passou. Workflow CI configurado para Python 3.11–3.13; execução do workflow no GitHub não pôde ser confirmada pelo conector disponível. A medição do PC fica adiada até ser necessária para profiling ou importação de dados.
 
 ### Objetivos
 - Auditar o estado visível do repositório remoto sem presumir estado local.
@@ -75,7 +75,8 @@ O projeto não deve afirmar que reproduz a consciência, a inteligência geral o
 - Relatório remoto de auditoria e registo explícito das incógnitas locais em `docs/CONTINUIDADE.md`.
 
 ### Critérios de saída do gate remoto
-- Instalação limpa e testes passam no CI em Python 3.11, 3.12 e 3.13.
+- Instalação editável limpa e testes passam num ambiente isolado reproduzível.
+- Workflow CI está configurado para verificar adicionalmente Python 3.11, 3.12 e 3.13; o estado remoto deve ser confirmado quando houver acesso ao painel de execuções.
 - Contratos rejeitam campos inválidos e preservam origem/estado de evidência.
 - Dados grandes e configurações locais não são incluídos por omissão.
 - A continuidade separa claramente factos remotos de factos locais não verificados.
