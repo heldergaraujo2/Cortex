@@ -411,11 +411,11 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 ## 7.9 Upload dos três produtos FAFB v783 e validação no GitHub (2026-10-28)
 
 - **Objetivo:** disponibilizar os três arquivos do piloto no GitHub para análise sem exigir inspeção manual local pelo utilizador.
-- **Branch:** \`data/fafb-v783-inputs\`.
+- **Branch:** `data/fafb-v783-inputs`.
 - **Pull Request:** https://github.com/heldergaraujo2/Cortex/pull/1 — aberto, não integrado na branch principal no momento deste registo.
-- **Arquivos enviados:** \`data/raw/fafb_v783/consolidated_cell_types.csv.gz\`, \`data/raw/fafb_v783/connections_princeton.csv.gz\` e \`data/raw/fafb_v783/coordinates.csv.gz\`.
-- **Resultado confirmado:** o \`git push\` concluiu e o GitHub aceitou os três arquivos. O servidor emitiu aviso porque \`connections_princeton.csv.gz\` tem 65,29 MB, acima da recomendação de 50 MB; não é um erro de envio. A pasta \`data/raw\` está ignorada pelo Git e foi necessário adicionar os três caminhos explicitamente com \`git add -f\`; nenhuma regra de ignore foi alterada.
-- **Validação adicionada ao PR:** \`scripts/inspect_fafb_data.py\` lê os CSVs comprimidos em streaming, regista cabeçalhos, contagem de registos, tamanho, SHA-256 e duas amostras curtas de linhas; gera \`fafb_v783_validation_report.json\`. O workflow \`.github/workflows/fafb-data-validation.yml\` executa essa inspeção no GitHub Actions e publica o relatório como artefato.
+- **Arquivos enviados:** `data/raw/fafb_v783/consolidated_cell_types.csv.gz`, `data/raw/fafb_v783/connections_princeton.csv.gz` e `data/raw/fafb_v783/coordinates.csv.gz`.
+- **Resultado confirmado:** o `git push` concluiu e o GitHub aceitou os três arquivos. O servidor emitiu aviso porque `connections_princeton.csv.gz` tem 65,29 MB, acima da recomendação de 50 MB; não é um erro de envio. A pasta `data/raw` está ignorada pelo Git e foi necessário adicionar os três caminhos explicitamente com `git add -f`; nenhuma regra de ignore foi alterada.
+- **Validação adicionada ao PR:** `scripts/inspect_fafb_data.py` lê os CSVs comprimidos em streaming, regista cabeçalhos, contagem de registos, tamanho, SHA-256 e duas amostras curtas de linhas; gera `fafb_v783_validation_report.json`. O workflow `.github/workflows/fafb-data-validation.yml` executa essa inspeção no GitHub Actions e publica o relatório como artefato.
 - **Estado dos resultados científicos:** **DESCONHECIDO** até a execução do workflow ser concluída e o relatório ser examinado. A presença e o upload dos arquivos não confirmam integridade, esquema esperado, licença, cobertura do circuito ou conexões específicas.
 - **Privacidade/segurança:** os arquivos são dados científicos públicos conforme a origem declarada pelo utilizador, mas a licença/citação específica dos produtos ainda deve ser verificada. Não há tokens incluídos no repositório.
 - **Próximo passo único:** consultar a execução do workflow e analisar o relatório gerado; então verificar a correspondência de tipos e IDs para L1, Mi1, Tm3 e T4 e registrar evidências antes de implementar simulação.
