@@ -330,3 +330,20 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Pendências não bloqueantes para iniciar a Fase 2:** confirmar execução GitHub Actions quando possível; estado do PC/clonagem local desconhecido; dados não descarregados; circuito real ainda não escolhido.
 - **Decisão de fase:** Fase 1 encerrada para o escopo remoto disponível. O perfil físico do PC fica deliberadamente adiado até que o importador, a simulação ou o profiling o tornem necessário.
 - **Próxima fase:** Fase 2 — revisão dos produtos de dados FAFB v783, seleção de circuito real pequeno, definição de tarefa e baseline mensuráveis.
+
+
+## 7.4 Registo de sessão — seleção do circuito inicial (2026-10-28)
+
+- **Objetivo:** avançar a Fase 2, selecionar um circuito real pequeno por regra reproduzível e definir uma tarefa observável antes de implementar dinâmica neuronal.
+- **Fontes consultadas:** FAQ/Codex oficial, portal de downloads e artigos primários sobre conectoma visual e via ON T4. O FAQ oficial indica que o acesso em lote deve usar CSVs estáticos, nomeia `consolidated_cell_types` e `connections_princeton` no exemplo programático, explica os campos de anotação e o limiar padrão FAFB de 5+ sinapses por par. O artigo de Takemura et al. descreve a hipótese de via de movimento baseada em L1, Mi1/Tm3 e T4; a literatura posterior assinala entradas adicionais e incertezas.
+- **Decisão:** primeiro núcleo exploratório = `L1 → Mi1/Tm3 → T4`, dataset FAFB v783. O núcleo é parcial e não é alegado como circuito biológico completo.
+- **Arquivos criados:** `docs/FASE_2_CIRCUITO_INICIAL.md`, `data/manifests/fafb_v783_t4_on_pilot.json`, `cortex/experiments/__init__.py`, `cortex/experiments/motion_t4.py`, `tests/test_motion_t4_spec.py`.
+- **Arquivos atualizados:** `README.md`, `docs/ROADMAP.md`, este arquivo.
+- **Validação executada:** os três testes da especificação foram executados num diretório temporário isolado, reproduzindo a especificação e os testes escritos no GitHub; resultado **3 passed in 0.05s**. Isto não valida dados biológicos nem substitui o workflow CI.
+- **Dados reais:** nenhum CSV foi descarregado, nenhuma raiz de neurónio (root ID) foi inventada ou registada e nenhum número de neurónios/arestas do subcircuito foi afirmado.
+- **Tarefa definida:** estímulo ON sintético com movimento em duas direções, flash estático e ausência de estímulo; métrica candidata = diferença normalizada de resposta T4 entre direções. A aplicabilidade desta métrica está condicionada à validação da correspondência entre posições visuais/colunas e neurónios.
+- **Baselines planeadas:** sem seletividade, filtros temporais simples, modelo sem plasticidade, ablação de Mi1/Tm3, direção invertida e flash estático. Nenhuma baseline foi simulada.
+- **Limitações:** o núcleo omite entradas conhecidas de T4 (Mi4, Mi9, C3, TmY15, CT1 e potencialmente outras); o conectoma não determina por si só sinais fisiológicos, pesos, atrasos, dinâmica neuronal ou plasticidade.
+- **Gate bloqueado:** o portal oficial requer token de conta para obter os recursos. A ferramenta de navegação conseguiu ler a documentação pública, mas não inspecionar metadados autenticados, tamanho/cabeçalhos dos arquivos concretos ou a correspondência espacial. Não pedir nem guardar token em chat ou Git. O gate será resolvido por acesso autorizado aos produtos ou por ficheiros obtidos pelo responsável e partilhados sem credenciais.
+- **Estado da Fase 2:** seleção documental do dataset, circuito e desenho experimental concluídos; extração/validação empírica de dados pendente e explicitamente bloqueada por acesso aos produtos. Não declarar a fase de dados completa.
+- **Próximo passo único:** obter por via autorizada os metadados e os CSVs mínimos `consolidated_cell_types` e `connections_princeton`, mais uma fonte validada de mapeamento espacial/colunas; registar cabeçalhos, tamanhos, hashes e termos de cada produto antes de construir o importador.
