@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install Cortex package
-        run: python -m pip install .
+        run: python -m pip install '.[dev]'
       - name: Inspect compressed CSV files
         run: python scripts/inspect_fafb_data.py
       - name: Import reduced pilot and build manifest
