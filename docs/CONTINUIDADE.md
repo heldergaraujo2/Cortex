@@ -468,3 +468,16 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Pares únicos dirigidos entre tipos principais:** L1→Mi1 1.620; L1→Tm3 6.706; Mi1→T4 21.157; Tm3→T4 10.351. Os números são pares `(pre_root_id, post_root_id)` deduplicados entre neuropilos; os registos e as contagens `syn_count` continuam preservados por neuropilo no subgrafo.
 - **Conclusão da fase:** Fase 3 concluída para o importador estrutural reduzido do piloto. Não significa conectoma completo nem simulação funcional. A tabela de coordenadas não confirma sozinha o mapeamento coluna/posição visual.
 - **Próxima fase:** Fase 4 — validar `column_assignment.csv.gz`, unidades e semântica das coordenadas, cobertura por subtipo T4 e só depois definir baseline espacial/dinâmica.
+
+
+## 7.13 Fase 4 — preparação do validador espacial, gate real ainda aberto (2026-10-28)
+
+- **Estado honesto:** Fase 4 iniciada, mas NÃO concluída. A branch `data/fafb-v783-inputs` contém os três produtos da Fase 3, mas a última listagem de `data/raw/fafb_v783/` não encontrou `column_assignment.csv.gz`.
+- **Código novo:** `cortex/spatial.py` implementa leitor estrito para as colunas esperadas `root_id, hemisphere, type, column_id, x, y, p, q`; calcula SHA-256; valida `p/q` como inteiros e `x/y` como números finitos; conta IDs sem correspondência e cobertura por tipo primário; distingue colunas por `(hemisphere, column_id)`.
+- **CLI:** `scripts/inspect_fafb_columns.py` combina o arquivo de colunas com as anotações primárias existentes e produz um relatório JSON fora do Git por padrão.
+- **Testes sintéticos:** `tests/test_spatial.py` cobre cobertura por tipo, hemisférios, IDs sem correspondência, cabeçalhos ausentes, `p/q` inválidos, coordenadas `x` inválidas, arquivo ausente e gzip corrompido. Estes testes verificam o código, não a exportação biológica real.
+- **CI:** `.github/workflows/fafb-data-validation.yml` foi ampliado para executar os testes e inspecionar a tabela real quando ela estiver presente; se faltar, emite warning e deixa o gate empírico pendente.
+- **Documentação:** `docs/VALIDACAO_ESPACIAL.md` explica esquema, limites e distinção entre `x/y` e `p/q`; `docs/ROADMAP.md` agora exige explicitamente a validação do arquivo original.
+- **Referência de coordenadas:** o FAQ do Codex descreve a visualização FlyWire em voxels de 4 × 4 × 40 nm, mas isso não basta para inferir automaticamente unidades/semântica dos campos `x/y` de `column_assignment`. Não foi aplicada transformação nem conversão.
+- **Evidência:** **CONFIRMADO** que o parser, CLI, testes e workflow foram adicionados à branch; **DESCONHECIDO** a cobertura real, os tipos presentes, a distribuição de colunas e as relações espaciais até ler o arquivo original.
+- **Gate bloqueador / próximo passo único:** disponibilizar `column_assignment.csv.gz` em `data/raw/fafb_v783/` na branch `data/fafb-v783-inputs` (arquivo esperado na máquina local anteriormente: `D:\\Cortex-data\\FAFB-v783\\column_assignment.csv.gz`), sem alterar `main` nem integrar o PR. Depois, a CI deve gerar o relatório real; só então interpretar cobertura e decidir se há base para uma baseline espacial.
