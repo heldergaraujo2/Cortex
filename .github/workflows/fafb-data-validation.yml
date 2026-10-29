@@ -5,9 +5,12 @@ on:
     paths:
       - "data/raw/fafb_v783/**"
       - "cortex/connectome.py"
+      - "cortex/spatial.py"
       - "scripts/inspect_fafb_data.py"
       - "scripts/import_fafb_pilot.py"
+      - "scripts/inspect_fafb_columns.py"
       - "tests/test_connectome.py"
+      - "tests/test_spatial.py"
       - ".github/workflows/fafb-data-validation.yml"
   workflow_dispatch:
 
@@ -34,6 +37,16 @@ jobs:
           python scripts/import_fafb_pilot.py
           --data-dir data/raw/fafb_v783
           --output fafb_v783_pilot_manifest.json
+      - name: Inspect visual column assignment when supplied
+        shell: bash
+        run: |
+          if [ -f data/raw/fafb_v783/column_assignment.csv.gz ]; then
+            python scripts/inspect_fafb_columns.py
+          else
+            echo "::warning::column_assignment.csv.gz is not in this branch; real-data spatial coverage remains pending."
+          fi
+      - name: Run structural and spatial unit tests
+        run: python -m pytest -q
       - name: Upload validation reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -42,4 +55,5 @@ jobs:
           path: |
             fafb_v783_validation_report.json
             fafb_v783_pilot_manifest.json
+            fafb_v783_column_assignment_report.json
           if-no-files-found: warn
