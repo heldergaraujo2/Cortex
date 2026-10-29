@@ -479,7 +479,7 @@ A Fase 3 começa com a aquisição autorizada dos produtos mínimos, verificaç�
 
 ## Fase 4 — Correspondência espacial/colunar e baseline dinâmica
 
-**Estado:** próxima fase; não iniciada.
+**Estado (2026-10-28): em andamento parcial.** O parser estrito, relatório de cobertura e testes sintéticos para `column_assignment.csv.gz` foram adicionados (`cortex/spatial.py`, `scripts/inspect_fafb_columns.py`, `tests/test_spatial.py`, `docs/VALIDACAO_ESPACIAL.md`). A inspeção mais recente da branch não encontrou o arquivo real; portanto, cobertura empírica, semântica dos campos e baseline continuam bloqueadas.
 
 ### Objetivos
 - Verificar se o arquivo oficial `column_assignment.csv.gz` associa de forma rastreável os neurónios do piloto a colunas/posições visuais adequadas.
@@ -495,6 +495,8 @@ A Fase 3 começa com a aquisição autorizada dos produtos mínimos, verificaç�
 - Especificação pré-registada para a primeira baseline dinâmica, incluindo parâmetros desconhecidos e controlos.
 
 ### Critérios de saída
+- `column_assignment.csv.gz` real do snapshot v783 é presente, tem SHA-256/cabeçalho/linhas registrados e passa validação estrutural; fixtures sintéticas não contam como validação dos dados reais.
+- A cobertura real de L1, Mi1, Tm3 e T4a–T4d foi calculada e reportada, com IDs não mapeados e ausências explícitas.
 - O mapeamento de coluna está apoiado por colunas reais e fonte oficial, ou a tarefa é explicitamente reduzida a uma experiência topológica sem afirmação de movimento espacial.
 - IDs e subtipos preservados; unidades e regras de agregação documentadas.
 - Baseline sintética reproduzível, com testes e métricas definidos antes de interpretar resultados.
