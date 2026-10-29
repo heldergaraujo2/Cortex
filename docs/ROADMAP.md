@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** Fase 1 — bootstrap remoto concluído; Fase 2 — seleção do circuito e desenho experimental concluídos; Fase 3 — aquisição e validação dos dados reais por iniciar (gate de acesso aos produtos).  
+**Status global:** Fase 1 — bootstrap remoto concluído; Fase 2 — seleção do circuito e desenho experimental concluídos; Fase 3 — importação estrutural do subgrafo piloto concluída e validada por GitHub Actions; Fase 4 — validação espacial/colunar e desenho da primeira baseline dinâmica por iniciar.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -113,6 +113,8 @@ O projeto não deve afirmar que reproduz a consciência, a inteligência geral o
 - Dados brutos grandes não são commitados inadvertidamente.
 
 ## Fase 3 — Importação, normalização e integridade do connectoma
+
+**Estado:** concluída para o subgrafo estrutural piloto. Os três produtos FAFB v783 foram validados, o importador produziu um manifesto reproduzível no GitHub Actions e os testes de integridade passaram. Isto não conclui a validação espacial/funcional nem significa que exista uma simulação neural.
 
 ### Objetivos
 - Construir um pipeline de importação robusto e testável, independente do simulador.
@@ -470,6 +472,32 @@ Entregáveis concluídos:
 - manifesto JSON, especificação tipada e testes adicionados;
 - três testes da especificação passaram no ambiente temporário de validação.
 
-Limite explícito: root IDs concretos, número real de células/arestas, cabeçalhos/tamanhos exatos dos produtos Codex e mapeamento espacial de colunas ainda não foram verificados. A FAQ oficial descreve downloads de produtos estáticos para usuários públicos, mas o exemplo de download programático inclui `api_token`. Esse token de API Codex é distinto do token CAVE/FlyWire usado para operações ao vivo/protegidas. O acesso interativo e os endpoints concretos ainda não foram testados com credenciais válidas. Não foi descarregado dado bruto.
+Limite explícito no momento em que esta nota histórica foi escrita: root IDs concretos, número real de células/arestas, cabeçalhos/tamanhos exatos e mapeamento espacial ainda não tinham sido verificados. A Fase 3 subsequente resolveu a aquisição e a validação estrutural, conforme `docs/SCIENTIFIC_SOURCES.md` e `docs/CONTINUIDADE.md`; a validação espacial/colunar continua pendente.
 
 A Fase 3 começa com a aquisição autorizada dos produtos mínimos, verificação dos metadados/licença/cabeçalhos e extração real do circuito. Se a correspondência espacial não estiver disponível no produto selecionado, a tarefa direcional deve ser reduzida a validação topológica até existir uma fonte adequada.
+
+
+## Fase 4 — Correspondência espacial/colunar e baseline dinâmica
+
+**Estado (2026-10-28): em andamento parcial.** O parser estrito, relatório de cobertura e testes sintéticos para `column_assignment.csv.gz` foram adicionados (`cortex/spatial.py`, `scripts/inspect_fafb_columns.py`, `tests/test_spatial.py`, `docs/VALIDACAO_ESPACIAL.md`). A inspeção mais recente da branch não encontrou o arquivo real; portanto, cobertura empírica, semântica dos campos e baseline continuam bloqueadas.
+
+### Objetivos
+- Verificar se o arquivo oficial `column_assignment.csv.gz` associa de forma rastreável os neurónios do piloto a colunas/posições visuais adequadas.
+- Documentar o significado e as unidades de `coordinates.position`; não inferir que a coordenada disponível é soma, centroide ou ponto funcional sem fonte.
+- Construir uma extração espacial pequena e rastreável que preserve os IDs, subtipos T4a–T4d, hemisfério/neuropilo quando disponível e proveniência.
+- Definir primeiro uma baseline sintética sem pretensão biológica e uma baseline topológica que não afirme seletividade direcional.
+- Só depois, se o mapeamento sustentar a tarefa, especificar dinâmica temporal, parâmetros, métricas e controlos.
+
+### Entregáveis
+- Relatório de cobertura espacial/colunar para L1, Mi1, Tm3 e T4a–T4d.
+- Regra de associação entre posições visuais, colunas e neurónios, com fonte e incertezas.
+- Fixture sintética pequena e testes da transformação espacial.
+- Especificação pré-registada para a primeira baseline dinâmica, incluindo parâmetros desconhecidos e controlos.
+
+### Critérios de saída
+- `column_assignment.csv.gz` real do snapshot v783 é presente, tem SHA-256/cabeçalho/linhas registrados e passa validação estrutural; fixtures sintéticas não contam como validação dos dados reais.
+- A cobertura real de L1, Mi1, Tm3 e T4a–T4d foi calculada e reportada, com IDs não mapeados e ausências explícitas.
+- O mapeamento de coluna está apoiado por colunas reais e fonte oficial, ou a tarefa é explicitamente reduzida a uma experiência topológica sem afirmação de movimento espacial.
+- IDs e subtipos preservados; unidades e regras de agregação documentadas.
+- Baseline sintética reproduzível, com testes e métricas definidos antes de interpretar resultados.
+- Nenhuma afirmação de seletividade direcional sem comparação adequada e validação espacial.

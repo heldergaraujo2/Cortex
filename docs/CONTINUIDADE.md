@@ -3,11 +3,11 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-10-28  
-**Versão:** 1.3 — Fase 3 iniciada; correção do acesso aos downloads estáticos Codex  
-**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo disponível; 11 testes passaram em ambiente isolado Python 3.13 e instalação editável passou. Fase 2 — seleção e desenho do circuito concluídos documentalmente. Fase 3 — iniciada; produtos reais ainda não baixados nem inspecionados, e nenhum simulador neural existe. A FAQ oficial descreve produtos estáticos para usuários públicos, mas o exemplo de download programático inclui `api_token`; o acesso interativo e a resposta dos endpoints não foram verificados neste ambiente.  
+**Versão:** 1.5 — gate de importação estrutural do piloto concluído  
+**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo verificado. Fase 2 — seleção e desenho experimental concluídos. Fase 3 — três produtos FAFB v783 foram validados; o importador real executou no GitHub Actions, gerou manifesto com hashes e 59.218 linhas de conexões do subgrafo piloto. A CI passou em Python 3.11–3.13 com 23 testes, incluindo rejeição de gzip corrompido. Nenhuma simulação neural foi implementada.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
-**Política de execução:** GitHub-first; usar o PC apenas quando necessário para baixar/inspecionar dados ou validar desempenho local.  
-**Próximo passo:** obter os metadados/produtos estáticos FAFB v783 pelo fluxo oficial, usando o token de API Codex localmente se necessário e sem o compartilhar; depois validar cabeçalhos, tamanhos, hashes e licença.
+**Política de execução:** GitHub-first; usar o PC apenas quando necessário para profiling ou validação de desempenho local.  
+**Próximo passo:** iniciar a Fase 4: verificar `column_assignment.csv.gz`, a semântica/unidades das coordenadas e a correspondência espacial/colunar antes de qualquer baseline de movimento.
 
 ---
 
@@ -406,3 +406,79 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Evidência:** **CONFIRMADO** para a instrução de uso de `api_token` no exemplo oficial; **DESCONHECIDO** para a autenticação exigida no portal interativo e para o sucesso do download real.
 - **Próximo passo único:** obter os metadados e os dois produtos mínimos por um fluxo oficial autorizado, com token Codex mantido localmente se o endpoint programático o exigir.
 - **Critério de aceitação:** arquivos reais recebidos e inspecionados, com tamanho, SHA-256, cabeçalhos, contagem de linhas, licença/citação e proveniência registados; só então implementar o importador de produção.
+
+
+## 7.9 Upload dos três produtos FAFB v783 e validação no GitHub (2026-10-28)
+
+- **Objetivo:** disponibilizar os três arquivos do piloto no GitHub para análise sem exigir inspeção manual local pelo utilizador.
+- **Branch:** `data/fafb-v783-inputs`.
+- **Pull Request:** https://github.com/heldergaraujo2/Cortex/pull/1 — aberto, não integrado na branch principal no momento deste registo.
+- **Arquivos enviados:** `data/raw/fafb_v783/consolidated_cell_types.csv.gz`, `data/raw/fafb_v783/connections_princeton.csv.gz` e `data/raw/fafb_v783/coordinates.csv.gz`.
+- **Resultado confirmado:** o `git push` concluiu e o GitHub aceitou os três arquivos. O servidor emitiu aviso porque `connections_princeton.csv.gz` tem 65,29 MB, acima da recomendação de 50 MB; não é um erro de envio. A pasta `data/raw` está ignorada pelo Git e foi necessário adicionar os três caminhos explicitamente com `git add -f`; nenhuma regra de ignore foi alterada.
+- **Validação adicionada ao PR:** `scripts/inspect_fafb_data.py` lê os CSVs comprimidos em streaming, regista cabeçalhos, contagem de registos, tamanho, SHA-256 e duas amostras curtas de linhas; gera `fafb_v783_validation_report.json`. O workflow `.github/workflows/fafb-data-validation.yml` executa essa inspeção no GitHub Actions e publica o relatório como artefato.
+- **Estado dos resultados científicos:** **DESCONHECIDO** até a execução do workflow ser concluída e o relatório ser examinado. A presença e o upload dos arquivos não confirmam integridade, esquema esperado, licença, cobertura do circuito ou conexões específicas.
+- **Privacidade/segurança:** os arquivos são dados científicos públicos conforme a origem declarada pelo utilizador, mas a licença/citação específica dos produtos ainda deve ser verificada. Não há tokens incluídos no repositório.
+- **Próximo passo único:** consultar a execução do workflow e analisar o relatório gerado; então verificar a correspondência de tipos e IDs para L1, Mi1, Tm3 e T4 e registrar evidências antes de implementar simulação.
+- **Critério de aceitação:** relatório do GitHub Actions disponível, três arquivos lidos integralmente sem erro de gzip/CSV, cabeçalhos e contagens conhecidos, hashes registados e limitações/licença anotadas.
+
+
+## 7.10 Primeira validação estrutural dos arquivos FAFB (2026-10-28)
+
+- **Execução:** GitHub Actions FAFB v783 Data Validation, run 2, ID 40766311959; job inspect-data concluído com sucesso.
+- **Resultado confirmado:** os três arquivos abriram como gzip e CSV sem erro; FILES_OK: 3/3, ERRORS: 0.
+- **consolidated_cell_types.csv.gz:** 901.707 bytes; 138.327 registos de dados; colunas root_id, primary_type, additional_type(s); SHA-256 8aba246d71dc40361677493629972ce3883048c3d02010adc42bda22962a1a2d.
+- **connections_princeton.csv.gz:** 68.456.801 bytes; 5.342.446 registos de dados; colunas pre_root_id, post_root_id, neuropil, syn_count, nt_type; SHA-256 445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b.
+- **coordinates.csv.gz:** 5.314.546 bytes; 238.909 registos de dados; colunas root_id, position, supervoxel_id; SHA-256 14337121f451f98c2576cee72c24409ada5aaf7948b7c7ca8de9040296840e05.
+- **Relatório:** artefato fafb-v783-validation-report, run https://github.com/heldergaraujo2/Cortex/actions/runs/40766311959.
+- **Limite da conclusão:** isto confirma integridade de leitura gzip/CSV e estrutura básica, não valida a licença específica, correspondência de todos os IDs, presença de arestas L1→Mi1/Tm3→T4, nem mecanismo funcional de seletividade direcional.
+- **Análise ampliada adicionada:** o script scripts/inspect_fafb_data.py foi expandido para contar tipos primários L1/Mi1/Tm3/T4, procurar pares dirigidos entre esses grupos na tabela de conexões e medir cobertura de coordenadas. A nova execução do workflow ainda estava em andamento quando este registo foi escrito.
+- **Próximo passo:** ler o resultado ampliado e verificar quais arestas e IDs estão realmente presentes antes de desenhar o importador ou a simulação.
+
+
+## 7.11 Evidência estrutural real, proveniência e importador inicial (2026-10-28)
+
+- **Branch/PR:** `data/fafb-v783-inputs`; https://github.com/heldergaraujo2/Cortex/pull/1. O PR continua aberto e não foi integrado em `main`.
+- **Proveniência/licença:** o arquivo `data/raw/fafb_v783/README.md` regista origem no FlyWire Codex, snapshot FAFB v783, data de download declarada pelo responsável e licença pública indicada pelo FlyWire como CC BY-NC 4.0. Fonte oficial: https://join.flywire.ai/guidelines. O uso deve permanecer não comercial e com atribuição, sujeito às orientações oficiais.
+- **Validação de dados:** execução completa do workflow FAFB v783 Data Validation, run https://github.com/heldergaraujo2/Cortex/actions/runs/40785935250, terminou com `FILES_OK: 3/3` e `ERRORS: 0`. A execução seguinte da mesma versão de inspeção também foi acionada na CI do PR.
+- **Produtos e hashes confirmados pelo workflow:**
+  - `consolidated_cell_types.csv.gz`: 901.707 bytes; 138.327 linhas de dados; colunas `root_id`, `primary_type`, `additional_type(s)`; SHA-256 `8aba246d71dc40361677493629972ce3883048c3d02010adc42bda22962a1a2d`.
+  - `connections_princeton.csv.gz`: 68.456.801 bytes; 5.342.446 linhas; colunas `pre_root_id`, `post_root_id`, `neuropil`, `syn_count`, `nt_type`; SHA-256 `445f996bf6c4b1803b9ba186189138a3061ff8623aa94c0abcf38af30a5bd48b`.
+  - `coordinates.csv.gz`: 5.314.546 bytes; 238.909 linhas; colunas `root_id`, `position`, `supervoxel_id`; SHA-256 `14337121f451f98c2576cee72c24409ada5aaf7948b7c7ca8de9040296840e05`.
+- **Contagens de tipos primários:** L1=1.775; Mi1=1.581; Tm3=1.756; T4a=1.457; T4b=1.507; T4c=1.710; T4d=1.569. Total de IDs classificados no conjunto piloto L1/Mi1/Tm3/T4: 11.355.
+- **Ligações dirigidas observadas na tabela** (pares `(pre_root_id, post_root_id)` distintos no conjunto todo, deduplicados entre neuropilos):
+  - L1 → Mi1: 1.620 pares distintos.
+  - L1 → Tm3: 6.706 pares distintos.
+  - Mi1 → T4: 21.157 pares distintos.
+  - Tm3 → T4: 10.351 pares distintos.
+- **Cobertura de coordenadas:** 11.355/11.355 IDs do conjunto piloto têm pelo menos uma linha no arquivo de coordenadas. O arquivo tem 238.909 linhas e 139.255 IDs únicos; alguns IDs têm múltiplas linhas, que não devem ser colapsadas arbitrariamente. As unidades/semântica física de `position` não foram inferidas.
+- **Mapeamento global de IDs nas conexões:** das 5.342.446 linhas, 5.318.409 têm ambos os IDs presentes no índice de tipos primários; isso não significa que os restantes estejam inválidos, pois os arquivos de anotação podem não cobrir todos os IDs da tabela.
+- **Interpretação:** **CONFIRMADO** que a tabela de conectividade contém registos dirigidos para os quatro pares de tipos selecionados. **FORTEMENTE INDICADO** que estes produtos bastam para extrair um subgrafo estrutural inicial. **DESCONHECIDO** se o subgrafo, por si só, reproduz seletividade direcional ou movimento visual; faltam mapeamento espacial/colunar validado, dinâmica e comparação experimental.
+- **Regra de agregação:** `connections_princeton` tem linhas por par pré/pós e neuropilo. Um par pode aparecer em mais de um neuropilo. A versão atual do script reporta linhas, pares únicos deduplicados e `syn_count` apenas dentro de cada neuropilo; não soma silenciosamente valores entre neuropilos.
+- **Código adicionado:** `cortex/connectome.py` implementa carregamento estrito do subgrafo piloto, valida cabeçalhos/IDs/contagens/posições, preserva registos por neuropilo e múltiplas coordenadas. `tests/test_connectome.py` testa ingestão, separação por neuropilo, IDs não mapeados, duplicatas e dados inválidos. `scripts/import_fafb_pilot.py` gera manifesto JSON; `docs/IMPORTADOR_FAFB.md` documenta uso e limites.
+- **CI confirmada:** `Cortex CI` run 61 passou em Python 3.11, 3.12 e 3.13 com 23 testes, incluindo a verificação adicional de gzip corrompido. O workflow de dados run 23 executou com sucesso a inspeção e o importador real, publicando os relatórios como artefato.
+- **Próximo passo único:** iniciar a Fase 4, verificando `column_assignment.csv.gz` e o significado espacial das coordenadas antes de implementar qualquer dinâmica direcional.
+
+
+## 7.12 Fecho do gate de importação estrutural do piloto (2026-10-28)
+
+- **Workflow de dados:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786637746 — sucesso; inspeção dos três arquivos e importação real concluídas.
+- **Artefato de validação e manifesto:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786637746/artifacts/12858733924. Inclui `fafb_v783_validation_report.json` e `fafb_v783_pilot_manifest.json`.
+- **CI do pacote:** https://github.com/heldergaraujo2/Cortex/actions/runs/40786637777 — sucesso em Python 3.11, 3.12 e 3.13; 23 testes passaram, incluindo o teste de gzip corrompido.
+- **Importação real:** 11.355 IDs piloto, todos com pelo menos uma linha de coordenadas; 59.218 linhas de conexão mantidas no subgrafo L1/Mi1/Tm3/T4. Tamanho e SHA-256 dos três produtos constam do manifesto.
+- **Pares únicos dirigidos entre tipos principais:** L1→Mi1 1.620; L1→Tm3 6.706; Mi1→T4 21.157; Tm3→T4 10.351. Os números são pares `(pre_root_id, post_root_id)` deduplicados entre neuropilos; os registos e as contagens `syn_count` continuam preservados por neuropilo no subgrafo.
+- **Conclusão da fase:** Fase 3 concluída para o importador estrutural reduzido do piloto. Não significa conectoma completo nem simulação funcional. A tabela de coordenadas não confirma sozinha o mapeamento coluna/posição visual.
+- **Próxima fase:** Fase 4 — validar `column_assignment.csv.gz`, unidades e semântica das coordenadas, cobertura por subtipo T4 e só depois definir baseline espacial/dinâmica.
+
+
+## 7.13 Fase 4 — preparação do validador espacial, gate real ainda aberto (2026-10-28)
+
+- **Estado honesto:** Fase 4 iniciada, mas NÃO concluída. A branch `data/fafb-v783-inputs` contém os três produtos da Fase 3, mas a última listagem de `data/raw/fafb_v783/` não encontrou `column_assignment.csv.gz`.
+- **Código novo:** `cortex/spatial.py` implementa leitor estrito para as colunas esperadas `root_id, hemisphere, type, column_id, x, y, p, q`; calcula SHA-256; valida `p/q` como inteiros e `x/y` como números finitos; conta IDs sem correspondência e cobertura por tipo primário; distingue colunas por `(hemisphere, column_id)`.
+- **CLI:** `scripts/inspect_fafb_columns.py` combina o arquivo de colunas com as anotações primárias existentes e produz um relatório JSON fora do Git por padrão.
+- **Testes sintéticos:** `tests/test_spatial.py` cobre cobertura por tipo, hemisférios, IDs sem correspondência, cabeçalhos ausentes, `p/q` inválidos, coordenadas `x` inválidas, arquivo ausente e gzip corrompido. Estes testes verificam o código, não a exportação biológica real.
+- **CI confirmada para o código novo:** `Cortex CI` run 70 passou com **33 testes** em Python 3.11, 3.12 e 3.13; o log do job Python 3.13 reporta `33 passed in 0.14s`. `Cortex CI` run 72 também terminou com sucesso no commit `66b238f0b66adefae471707872f8747c7b781886`. Isso valida o software sintético, não os dados reais de colunas.
+- **CI:** `.github/workflows/fafb-data-validation.yml` foi ampliado para executar os testes e inspecionar a tabela real quando ela estiver presente; se faltar, emite warning e deixa o gate empírico pendente.
+- **Documentação:** `docs/VALIDACAO_ESPACIAL.md` explica esquema, limites e distinção entre `x/y` e `p/q`; `docs/ROADMAP.md` agora exige explicitamente a validação do arquivo original.
+- **Referência de coordenadas:** o FAQ do Codex descreve a visualização FlyWire em voxels de 4 × 4 × 40 nm, mas isso não basta para inferir automaticamente unidades/semântica dos campos `x/y` de `column_assignment`. Não foi aplicada transformação nem conversão.
+- **Evidência:** **CONFIRMADO** que o parser, CLI, testes e workflow foram adicionados à branch; **DESCONHECIDO** a cobertura real, os tipos presentes, a distribuição de colunas e as relações espaciais até ler o arquivo original.
+- **Gate bloqueador / próximo passo único:** disponibilizar `column_assignment.csv.gz` em `data/raw/fafb_v783/` na branch `data/fafb-v783-inputs` (arquivo esperado na máquina local anteriormente: `D:\\Cortex-data\\FAFB-v783\\column_assignment.csv.gz`), sem alterar `main` nem integrar o PR. Depois, a CI deve gerar o relatório real; só então interpretar cobertura e decidir se há base para uma baseline espacial.
