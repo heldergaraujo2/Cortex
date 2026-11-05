@@ -78,3 +78,15 @@ def test_invalid_neuron_transmitter_score_is_rejected(tmp_path):
     _write(path, [["1", "optic", "ACH", "1.5", "0", "0", "0", "0", "1", "0"]])
     with pytest.raises(ValueError, match="within"):
         load_neuron_transmitter_annotations(path)
+
+
+
+def test_empty_neuron_prediction_is_not_counted_as_mismatch(tmp_path):
+    path = tmp_path / "neurons.csv.gz"
+    _write(path, [["1", "optic", "", "0.12", "0", "0", "0", "0", "0", "0"]])
+    edge = (T4InputEdge("1", "10", "Mi1", "T4a", "ME_L", 8, "ACH"),)
+    report = audit_t4_neuron_annotations(path, edge)
+    assert report["edge_rows_with_empty_neuron_prediction"] == 1
+    assert report["edge_vs_neuron_prediction_mismatch_rows"] == 0
+    mi1 = report["by_presynaptic_primary_type"][0]
+    assert mi1["edge_rows_with_empty_neuron_prediction"] == 1
