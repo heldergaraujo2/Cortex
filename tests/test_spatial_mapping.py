@@ -39,8 +39,8 @@ def test_coordinate_mapping_audit_reports_holdouts_without_mapping_candidates(tm
     path = tmp_path / "coordinates.csv.gz"
     assignments = _assignments()
     _write(path, [
-        [row.root_id, f"[{int(row.x)} {int(row.y)} {int(row.p)}]", "99"]
-        for row in assignments
+        [row.root_id, f"[{int(row.x)} {int(row.y)} {index % 3}]", "99"]
+        for index, row in enumerate(assignments, start=1)
     ])
     report = audit_coordinate_to_column_mapping(path, assignments)
     assert report["assignment_rows_with_coordinates"] == 30
