@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** Fases 1–3 concluídas no escopo documentado. No fluxo experimental FAFB, Fase 4 espacial/colunar concluída com dados reais e Fase 5 baseline estrutural rate-based v0 concluída com CI e execuções reais ME_L/ME_R aprovadas em 2026-11-04. Não foi demonstrada seletividade direcional nem fidelidade biológica. Próximo gate: Fase 6 — validar semântica espacial e desenhar estímulos espaço-temporais controlados. Ver aditivo no final e docs/CONTINUIDADE.md.  
+**Status global:** Fases 1–3 concluídas no escopo documentado. No fluxo FAFB, Fase 4 espacial/colunar e Fase 5 baseline rate-based v0 concluídas. A Fase 6 (malha medular e frentes espaço-temporais) passou CI e execução real ME_L/ME_R em 2026-11-05; 61 testes passaram em Python 3.11–3.13. Preparação no repositório concluída; primeiro teste local no PC Windows pendente. Não foi demonstrada seletividade direcional nem fidelidade biológica. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -557,3 +557,8 @@ Foi adicionado um gerador de frentes L1 para +p/−p, +q/−q e +v/−v. Em cada
 ### Revisão metodológica Fase 6 — readout bilateral corrigido (2026-11-05)
 
 A primeira execução real das frentes mostrou um erro de escopo: a entrada L1 era de um hemisfério, mas a média T4 incluía os dois. Os valores de resposta e assimetria do artefato #56 ficam supersedidos. O código agora restringe o readout T4 aos IDs explicitamente atribuídos ao mesmo hemisfério e reporta cobertura L1 global separadamente, sem inferir o lado dos neurónios sem atribuição. A nova CI e os relatórios corrigidos são obrigatórios antes de avançar para testes locais.
+
+
+## Gate de handoff — primeiro teste local no PC (2026-11-05)
+
+A preparação de código, dados, controles, testes e relatórios da Fase 6 foi concluída no GitHub. A execução real #71 validou ME_L e ME_R, e CI #109 aprovou 61 testes em cada versão Python 3.11–3.13. O próximo passo não é outra fase de modelagem: é validar no ambiente Windows do projeto com `scripts/run_first_pc_validation.ps1`, comparar os relatórios locais com a CI e conferir desempenho/compatibilidade. A Fase 6 permanece aguardando esse gate local.
