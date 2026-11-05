@@ -28,7 +28,7 @@ class T4InputEdge:
     nt_type: str
 
 
-def _load_primary_types(path: Path) -> dict[str, str]:
+def load_primary_types(path: str | Path) -> dict[str, str]:
     cell_types: dict[str, str] = {}
     with gzip.open(path, "rt", encoding="utf-8-sig", newline="") as stream:
         reader = csv.DictReader(stream)
@@ -59,7 +59,7 @@ def load_t4_input_edges(
         raise ValueError("minimum_synapses must be an integer >= 0")
 
     root = Path(data_dir)
-    cell_types = _load_primary_types(root / CELL_TYPES_FILE)
+    cell_types = load_primary_types(root / CELL_TYPES_FILE)
     path = root / CONNECTIONS_FILE
     edges: list[T4InputEdge] = []
     with gzip.open(path, "rt", encoding="utf-8-sig", newline="") as stream:
