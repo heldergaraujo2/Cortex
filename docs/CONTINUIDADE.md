@@ -551,3 +551,13 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Desenho experimental:** cada L1 atribuído é ativado exatamente uma vez por direção; a direção oposta tem os mesmos frames em ordem inversa. As métricas de assimetria são apenas diagnósticas, não DSI biológico.
 - **Limite crítico:** a rede atual contém L1/Mi1/Tm3/T4, sem entradas inibitórias Mi4/Mi9/C3/CT1, sem atrasos fisiológicos e sem dinâmica de membrana. Não permite alegar seletividade direcional. T4a–T4d serão reportados, mas não mapeados a direções cardinais globais.
 - **Próximo gate:** CI real após implementação, inspeção dos relatórios espaciais dos dois hemisférios e correção de qualquer falha. Só então preparar os primeiros testes locais no PC.
+
+
+## 7.18 Revisão do readout espacial e correção (2026-11-05)
+
+- **Primeira execução espacial:** FAFB Data Validation #56, commit `1ac921ee5e6a0cc021eecf2e24df1c54146455a8`, terminou com sucesso e gerou relatórios ME_L/ME_R.
+- **Auditoria do artefato:** detectado que o estímulo usava L1 atribuídos a um hemisfério, mas a média T4 incluía a população bilateral. A cobertura L1 por hemisfério também estava sendo calculada com denominador bilateral.
+- **Decisão:** valores de resposta e assimetria do run #56 são supersedidos; não usar para inferência.
+- **Correção:** função `assigned_t4_readout_by_hemisphere` seleciona apenas T4a–T4d atribuídos ao hemisfério do neuropilo, valida concordância com o tipo primário e rejeita duplicatas. A cobertura L1 global (88,56%) é separada da contagem atribuída por hemisfério; não se inventa cobertura específica para neurónios sem atribuição.
+- **Testes novos:** seleção de T4 por hemisfério, tipo inconsistente e duplicatas. A nova suíte CI deve validar a alteração.
+- **Estado:** Fase 6 permanece em andamento até nova CI, execução real ME_L/ME_R e inspeção dos artefatos corrigidos.
