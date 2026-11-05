@@ -561,3 +561,6 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Correção:** função `assigned_t4_readout_by_hemisphere` seleciona apenas T4a–T4d atribuídos ao hemisfério do neuropilo, valida concordância com o tipo primário e rejeita duplicatas. A cobertura L1 global (88,56%) é separada da contagem atribuída por hemisfério; não se inventa cobertura específica para neurónios sem atribuição.
 - **Testes novos:** seleção de T4 por hemisfério, tipo inconsistente e duplicatas. A nova suíte CI deve validar a alteração.
 - **Estado:** Fase 6 permanece em andamento até nova CI, execução real ME_L/ME_R e inspeção dos artefatos corrigidos.
+
+
+- **Progressão da frente:** bins inteiros vazios entre colunas são mantidos como frames sem estímulo; não se comprimem lacunas. Um passo é uma unidade de projeção da malha, não tempo biológico ou distância física.
