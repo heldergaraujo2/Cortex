@@ -209,8 +209,19 @@ def run_baseline_experiment(
                 "edges": len(network.edges),
                 "l1_input_neurons": len(network.input_ids),
                 "t4_readout_neurons": len(network.readout_ids),
+                "t4_readout_neurons_with_incoming_edges": len({
+                    edge.post_root_id for edge in network.edges
+                    if edge.post_root_id in set(network.readout_ids)
+                }),
                 "t4_readout_by_subtype": {
                     kind: len(ids) for kind, ids in network.readout_ids_by_subtype.items()
+                },
+                "t4_readout_connected_by_subtype": {
+                    kind: len({
+                        edge.post_root_id for edge in network.edges
+                        if edge.post_root_id in set(ids)
+                    })
+                    for kind, ids in network.readout_ids_by_subtype.items()
                 },
                 "synapse_count_threshold": config.minimum_synapses,
             },
