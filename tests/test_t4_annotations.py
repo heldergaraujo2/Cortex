@@ -90,3 +90,20 @@ def test_empty_neuron_prediction_is_not_counted_as_mismatch(tmp_path):
     assert report["edge_vs_neuron_prediction_mismatch_rows"] == 0
     mi1 = report["by_presynaptic_primary_type"][0]
     assert mi1["edge_rows_with_empty_neuron_prediction"] == 1
+
+
+def test_global_prediction_counters_separate_empty_and_mismatch(tmp_path):
+    path = tmp_path / "neurons.csv.gz"
+    _write(path, [
+        ["1", "optic", "ACH", "0.91", "0", "0", "0", "0", "1", "0"],
+        ["2", "optic", "", "0.08", "0", "0", "0", "0", "0", "0"],
+    ])
+    edges = (
+        T4InputEdge("1", "10", "Mi1", "T4a", "ME_L", 8, "ACH"),
+        T4InputEdge("2", "11", "Mi1", "T4b", "ME_L", 5, "GABA"),
+    )
+    report = audit_t4_neuron_annotations(path, edges)
+    assert report["edge_rows_with_nonempty_neuron_prediction"] == 1
+    assert report["edge_rows_with_empty_neuron_prediction"] == 1
+    assert report["edge_vs_neuron_prediction_match_rows"] == 1
+    assert report["edge_vs_neuron_prediction_mismatch_rows"] == 0
