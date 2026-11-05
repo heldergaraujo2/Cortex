@@ -192,3 +192,39 @@ O script `scripts/inspect_mi1_reference.R` foi corrigido para inverter a relaç�
 **Estado:** estrutura e semântica do vetor fortemente indicadas; cobertura local de 779/780 pelo mapeamento inverso, com uma exclusão explícita. O script corrigido executou com sucesso e o cross-check automatizado DRA foi TRUE (42/42, correspondência exata em ordem). Gate 8A está aprovado somente para a relação local CATMAID-index-M10, não para o crosswalk FAFB v783 nem para validação biológica da grade. Ainda não existe crosswalk CATMAID→FAFB v783, nem validação biológica de toda a grade.
 
 O artefato corrigido [phase8-mi1-inventory](https://github.com/heldergaraujo2/Cortex/actions/runs/42050752606) inclui `dra_index_crosscheck.csv`, `mapping_summary.csv`, `mi1_skid_to_m10_mapping.csv`, `mapping_status.txt`, `mi1_object_structure.txt` e `object_inventory.csv`.
+
+
+## Preparação do crosswalk CATMAID → FlyWire FAFB v783
+
+A etapa seguinte foi preparada, mas a consulta remota ainda não foi executada.
+
+### Método técnico selecionado
+
+1. A entrada será gerada pelo script R a partir da associação local validada: `mi1_catmaid_skids_for_crosswalk.csv`. Ela contém apenas os 779 neurônios com linha M10 identificada; o `skid=15578998` (linha de anotação 752) permanece fora.
+2. A origem CATMAID configurada é a instância pública FAFB do Virtual Fly Brain (`https://fafb.catmaid.virtualflybrain.org/`, projeto 1), a mesma classe de endpoint usada no exemplo oficial do `fafbseg`.
+3. A função oficial `fafbseg.flywire.skid_to_id` busca o esqueleto CATMAID, transforma os nós de FAFB14 para o espaço FlyWire, consulta a segmentação em cada nó e retorna o root ID mais frequente. A confiança é a diferença entre a frequência do primeiro e do segundo root ID, dividida pelo total de roots não-zero; não é uma probabilidade calibrada.
+4. A segmentação alvo está fixada em `dataset="flat_783"`. O código atual do `fafbseg` mapeia esse alias para o volume estático `precomputed://gs://flywire_v141_m783` e associa o datastack CAVE público. Isso evita misturar IDs de uma segmentação de produção mutável com a referência v783.
+5. O script preserva a confiança e o status por skeleton ID; não aceita automaticamente um limiar nem inventa root ID quando a consulta falha.
+
+### Artefatos e execução
+
+- Script: `scripts/crosswalk_mi1_catmaid_flywire.py`.
+- Workflow manual: `.github/workflows/mi1-catmaid-flywire-crosswalk.yml`.
+- Entrada: gerada novamente com `scripts/inspect_mi1_reference.R`.
+- Saída: `mi1_catmaid_to_flywire_v783.csv`, publicada como artefato por 30 dias.
+- Dependência de credencial: o workflow exige o segredo GitHub Actions `FLYWIRE_TOKEN`; `CATMAID_API_TOKEN` é opcional para a instância pública. O token nunca deve ser gravado no repositório, no CSV ou nos logs.
+- Para executar: adicionar `FLYWIRE_TOKEN` em *Settings → Secrets and variables → Actions* e iniciar manualmente o workflow. O workflow não dispara em cada push.
+
+### Limitações que permanecem
+
+- O root ID mais frequente pode representar somente o maior fragmento de um skeleton CATMAID após splits/merges; a confiança e a cobertura devem ser revisadas, não tratadas como identidade biológica perfeita.
+- A consulta de skeletons precisa confirmar que todos os 779 IDs ainda existem e estão acessíveis na instância CATMAID usada.
+- A função documenta a transformação FAFB14 → FlyWire e a votação por nós, mas isso não substitui inspeção de candidatos alternativos nos casos ambíguos.
+- A conversão CATMAID → FlyWire não prova, sozinha, que os root IDs mapeados pertencem à mesma versão da conectividade importada no Cortex. O alvo do crosswalk foi fixado em v783; o alinhamento com a proveniência dos dados de conectividade deve ser confirmado separadamente.
+
+### Referências técnicas
+
+- [fafbseg.flywire.skid_to_id](https://fafbseg-py.readthedocs.io/en/latest/source/generated/fafbseg.flywire.skid_to_id.html)
+- [Código-fonte fafbseg — algoritmo de skeleton → root ID](https://fafbseg-py.readthedocs.io/en/latest/_modules/fafbseg/flywire/segmentation.html)
+- [Código-fonte fafbseg — alias flat_783 e datastack público](https://fafbseg-py.readthedocs.io/en/latest/_modules/fafbseg/flywire/utils.html)
+- [Materialização v783 e dados de release](https://natverse.org/fafbseg/reference/download_flywire_release_data.html)
