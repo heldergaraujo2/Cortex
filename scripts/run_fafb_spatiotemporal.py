@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import replace
 from pathlib import Path
 
 from cortex.connectome import load_pilot_connectome
@@ -24,6 +25,30 @@ def run_experiment(data_dir: Path, neuropil: str, minimum_synapses: int = 5) -> 
         data_dir / "column_assignment.csv.gz", graph.cell_types
     )
     network = build_rate_network(graph, neuropil, minimum_synapses)
+    spatial_summary = assignments.summary(graph.cell_types)
+    global_l1_coverage = spatial_summary["coverage_by_primary_type"]["L1"]["coverage_fraction"]
+
+    # Restrict the measured T4 population to cells assigned to this hemisphere.
+    # The graph contains both hemispheres even when only one neuropil is selected.
+    t4_ids_by_subtype = {
+        subtype: tuple(sorted({
+            row.root_id for row in assignments.rows
+            if row.hemisphere == hemisphere
+            and row.cell_type == subtype
+            and row.root_id in network.neuron_types
+        }))
+        for subtype in ("T4a", "T4b", "T4c", "T4d")
+    }
+    side_t4_ids = tuple(sorted(
+        root_id for ids in t4_ids_by_subtype.values() for root_id in ids
+    ))
+    if not side_t4_ids:
+        raise ValueError(f"no assigned T4 readout neurons for hemisphere {hemisphere!r}")
+    network = replace(
+        network,
+        readout_ids=side_t4_ids,
+        readout_ids_by_subtype=t4_ids_by_subtype,
+    )
     schedules = {}
 
     for axis in ("p", "q", "v"):
@@ -61,11 +86,9 @@ def run_experiment(data_dir: Path, neuropil: str, minimum_synapses: int = 5) -> 
             }[axis],
             "input": {
                 "assigned_l1_neurons": len(all_assigned_l1),
-                "network_l1_neurons": len(network.input_ids),
-                "coverage_fraction": (
-                    len(all_assigned_l1) / len(network.input_ids)
-                    if network.input_ids else None
-                ),
+                "l1_neurons_in_graph_both_hemispheres": len(network.input_ids),
+                "global_l1_assignment_coverage_both_hemispheres": global_l1_coverage,
+                "hemisphere_specific_l1_coverage": None,
                 "frames": len(positive.frames),
                 "total_l1_input_events_per_direction": positive.total_input_events,
                 "progress_min": min(positive.progress_values),
@@ -100,7 +123,10 @@ def run_experiment(data_dir: Path, neuropil: str, minimum_synapses: int = 5) -> 
             "neurons": len(network.neuron_types),
             "edges": len(network.edges),
             "l1_input_neurons": len(network.input_ids),
-            "t4_readout_neurons": len(network.readout_ids),
+            "t4_readout_assigned_to_hemisphere": len(network.readout_ids),
+            "t4_readout_by_subtype": {
+                subtype: len(ids) for subtype, ids in network.readout_ids_by_subtype.items()
+            },
             "minimum_synapses": minimum_synapses,
         },
         "model_limits": [
@@ -134,6 +160,7 @@ def main() -> int:
             axis: {
                 "steps": data["input"]["frames"],
                 "assigned_l1": data["input"]["assigned_l1_neurons"],
+                "t4_readout": report["network"]["t4_readout_assigned_to_hemisphere"],
                 "asymmetry": data["lattice_response_asymmetry_index"],
                 "plus_peak": data["positive_direction"]["peak_mean_t4_rate"],
                 "minus_peak": data["negative_direction"]["peak_mean_t4_rate"],
