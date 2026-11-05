@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** auditoria/importação T4 e previsões neuronais validadas com dados reais (#82, #99, #110): 53.284 arestas, 7.028 IDs pré-sinápticos e 6.236 IDs T4; 50.630 linhas têm previsão não vazia, 2.654 vazias e zero divergências internas com o rótulo da aresta. O dump não contém `nt_type_verified`; consistência interna não é validação biológica. Próxima subetapa: perfis por T4-alvo e mapeamento espacial das classes. Protótipo sintético permanece não calibrado. Estratégia GitHub-first. Ver aditivo e docs/CONTINUIDADE.md.  
+**Status global:** auditoria/importação T4 e previsões neuronais validadas (#82, #99, #110): 53.284 arestas, 7.028 IDs pré-sinápticos, 6.236 IDs T4; 50.630 linhas com previsão não vazia, 2.654 vazias e zero divergências internas. Cortex CI #155 passou com 88 testes em Python 3.11–3.13 e executou o demo. O dump não contém `nt_type_verified`; consistência interna não é validação biológica. Próxima subetapa: perfis por T4-alvo e mapeamento espacial. Protótipo sintético não calibrado. Estratégia GitHub-first. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -635,7 +635,7 @@ O CSV `consolidated_cell_types` versionado não contém `nt_type_verified`; o ar
 
 ## Aditivo — previsões neuronais e confiança dos inputs T4 (2026-11-05)
 
-O workflow FAFB #110 baixou o produto público `neurons.csv.gz` do snapshot 783 (139.255 registos; SHA-256 `6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719`) e executou `scripts/audit_t4_neuron_annotations.py`.
+O workflow FAFB #110 baixou o produto público `neurons.csv.gz` do snapshot 783 (139.255 registos; SHA-256 `6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719`) e executou `scripts/audit_t4_neuron_annotations.py`. Cortex CI #155 aprovou 88 testes em Python 3.11, 3.12 e 3.13 e executou o demo sintético T4.
 
 Resultados:
 - 7.028/7.028 IDs pré-sinápticos candidatos mapeados.
