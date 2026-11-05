@@ -280,6 +280,14 @@ def audit_coordinate_to_column_mapping(
         })
 
     hemisphere = _hemisphere_accuracy(train, test)
+    hemisphere_by_type = []
+    for cell_type in sorted({sample.cell_type for sample in samples}):
+        held_out = [sample for sample in samples if sample.cell_type == cell_type]
+        training = [sample for sample in samples if sample.cell_type != cell_type]
+        hemisphere_by_type.append({
+            "held_out_cell_type": cell_type,
+            **_hemisphere_accuracy(training, held_out),
+        })
     type_counts = Counter(sample.cell_type for sample in samples)
     return {
         "dataset": "FlyWire FAFB v783",
@@ -328,6 +336,7 @@ def audit_coordinate_to_column_mapping(
         },
         "leave_one_cell_type_out": by_type,
         "hemisphere_nearest_centroid_holdout": hemisphere,
+        "hemisphere_nearest_centroid_leave_one_cell_type_out": hemisphere_by_type,
         "candidate_cells_mapped": False,
         "interpretation_limits": [
             "This is a feasibility audit on already-assigned cells only.",
