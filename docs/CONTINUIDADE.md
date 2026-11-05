@@ -3,12 +3,12 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-11-05  
-**Versão:** 1.9 — Fase 4/5 concluídas; Fase 6 validada no GitHub e pronta para primeiro teste local  
-**Estado geral:** Fases 1–3 concluídas no escopo documentado. Fase 4 do piloto FAFB v783 concluída. Fase 5 baseline estrutural rate-based v0 concluída. Fase 6 (malha medular p/q e diagnóstico de frentes espaço-temporais) passou na validação real ME_L/ME_R; Cortex CI passou com 61 testes em Python 3.11–3.13. A preparação no repositório está concluída; primeiro teste local no PC Windows pendente. Não foi demonstrada seletividade direcional nem dinâmica biologicamente calibrada.  
+**Versão:** 2.0 — Fase 6 validada no GitHub; Fase 7 em auditoria de evidências dos inputs T4  
+**Estado geral:** Fases anteriores do piloto FAFB, incluindo baseline estrutural e diagnóstico espaço-temporal, foram validadas no GitHub. A Fase 7 começou por uma auditoria dos tipos pré-sinápticos candidatos a T4 e dos rótulos `nt_type` fornecidos no dataset. A nova auditoria e seus testes foram adicionados; a execução CI e o relatório real ainda precisam ser inspecionados. Não foi implementada nem demonstrada inibição fisiológica, atraso biológico ou seletividade direcional.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
-**Política de execução:** GitHub-first; o PC só será necessário para profiling ou validação de desempenho local.  
-**Próximo passo único:** executar o primeiro teste local no PC Windows com `scripts/run_first_pc_validation.ps1`, depois de sincronizar com segurança a branch `data/fafb-v783-inputs`.
+**Política de execução:** GitHub-first; testes e experimentos remotos primeiro. PC reservado para profiling, validação Windows ou quando houver necessidade concreta.  
+**Próximo passo único:** inspecionar a CI acionada pela auditoria T4, corrigir falhas e examinar `fafb_v783_t4_input_audit.json` antes de definir quais mecanismos podem ser modelados.
 
 ---
 
@@ -207,31 +207,33 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 
 **Próximo passo:** Fase 1 — auditar repositório e ambiente.
 
-## 8. Próxima tarefa prioritária: primeiro teste local no PC Windows
+## 7.20 Início da Fase 7 — auditoria dos inputs candidatos a T4 (2026-11-05)
 
-### Estado
-A preparação no GitHub está concluída. O commit de referência validado é `784f30d43811da795fbda5ddadcbb5599ef91a8c`; a branch remota recebeu depois atualizações documentais e o script local. Consulte sempre o HEAD atual da branch antes de sincronizar.
+- **Objetivo imediato:** determinar, a partir dos produtos FAFB v783 já versionados, quais classes pré-sinápticas candidatas a T4 estão anotadas, que ligações aparecem no arquivo de conexões e quais rótulos `nt_type` acompanham essas linhas.
+- **Tipos auditados:** Mi1, Tm3, Mi4, Mi9, C3, TmY15 e CT1; T4a–T4d são contados separadamente.
+- **Implementação adicionada:** `scripts/audit_t4_inputs.py` e `tests/test_t4_input_audit.py`. O script preserva separação por neuropilo e por `nt_type`, valida IDs/tipos e `syn_count`, e produz `fafb_v783_t4_input_audit.json`.
+- **Workflow:** `.github/workflows/fafb-data-validation.yml` executa a auditoria e inclui o JSON no artefato. A suíte CI geral recolhe automaticamente o novo teste.
+- **Salvaguarda científica:** `nt_type` é reportado literalmente como fornecido; não é convertido automaticamente em sinal excitatório/inibitório por neurónio. Contagem estrutural não é eficácia sináptica. A presença anatómica não prova função causal, atraso ou seletividade.
+- **Estado dos testes:** os testes sintéticos foram escritos, mas a execução CI desta alteração ainda está pendente de inspeção. Nenhum resultado real da nova auditoria é declarado nesta atualização.
+- **Próxima decisão técnica:** usar o relatório real para determinar cobertura dos candidatos e qualidade dos rótulos antes de ampliar o importador ou implementar sinais sinápticos. Se os dados não sustentarem uma inferência, manter o mecanismo como desconhecido e procurar fonte complementar.
+- **Branch:** `data/fafb-v783-inputs`; PR #1 permanece aberto. `main` não foi alterada.
 
-### Próxima ação
-1. No clone Windows, verificar `git status --short --branch`.
-2. Se houver alterações locais ou arquivos não rastreados, parar e revisar; não usar reset, clean ou stash.
-3. Com a árvore limpa, buscar origin, selecionar `data/fafb-v783-inputs` e atualizar somente com `git pull --ff-only`.
-4. Executar `powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\run_first_pc_validation.ps1`.
-5. Examinar a suíte pytest e os cinco relatórios em `artifacts/pc-validation/`; comparar com FAFB Data Validation #71.
+## 8. Estratégia de execução atual — GitHub-first
 
-### Critérios de aceitação local
-- Python 3.11, 3.12 ou 3.13 em ambiente virtual do projeto.
-- Testes unitários aprovados.
-- Arquivos FAFB v783 encontrados e legíveis.
-- Baselines ME_L/ME_R e frentes espaço-temporais ME_L/ME_R reproduzidas.
-- Controles sem estímulo permanecem em zero; contagens e métricas próximas das saídas da CI.
-- Nenhum arquivo bruto alterado e nenhuma modificação inesperada no Git.
+O responsável decidiu adiar o primeiro teste local no Windows e continuar o desenvolvimento no GitHub. Esta decisão é compatível com as tarefas atuais: a CI executa testes automatizados e os workflows podem processar os arquivos FAFB já presentes na branch.
 
-### Não fazer antes desse gate
-- Não expandir para o connectoma completo.
-- Não implementar aprendizagem ou seletividade direcional.
-- Não otimizar GPU nem iniciar profiling antes de validar a reprodução local.
-- Não integrar o PR #1 em `main` sem decisão explícita.
+### Regras
+1. Executar testes unitários e experimentos com dados reais no GitHub Actions sempre que o workflow suportar a tarefa.
+2. Inspecionar logs e artefatos reais antes de marcar uma fase como concluída.
+3. Não afirmar compatibilidade Windows, desempenho local ou uso de GPU sem teste no PC.
+4. Preservar a branch `data/fafb-v783-inputs` e o PR #1; não integrar em `main` sem decisão explícita.
+5. Fazer o primeiro teste local quando houver profiling, necessidade de bibliotecas específicas, limite de runner, validação Windows ou uma comparação de desempenho que não possa ser feita remotamente.
+
+### Próximo gate remoto
+- CI geral: novos testes de auditoria T4 passam em Python 3.11–3.13.
+- Workflow FAFB: auditoria real termina e publica `fafb_v783_t4_input_audit.json`.
+- O relatório é examinado para confirmar classes presentes, ligações candidatas, neuropilos e valores `nt_type`.
+- Só depois será especificado o modelo de sinais e atrasos; não inferir inibição apenas pelo nome de uma classe ou por um rótulo não validado.
 
 ## 9. Formato obrigatório para atualizações futuras
 
