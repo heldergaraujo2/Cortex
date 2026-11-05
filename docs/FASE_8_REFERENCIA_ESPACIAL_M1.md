@@ -38,7 +38,7 @@ Inspeção estática de `reiserlab/eyemap_T4`, branch `main`:
 
 O repositório dos autores contém objetos binários RData, incluindo `neu_Mi1.RData`, `Mi1_ind.RData`, `med_ixy.RData` e `eyemap.RData`. A inspeção textual dos scripts comprova a existência e o uso desses objetos, mas não permite confirmar, sem abrir os binários, se todos os registros incluem IDs CATMAID estáveis, IDs FlyWire, ou uma tabela de crosswalk reproduzível.
 
-Portanto, **não está confirmado** que os 780 Mi1 possam ser automaticamente cruzados com `root_id` do snapshot FAFB v783 a partir dos arquivos já disponíveis no repositório público.
+Há, porém, uma pista mais específica nos scripts: `Fig_2_EM.R` usa `anno_Mi1_DRA$skid` e `anno_Mi1$skid` em conjunto com `Mi1_neu_ind` (linhas 121–124), indicando que pelo menos parte dos dados de anotação preserva IDs CATMAID (`skid`). Isso torna plausível recuperar um subconjunto de IDs de esqueleto. Ainda não demonstra que a tabela cubra todos os 780 Mi1, que os IDs estejam alinhados sem ambiguidade a cada linha de `Mi1_M10_xyz`, nem que exista um crosswalk pronto para FAFB v783. Esses pontos dependem de inspecionar os objetos RData e suas dimensões/rownames.
 
 A função `fafbseg.flywire.skid_to_id` documenta um caminho possível quando um CATMAID skeleton ID é conhecido: baixa o esqueleto, transforma suas coordenadas para o espaço FlyWire e consulta os root IDs sobrepostos, retornando uma confiança baseada na frequência dos IDs encontrados. Isso é uma ferramenta candidata, não evidência de que os IDs de entrada já foram recuperados:
 https://fafbseg-py.readthedocs.io/en/latest/source/generated/fafbseg.flywire.skid_to_id.html
