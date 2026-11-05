@@ -150,3 +150,32 @@ Controles:
 ### Estado do gate
 
 A preparação no repositório e a validação no GitHub estão concluídas. O próximo gate é a primeira execução no PC Windows, usando `scripts/run_first_pc_validation.ps1`. A Fase 6 só será encerrada depois de comparar os resultados locais com estes relatórios da CI.
+
+
+## Resultado real final — FAFB Data Validation #71
+
+Execução real concluída com sucesso no commit `784f30d43811da795fbda5ddadcbb5599ef91a8c`. Artefato: https://github.com/heldergaraujo2/Cortex/actions/runs/41945748140. Cortex CI #109: 61 testes aprovados em cada versão Python 3.11, 3.12 e 3.13: https://github.com/heldergaraujo2/Cortex/actions/runs/41945747960.
+
+### Cobertura e readout
+
+- `column_assignment.csv.gz`: 45.528 linhas e 45.528 root IDs únicos; SHA-256 `bdf4ce7f62cc63493d53eefad3816ff2dfd08b190e97b35a492e0e453df2f0f6`.
+- 10.637/11.355 IDs piloto atribuídos; 718 sem atribuição.
+- L1 global: 1.572/1.775 = 88,56%; 783 L1 atribuídos no hemisfério left e 789 no right. Não se inventa cobertura por lado para L1 sem atribuição.
+- Readout T4 restrito ao hemisfério estimulado: 2.986 left (T4a 713, T4b 750, T4c 775, T4d 748) e 2.999 right (T4a 728, T4b 743, T4c 778, T4d 750).
+
+### Assimetria integrada entre direções opostas
+
+| Hemisfério | Eixo | Assimetria | Pico T4 + | Pico T4 − |
+|---|---|---:|---:|---:|
+| ME_L | p | 0,8359% | 0,021546 | 0,021539 |
+| ME_L | q | 0,2204% | 0,023776 | 0,023733 |
+| ME_L | v | 0,5120% | 0,021716 | 0,021793 |
+| ME_R | p | 0,9783% | 0,021803 | 0,021872 |
+| ME_R | q | 0,0440% | 0,023590 | 0,023540 |
+| ME_R | v | 0,4656% | 0,021751 | 0,021654 |
+
+O controlo sem estímulo produziu pico zero em todos os casos. O flash ON global teve atividade T4 integrada de 0,995097 em ME_L e 0,993021 em ME_R. Frentes opostas usam os mesmos L1, duração e energia, em ordem inversa; bins de projeção vazios são preservados.
+
+**Interpretação:** a assimetria observada é pequena (0,044%–0,978%) e é apenas uma medida de engenharia, não um DSI biológico. Não demonstra seletividade direcional. A rede continua sem entradas inibitórias Mi4/Mi9/C3/CT1, atrasos fisiológicos, integração dendrítica não linear e calibração biológica. Também não converte eixos da medula em direções do campo visual.
+
+**Estado:** preparação e validação no GitHub concluídas. O próximo gate é a primeira execução no PC Windows com `scripts/run_first_pc_validation.ps1`; a Fase 6 só será encerrada após comparar os relatórios locais com os da CI.
