@@ -183,6 +183,73 @@ def run_rate_simulation(
     }
 
 
+
+def run_rate_simulation_schedule(
+    network: RateNetwork,
+    input_schedule: tuple[frozenset[str], ...],
+    amplitude: float = 1.0,
+    leak: float = 0.5,
+) -> dict[str, object]:
+    """Run a time-varying set of L1 inputs, one input set per simulation step.
+
+    This is an engineering diagnostic over the same rate model as v0. It does
+    not add biological delays, inhibition, membrane dynamics or calibration.
+    """
+    if not input_schedule:
+        raise ValueError("input_schedule must contain at least one frame")
+    if not isfinite(amplitude) or not 0 <= amplitude <= 1:
+        raise ValueError("amplitude must be finite and within [0, 1]")
+    if not isfinite(leak) or not 0 < leak <= 1:
+        raise ValueError("leak must be finite and within (0, 1]")
+
+    input_set = set(network.input_ids)
+    for frame in input_schedule:
+        unknown = set(frame) - input_set
+        if unknown:
+            raise ValueError(f"schedule contains non-input neurons: {sorted(unknown)[:5]}")
+
+    neuron_ids = tuple(sorted(network.neuron_types))
+    incoming: dict[str, list[tuple[str, float]]] = defaultdict(list)
+    for edge in network.edges:
+        incoming[edge.post_root_id].append((edge.pre_root_id, edge.weight))
+
+    state = {rid: 0.0 for rid in neuron_ids}
+    trace: list[float] = []
+    subtype_trace = {
+        kind: [] for kind, ids in network.readout_ids_by_subtype.items() if ids
+    }
+    for frame in input_schedule:
+        next_state = {}
+        for rid in neuron_ids:
+            drive = sum(state[src] * weight for src, weight in incoming[rid])
+            if rid in frame:
+                drive += amplitude
+            drive = min(1.0, max(0.0, drive))
+            next_state[rid] = (1.0 - leak) * state[rid] + leak * drive
+        state = next_state
+        trace.append(
+            sum(state[rid] for rid in network.readout_ids) / len(network.readout_ids)
+            if network.readout_ids else 0.0
+        )
+        for subtype, ids in network.readout_ids_by_subtype.items():
+            if ids:
+                subtype_trace[subtype].append(sum(state[rid] for rid in ids) / len(ids))
+
+    peak = max(trace, default=0.0)
+    return {
+        "metrics": {
+            "steps": len(input_schedule),
+            "readout_neurons": len(network.readout_ids),
+            "peak_mean_t4_rate": peak,
+            "peak_step": trace.index(peak) if trace else None,
+            "mean_t4_rate_over_steps": sum(trace) / len(trace) if trace else 0.0,
+            "integrated_t4_activity": sum(trace),
+            "t4_rate_trace": trace,
+            "t4_subtype_mean_rate_traces": subtype_trace,
+        }
+    }
+
+
 def run_baseline_experiment(
     connectome: PilotConnectome,
     neuropil: str,
