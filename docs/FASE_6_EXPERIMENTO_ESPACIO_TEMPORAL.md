@@ -37,7 +37,7 @@ Para cada neuropilo, executado separadamente:
 - ME_R usa apenas atribuições do hemisfério `right`;
 - somente neurónios L1 presentes no grafo e com atribuição válida entram no estímulo;
 - cada L1 atribuído é ativado exatamente uma vez por passagem;
-- a frente percorre uma fatia da malha por passo, ordenada por projeção p, q ou v;
+- a frente percorre um bin inteiro da projeção p, q ou v por passo; bins sem L1 mantêm-se como frames vazios, sem comprimir lacunas;
 - a direção oposta é a mesma sequência de fatias em ordem inversa.
 
 Por construção, as duas direções opostas têm exatamente o mesmo conjunto de neurónios, duração, número total de eventos de entrada e amplitude. A comparação não pode ser explicada por diferença na quantidade de estímulo.
@@ -102,3 +102,8 @@ Correção aplicada:
 - não publicar uma cobertura L1 específica por hemisfério, pois os L1 sem atribuição não têm hemisfério conhecido por esta tabela.
 
 A nova execução CI deve validar esta correção antes de aceitar os resultados. Os relatórios do run #56 continuam úteis apenas para provar que os scripts executaram e que os controles/pares de entrada foram produzidos; seus valores de resposta não são resultados finais.
+
+
+### Progressão uniforme da frente
+
+A implementação preserva bins de projeção vazios entre o mínimo e o máximo observados. Assim, uma lacuna na malha não é removida para acelerar artificialmente a frente. O passo é uma unidade inteira da projeção da malha, não um intervalo de tempo biológico nem uma distância física calibrada.
