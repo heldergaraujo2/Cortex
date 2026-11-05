@@ -629,3 +629,16 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - Script local criado: `scripts/run_first_pc_validation.ps1`. Confere branch, alterações staged/não staged, sincronização com origin e arquivos de dados; usa ambiente virtual local e grava relatórios em `artifacts/pc-validation` (ignorado pelo Git). Não executa reset, clean, stash nem altera arquivos brutos.
 - Estado da Fase 6: gates do repositório/GitHub concluídos. Primeiro teste no PC ainda não executado.
 - Próxima ação: sincronizar a branch com segurança no clone Windows e executar o script local. Não avançar para a expansão do modelo até examinar a saída local.
+
+
+## 7.20 Fase 8 — referência anatômica M1 e CI concluída (2026-11-05)
+
+- Branch isolada: `research/phase-8-anatomical-column-reference`, baseada em `data/fafb-v783-inputs` no commit `66cb821590090561c69679cd5c2c005413bde50a`.
+- Documento: `docs/FASE_8_REFERENCIA_ESPACIAL_M1.md`; commit atual `e4873cd702a411ed771b8b4ee25494cd9448d85f`.
+- PR #2 Draft: https://github.com/heldergaraujo2/Cortex/pull/2. PR #1 e `main` permanecem sem alterações.
+- Cortex CI #189: sucesso no commit atual, Python 3.11, 3.12 e 3.13; os três jobs concluíram os testes e a demonstração sintética. https://github.com/heldergaraujo2/Cortex/actions/runs/42040581437
+- A execução #189 não publicou artefatos. O CI confirma a integridade da alteração documental, não valida o crosswalk CATMAID→FlyWire nem a geometria da grade.
+- Inspeção adicional do repositório público `reiserlab/eyemap_T4`: `data/neu_Mi1.RData` existe na branch `main` (blob SHA `ee941396f53e813b0e12d5a1fcc64abdfec321db`), mas a interface de leitura textual não expôs o conteúdo binário. Os objetos RData continuam por inspecionar em ambiente R/pyreadr; não declarar IDs ou cobertura dos 780 Mi1 como confirmados.
+- **CONFIRMADO:** CI #189 aprovado em três versões de Python; scripts públicos referenciam os objetos RData e usam centros M10 de Mi1 para construir a referência anatômica.
+- **DESCONHECIDO:** dimensões, alinhamento dos índices, IDs CATMAID por Mi1, cobertura dos 780 neurônios e crosswalk para FAFB v783.
+- **Próximo gate:** obter os RData sem perda, inspecionar estrutura/rownames/listas e produzir inventário de identidade reproduzível. Só depois executar crosswalk CATMAID→FlyWire e validar correspondência de snapshot.
