@@ -44,8 +44,10 @@ Esta arquitetura é uma decisão de planeamento, ainda não implementada nem val
 
 ## Estado atual
 
-O repositório já contém um scaffold Python mínimo, contratos tipados para mensagens entre instâncias, testes unitários e workflow de CI para Python 3.11–3.13. Isso ainda não é um simulador neural: não existe importador de connectoma, dinâmica neuronal, plasticidade nem memória coletiva implementada.
+O repositório contém um pipeline reproduzível para o subgrafo piloto do FlyWire FAFB v783, validação estrutural e espacial, um baseline determinístico rate-based e diagnósticos de frentes espaço-temporais sobre a malha medular p/q. Os workflows GitHub Actions executam testes e experimentos reais ME_L/ME_R; a última linha de base documentada aprovou 61 testes em Python 3.11, 3.12 e 3.13.
 
-O dataset selecionado para o primeiro protótipo é FlyWire FAFB v783 (cérebro adulto feminino completo, incluindo lobos ópticos; sem cordão nervoso), com licença pública CC BY-NC 4.0 e atribuição obrigatória. BANC v888 fica como possível extensão futura para circuitos cérebro–cordão nervoso. Nenhum dataset foi baixado; antes disso, serão verificados os metadados e os produtos concretos necessários para um circuito pequeno.
+A Fase 7 está em andamento. Sua primeira subetapa audita as classes pré-sinápticas candidatas a T4 (Mi1, Tm3, Mi4, Mi9, C3, TmY15 e CT1), as conexões anotadas para T4a–T4d e os valores `nt_type` fornecidos pelo produto FAFB. O relatório real dessa nova auditoria e a CI correspondente ainda precisam ser inspecionados antes de implementar sinais ou atrasos sinápticos.
 
-A auditoria do PC será feita quando a execução local for necessária para validar recursos reais; existe agora um diagnóstico de leitura apenas em `python -m cortex.diagnostics`, que não instala nada nem escreve arquivos.
+**Limites atuais:** o modelo não representa ainda inibição fisiológica calibrada, atrasos biológicos, dinâmica de membrana, plasticidade, aprendizagem ou seletividade direcional validada. Os índices de assimetria dos experimentos anteriores são diagnósticos de engenharia, não DSI biológico. `syn_count` é uma medida estrutural e `nt_type` não deve ser convertido em sinal funcional sem validação da semântica e da cobertura.
+
+O fluxo atual é GitHub-first. A validação local Windows e o profiling no hardware do responsável foram adiados até que sejam tecnicamente necessários. A branch experimental `data/fafb-v783-inputs` permanece separada de `main`; não integrar sem revisão e decisão explícita.
