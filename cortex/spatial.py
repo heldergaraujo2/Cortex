@@ -12,6 +12,7 @@ import math
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Iterable
 
 COLUMN_ASSIGNMENT_FILE = "column_assignment.csv.gz"
 REQUIRED_COLUMNS = {
@@ -170,3 +171,35 @@ def load_column_assignments(
         rows=tuple(rows),
         unmapped_root_ids=unmapped,
     )
+
+
+
+def assigned_t4_readout_by_hemisphere(
+    assignments: Iterable[ColumnAssignment],
+    neuron_types: dict[str, str],
+    hemisphere: str,
+) -> dict[str, tuple[str, ...]]:
+    """Return only T4 neurons assigned to one hemisphere, grouped by subtype."""
+    if not hemisphere.strip():
+        raise ValueError("hemisphere must be non-empty")
+    subtypes = ("T4a", "T4b", "T4c", "T4d")
+    by_subtype: dict[str, set[str]] = {subtype: set() for subtype in subtypes}
+    seen: set[str] = set()
+    for row in assignments:
+        if row.hemisphere != hemisphere or row.cell_type not in by_subtype:
+            continue
+        if row.root_id not in neuron_types:
+            continue
+        if neuron_types[row.root_id] != row.cell_type:
+            raise ValueError(
+                f"column assignment type mismatch for {row.root_id}: "
+                f"{row.cell_type!r} != {neuron_types[row.root_id]!r}"
+            )
+        if row.root_id in seen:
+            raise ValueError(f"duplicate T4 assignment for root_id {row.root_id}")
+        seen.add(row.root_id)
+        by_subtype[row.cell_type].add(row.root_id)
+    return {
+        subtype: tuple(sorted(root_ids))
+        for subtype, root_ids in by_subtype.items()
+    }
