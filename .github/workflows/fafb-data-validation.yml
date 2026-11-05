@@ -7,13 +7,16 @@ on:
       - "cortex/connectome.py"
       - "cortex/spatial.py"
       - "cortex/dynamics.py"
+      - "cortex/visual_stimuli.py"
       - "scripts/inspect_fafb_data.py"
       - "scripts/import_fafb_pilot.py"
       - "scripts/inspect_fafb_columns.py"
       - "scripts/run_fafb_baseline.py"
+      - "scripts/run_fafb_spatiotemporal.py"
       - "tests/test_connectome.py"
       - "tests/test_spatial.py"
       - "tests/test_dynamics.py"
+      - "tests/test_visual_stimuli.py"
       - ".github/workflows/fafb-data-validation.yml"
   workflow_dispatch:
 
@@ -62,6 +65,18 @@ jobs:
           --data-dir data/raw/fafb_v783
           --neuropil ME_R
           --output fafb_v783_baseline_ME_R.json
+      - name: Run paired medulla lattice stimulus diagnostics for ME_L
+        run: >-
+          python scripts/run_fafb_spatiotemporal.py
+          --data-dir data/raw/fafb_v783
+          --neuropil ME_L
+          --output fafb_v783_spatiotemporal_ME_L.json
+      - name: Run paired medulla lattice stimulus diagnostics for ME_R
+        run: >-
+          python scripts/run_fafb_spatiotemporal.py
+          --data-dir data/raw/fafb_v783
+          --neuropil ME_R
+          --output fafb_v783_spatiotemporal_ME_R.json
       - name: Upload validation reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -73,4 +88,6 @@ jobs:
             fafb_v783_column_assignment_report.json
             fafb_v783_baseline_ME_L.json
             fafb_v783_baseline_ME_R.json
+            fafb_v783_spatiotemporal_ME_L.json
+            fafb_v783_spatiotemporal_ME_R.json
           if-no-files-found: warn
