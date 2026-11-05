@@ -127,6 +127,14 @@ dra_map <- build_mapping(dra, "anno_Mi1_DRA")
 mapping <- rbind(full_map, dra_map)
 utils::write.csv(mapping, file.path(out_dir, "mi1_skid_to_m10_mapping.csv"), row.names = FALSE)
 
+# Export only rows with a verified local M10 coordinate for the later
+# CATMAID -> FlyWire v783 crosswalk. The missing annotation row stays excluded.
+crosswalk_input <- full_map[full_map$mapping_status == "mapped",
+                            c("skid", "anno_Mi1_row", "Mi1_M10_row")]
+utils::write.csv(crosswalk_input,
+                 file.path(out_dir, "mi1_catmaid_skids_for_crosswalk.csv"),
+                 row.names = FALSE)
+
 summarize_map <- function(x) {
   data.frame(
     subset = unique(x$subset),
