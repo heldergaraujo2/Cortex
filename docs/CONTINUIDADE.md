@@ -207,35 +207,31 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 
 **Próximo passo:** Fase 1 — auditar repositório e ambiente.
 
-## 8. Próxima tarefa prioritária: Fase 2 — circuito real pequeno e tarefa mensurável
+## 8. Próxima tarefa prioritária: primeiro teste local no PC Windows
 
-### Objetivo
-Escolher um circuito do dataset FAFB v783 e uma tarefa que permita testar comportamento observável antes de implementar um simulador completo ou descarregar dados grandes.
+### Estado
+A preparação no GitHub está concluída. O commit de referência validado é `784f30d43811da795fbda5ddadcbb5599ef91a8c`; a branch remota recebeu depois atualizações documentais e o script local. Consulte sempre o HEAD atual da branch antes de sincronizar.
 
-### Sequência recomendada
-1. Rever no Codex os produtos de download compactos disponíveis para FAFB v783 e confirmar metadados/licença dos arquivos concretos.
-2. Identificar candidatos a circuitos com anotações suficientes e uma função/tarefa que possa ser operacionalizada; usar literatura primária e fontes de dados rastreáveis.
-3. Comparar candidatos por tamanho, completude, anotação, disponibilidade de estímulos/saídas e custo provável.
-4. Definir a tarefa, entradas, saídas, baseline simples, métrica primária, controlos e critério de sucesso antes de treinar.
-5. Só depois criar o manifesto de dados e importar o menor subconjunto necessário.
-6. Atualizar este arquivo com a decisão e o que foi verificado.
+### Próxima ação
+1. No clone Windows, verificar `git status --short --branch`.
+2. Se houver alterações locais ou arquivos não rastreados, parar e revisar; não usar reset, clean ou stash.
+3. Com a árvore limpa, buscar origin, selecionar `data/fafb-v783-inputs` e atualizar somente com `git pull --ff-only`.
+4. Executar `powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\run_first_pc_validation.ps1`.
+5. Examinar a suíte pytest e os cinco relatórios em `artifacts/pc-validation/`; comparar com FAFB Data Validation #71.
 
-### Critérios de aceitação
-- Dataset/snapshot e produtos de origem identificados.
-- Circuito delimitado por IDs ou regras reproduzíveis.
-- Tarefa observável com entrada, saída e métrica definidas.
-- Baseline/controlos definidos antes do treino.
-- Licença, citação, esquema e proveniência registados.
-- Nenhum dataset bruto grande foi adicionado ao Git por acidente.
+### Critérios de aceitação local
+- Python 3.11, 3.12 ou 3.13 em ambiente virtual do projeto.
+- Testes unitários aprovados.
+- Arquivos FAFB v783 encontrados e legíveis.
+- Baselines ME_L/ME_R e frentes espaço-temporais ME_L/ME_R reproduzidas.
+- Controles sem estímulo permanecem em zero; contagens e métricas próximas das saídas da CI.
+- Nenhum arquivo bruto alterado e nenhuma modificação inesperada no Git.
 
-### Não fazer nesta fase
-- Não importar os 139.255 neurónios só porque estão disponíveis.
-- Não escolher pesos, sinais, atrasos ou plasticidade como se fossem dados confirmados quando são estimativas.
-- Não alegar aprendizagem sem avaliação em condições de teste e comparação com baseline.
-- Não iniciar quatro simulações completas antes de validar um circuito pequeno.
-
-### Estado local
-O caminho/estado do clone do responsável e as capacidades físicas do PC continuam desconhecidos. Não são necessários para investigar metadados e definir o circuito; devem ser recolhidos quando o primeiro teste local ou profiling exigir.
+### Não fazer antes desse gate
+- Não expandir para o connectoma completo.
+- Não implementar aprendizagem ou seletividade direcional.
+- Não otimizar GPU nem iniciar profiling antes de validar a reprodução local.
+- Não integrar o PR #1 em `main` sem decisão explícita.
 
 ## 9. Formato obrigatório para atualizações futuras
 
@@ -286,7 +282,7 @@ Estas questões não bloqueiam a auditoria inicial; devem ser resolvidas na fase
 
 ## 12. Resumo de retomada em poucas linhas
 
-Cortex está na etapa de fundação documental. O repositório estava vazio na primeira inspeção e recebeu README, roadmap, planejamento e continuidade. A missão é investigar um núcleo neural inspirado em connectoma real de mosca, começando pequeno, separando estrutura/dinâmica/aprendizagem, medindo resultados e sem usar um LLM convencional como núcleo inicial. Nenhum código funcional foi implementado, nenhum dataset foi baixado e nenhum teste foi executado. O próximo passo é auditar o estado real do repositório e do ambiente, preservar qualquer alteração local e só então iniciar a seleção técnica do dataset e do circuito.
+O Cortex já possui o piloto FAFB v783 importado, validação espacial/colunar, baseline estrutural rate-based v0 e diagnóstico de frentes na malha medular p/q. A Fase 6 passou na validação real ME_L/ME_R do GitHub Actions e a suíte CI aprovou 61 testes em Python 3.11, 3.12 e 3.13. A assimetria +/− observada é pequena e não demonstra seletividade direcional biológica; a rede ainda não inclui entradas inibitórias, atrasos fisiológicos ou calibração. O repositório está pronto para o primeiro teste local no PC Windows. Próxima ação: sincronizar a branch `data/fafb-v783-inputs` sem descartar trabalho local e executar `scripts/run_first_pc_validation.ps1`; depois comparar os cinco relatórios locais com o artefato CI #71. O PR #1 continua aberto e `main` não foi alterada.
 
 
 ## 7.2 Registro de alterações 1.2 — bootstrap remoto e revisão de fontes (2026-10-28)
