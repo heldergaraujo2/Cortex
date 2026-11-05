@@ -66,16 +66,22 @@ def test_coordinate_loader_aggregates_multiple_supervoxel_positions(tmp_path):
     assert result["1"].bbox_diagonal == pytest.approx(6)
 
 
-def test_coordinate_loader_ignores_exact_duplicate_supervoxel_row(tmp_path):
+def test_coordinate_loader_counts_exact_duplicate_position_rows(tmp_path):
     path = tmp_path / "coordinates.csv.gz"
     _write(path, [["1", "[10 20 30]", "99"], ["1", "[10 20 30]", "99"]])
     result = load_coordinate_records(path)
-    assert result["1"].sample_count == 1
-    assert result["1"].duplicate_rows_ignored == 1
+    assert result["1"].sample_count == 2
+    assert result["1"].unique_supervoxel_ids == 1
+    assert result["1"].repeated_root_supervoxel_pairs == 1
+    assert result["1"].conflicting_root_supervoxel_pairs == 0
+    assert result["1"].exact_duplicate_position_rows == 1
 
 
-def test_coordinate_loader_rejects_conflicting_duplicate_supervoxel_position(tmp_path):
+def test_coordinate_loader_preserves_conflicting_positions_for_repeated_supervoxel(tmp_path):
     path = tmp_path / "coordinates.csv.gz"
-    _write(path, [["1", "[10 20 30]", "99"], ["1", "[11 21 31]", "99"]])
-    with pytest.raises(ValueError, match="conflicting duplicate root_id/supervoxel_id"):
-        load_coordinate_records(path)
+    _write(path, [["1", "[10 20 30]", "99"], ["1", "[12 24 34]", "99"]])
+    result = load_coordinate_records(path)
+    assert result["1"].sample_count == 2
+    assert result["1"].repeated_root_supervoxel_pairs == 1
+    assert result["1"].conflicting_root_supervoxel_pairs == 1
+    assert result["1"].exact_duplicate_position_rows == 0
