@@ -137,7 +137,7 @@ O dataset FAFB v783 usado pelo Cortex possui restrições de uso já registradas
 Foi adicionado `scripts/inspect_mi1_reference.R`. É um utilitário de leitura que recebe os dois arquivos de origem identificados no bootstrap dos autores (`data/neu_Mi1.RData` e `data/Mi1_ind.RData`), carrega os objetos em um ambiente R isolado e exporta:
 - `object_inventory.csv`: classes, tipos, comprimentos, dimensões e presença de rownames de cada objeto carregado;
 - `mi1_skid_to_m10_mapping.csv`: relação por linha entre `anno_Mi1$skid`, índice local `Mi1_neu_ind` e linha/coordenadas de `Mi1_M10_xyz`, tanto para o conjunto de anotações quanto para `anno_Mi1_DRA`;
-- `mapping_summary.csv` e `mapping_status.txt`: contagens de correspondências, duplicatas, índices válidos e coordenadas finitas.
+- `mapping_summary.csv` e `mapping_status.txt`: contagens de correspondências, duplicatas, índices válidos e coordenadas finitas. O script rejeita `skid` duplicado em `anno_Mi1` como ambíguo, em vez de aceitar silenciosamente o primeiro resultado de `match()`.
 
 Execução em clone local do repositório dos autores, usando uma cópia do script do Cortex:
 
