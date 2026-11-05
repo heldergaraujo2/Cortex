@@ -82,8 +82,10 @@ def build_lattice_schedule(
     if not by_progress:
         raise ValueError(f"no assigned L1 input neurons for hemisphere {hemisphere!r}")
 
-    progress_values = tuple(sorted(by_progress))
-    frames = tuple(frozenset(by_progress[value]) for value in progress_values)
+    # Keep empty projection bins: dropping them would silently accelerate the
+    # front wherever the lattice has a missing slice.
+    progress_values = tuple(range(min(by_progress), max(by_progress) + 1))
+    frames = tuple(frozenset(by_progress.get(value, set())) for value in progress_values)
     if direction == -1:
         progress_values = tuple(reversed(progress_values))
         frames = tuple(reversed(frames))
