@@ -37,7 +37,7 @@ describe_object <- function(nm) {
 inventory <- do.call(rbind, lapply(all_objects, describe_object))
 utils::write.csv(inventory, file.path(out_dir, "object_inventory.csv"), row.names = FALSE)
 
-required <- c("Mi1_M10_xyz", "Mi1_neu_ind", "anno_Mi1", "anno_Mi1_DRA")
+required <- c("Mi1_M10_xyz", "Mi1_neu_ind", "anno_Mi1", "anno_Mi1_DRA", "Mi1_ind_DRA")
 missing <- required[!vapply(required, exists, logical(1), envir = env, inherits = FALSE)]
 if (length(missing)) {
   writeLines(
@@ -59,6 +59,7 @@ xyz <- as.matrix(get("Mi1_M10_xyz", envir = env))
 idx <- get("Mi1_neu_ind", envir = env)
 anno <- get("anno_Mi1", envir = env)
 dra <- get("anno_Mi1_DRA", envir = env)
+dra_reference_rows <- as.integer(get("Mi1_ind_DRA", envir = env))
 
 if (ncol(xyz) != 3L || !is.numeric(xyz)) {
   stop("Mi1_M10_xyz is not a numeric matrix with exactly 3 columns.", call. = FALSE)
@@ -144,6 +145,20 @@ summarize_map <- function(x) {
 summary <- rbind(summarize_map(full_map), summarize_map(dra_map))
 utils::write.csv(summary, file.path(out_dir, "mapping_summary.csv"), row.names = FALSE)
 
+dra_derived_rows <- as.integer(dra_map$Mi1_M10_row)
+dra_reference_match <- identical(dra_derived_rows, dra_reference_rows)
+dra_check <- data.frame(
+  check = "inverse_annotation_to_M10_rows_equals_Mi1_ind_DRA",
+  derived_count = length(dra_derived_rows),
+  reference_count = length(dra_reference_rows),
+  exact_ordered_match = dra_reference_match,
+  stringsAsFactors = FALSE
+)
+utils::write.csv(dra_check, file.path(out_dir, "dra_index_crosscheck.csv"), row.names = FALSE)
+if (!dra_reference_match) {
+  warning("Inverse Mi1 annotation-to-M10 mapping does not exactly match Mi1_ind_DRA; inspect dra_index_crosscheck.csv.")
+}
+
 status_lines <- c(
   "Read-only Mi1 reference inventory completed.",
   paste("neu_Mi1.RData:", neu_path),
@@ -155,11 +170,13 @@ status_lines <- c(
   paste("Source annotation rows without M10 coordinate:", paste(which(!(seq_len(nrow(anno)) %in% idx)), collapse=", ")),
   paste("anno_Mi1 rows:", nrow(anno)),
   paste("anno_Mi1_DRA rows:", nrow(dra)),
+  paste("Mi1_ind_DRA exact ordered cross-check:", dra_reference_match),
   "",
   "Mapping summary:",
   utils::capture.output(print(summary, row.names = FALSE)),
   "",
   "The inverse mapping is cross-checked against Mi1_ind_DRA; it does not silently shift or impute indices.",
+  paste("Rows in anno_Mi1 absent from Mi1_neu_ind:", paste(which(!(seq_len(nrow(anno)) %in% idx)), collapse=", ")),
   "Important: this checks the authors' local index chain only. It does NOT",
   "establish a CATMAID-to-FAFB-v783 crosswalk or biological validity of every row."
 )
