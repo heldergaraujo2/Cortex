@@ -512,3 +512,12 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **DESCONHECIDO:** se parâmetros/dinâmica representam neurónios biológicos; se o subcircuito reduzido reproduz comportamento visual; se há seletividade direcional. Esta baseline não testa movimento, espaço visual, sinal neurotransmissor ou aprendizagem.
 - **Estado da Fase 5 neste registo:** implementação adicionada, execução real/CI ainda pendente. Não marcar como concluída até verificar os workflows e examinar os relatórios ME_L/ME_R.
 - **Próximo passo prioritário:** acompanhar as execuções CI do commit mais recente, corrigir qualquer falha e analisar os dois relatórios reais. Não integrar PR #1 nem alterar `main`.
+
+
+## 7.15 Revisão metodológica da baseline v0 (2026-11-04)
+
+- **Primeira execução real:** FAFB Data Validation run #41, commit `ee3a9b48f81eb74d14269201ebcf7b79a3bd9f96`, terminou com sucesso e gerou relatórios ME_L/ME_R.
+- **Revisão crítica do artefato:** o pulso propagou até T4 e o controlo sem estímulo ficou em zero, mas a comparação das ablações não era válida: ao remover Mi1/Tm3, a versão inicial renormalizava os pesos restantes e alterava o conjunto de T4 medido.
+- **Decisão:** os resultados de ablação do run #41 ficam supersedidos e não devem sustentar inferências.
+- **Correção:** pesos normalizados uma única vez no grafo intacto; ablações removem a via sem renormalizar as restantes. A população T4 de leitura permanece idêntica em todos os cenários; T4 sem entradas após ablação conta como zero. Adicionado teste que verifica explicitamente estas duas propriedades.
+- **Estado:** nova CI e nova execução real ainda pendentes após a correção. A Fase 5 permanece em andamento; não usar números da primeira execução como resultado final.
