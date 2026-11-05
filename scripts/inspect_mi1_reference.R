@@ -99,7 +99,7 @@ build_mapping <- function(source, label) {
   }
   finite_xyz <- in_range & is.finite(x) & is.finite(y) & is.finite(z)
   source_index_value <- rep(NA_integer_, length(anno_rows))
-  source_index_value[can_match] <- idx[match_count[can_match] == 1L & !is.na(anno_rows[can_match])]
+  source_index_value[can_match] <- anno_rows[can_match]
   status <- ifelse(
     match_count == 0L, "skid_not_found_in_anno_Mi1",
     ifelse(match_count > 1L, "duplicate_skid_in_anno_Mi1",
