@@ -3,8 +3,8 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-11-05  
-**Versão:** 2.0 — Fase 6 validada no GitHub; Fase 7 em auditoria de evidências dos inputs T4  
-**Estado geral:** Fases anteriores do piloto FAFB, incluindo baseline estrutural e diagnóstico espaço-temporal, foram validadas no GitHub. A Fase 7 começou por uma auditoria dos tipos pré-sinápticos candidatos a T4 e dos rótulos `nt_type` fornecidos no dataset. A nova auditoria e seus testes foram adicionados; a execução CI e o relatório real ainda precisam ser inspecionados. Não foi implementada nem demonstrada inibição fisiológica, atraso biológico ou seletividade direcional.  
+**Versão:** 2.1 — auditoria real dos inputs candidatos a T4 concluída; modelo assinado é o próximo passo  
+**Estado geral:** o pipeline FAFB v783 e os diagnósticos espaço-temporais anteriores permanecem validados. Na Fase 7, a auditoria real leu 5.342.446 linhas de conectividade e encontrou 53.284 linhas candidatas de tipos pré-sinápticos para T4; o workflow #82 terminou com sucesso. Cortex CI #122 aprovou 65 testes em Python 3.11–3.13. Os dados mostram candidatos e rótulos `nt_type` mistos; nenhum sinal funcional individual, atraso biológico ou seletividade direcional foi demonstrado. Relatório em `docs/FASE_7_AUDITORIA_INPUTS_T4.md`.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; testes e experimentos remotos primeiro. PC reservado para profiling, validação Windows ou quando houver necessidade concreta.  
@@ -207,16 +207,19 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 
 **Próximo passo:** Fase 1 — auditar repositório e ambiente.
 
-## 7.20 Início da Fase 7 — auditoria dos inputs candidatos a T4 (2026-11-05)
+## 7.20 Fase 7 — auditoria real dos inputs candidatos a T4 concluída (2026-11-05)
 
-- **Objetivo imediato:** determinar, a partir dos produtos FAFB v783 já versionados, quais classes pré-sinápticas candidatas a T4 estão anotadas, que ligações aparecem no arquivo de conexões e quais rótulos `nt_type` acompanham essas linhas.
-- **Tipos auditados:** Mi1, Tm3, Mi4, Mi9, C3, TmY15 e CT1; T4a–T4d são contados separadamente.
-- **Implementação adicionada:** `scripts/audit_t4_inputs.py` e `tests/test_t4_input_audit.py`. O script preserva separação por neuropilo e por `nt_type`, valida IDs/tipos e `syn_count`, e produz `fafb_v783_t4_input_audit.json`.
-- **Workflow:** `.github/workflows/fafb-data-validation.yml` executa a auditoria e inclui o JSON no artefato. A suíte CI geral recolhe automaticamente o novo teste.
-- **Salvaguarda científica:** `nt_type` é reportado literalmente como fornecido; não é convertido automaticamente em sinal excitatório/inibitório por neurónio. Contagem estrutural não é eficácia sináptica. A presença anatómica não prova função causal, atraso ou seletividade.
-- **Estado dos testes:** os testes sintéticos foram escritos, mas a execução CI desta alteração ainda está pendente de inspeção. Nenhum resultado real da nova auditoria é declarado nesta atualização.
-- **Próxima decisão técnica:** usar o relatório real para determinar cobertura dos candidatos e qualidade dos rótulos antes de ampliar o importador ou implementar sinais sinápticos. Se os dados não sustentarem uma inferência, manter o mecanismo como desconhecido e procurar fonte complementar.
-- **Branch:** `data/fafb-v783-inputs`; PR #1 permanece aberto. `main` não foi alterada.
+- **Execução:** FAFB v783 Data Validation #82, run `41948702974`, sucesso. Artefato `fafb-v783-validation-report`, ID `13380560010`; contém `fafb_v783_t4_input_audit.json`. SHA-256 do ZIP: `a947761f29a87e101f2b18d901a8691bc4796aa3e3cdd47dde69ad8d2fef08c7`.
+- **CI:** Cortex CI #122, run `41948813842`, sucesso; 65 testes passaram em cada matriz Python 3.11, 3.12 e 3.13. Log da matriz 3.11 confirma `65 passed`.
+- **Dados:** 5.342.446 linhas de conexões; 5.318.409 linhas com ambos os IDs mapeados; 53.284 linhas de conexão de Mi1/Tm3/Mi4/Mi9/C3/TmY15/CT1 para T4a–T4d, considerando todos os neuropilos.
+- **Tipos primários:** Mi1 1.581; Tm3 1.756; Mi4 1.532; Mi9 1.551; C3 1.535; TmY15 257; CT1 2; T4a 1.457; T4b 1.507; T4c 1.710; T4d 1.569.
+- **Medula:** 25.904 linhas ME_L e 26.656 ME_R (52.560 total); soma estrutural de `syn_count` 574.359 nessas duas regiões, mantendo no relatório a separação por tipo/neuropilo/`nt_type`.
+- **Rótulos no arquivo:** ACH 31.333 linhas; GABA 17.098; GLUT 4.853. A distribuição não é perfeitamente uniforme por tipo (por exemplo, Mi9 mistura GLUT e GABA; aparecem algumas exceções nos outros tipos). Codex diferencia `nt_type` previsto de `nt_type_verified` curado; os rótulos não são tratados como sinal funcional confirmado.
+- **Observação:** CT1 tem dois IDs primários, mas milhares de linhas de conexão para T4; linhas não equivalem a neurónios.
+- **Documento completo:** `docs/FASE_7_AUDITORIA_INPUTS_T4.md`.
+- **Conclusão:** CONFIRMADO para presença de classes e conexões estruturais no snapshot. FORTEMENTE INDICADO pela literatura para papéis transmissores gerais de várias classes. DESCONHECIDO para sinal fisiológico por aresta, eficácia, atraso e contribuição causal específica. Nenhuma DSI foi calculada nesta auditoria.
+- **Próxima subetapa:** construir um módulo experimental T4 assinado e separado do baseline v0. Distinguir neurotransmissor, efeito pós-sináptico e polaridade da resposta pré-sináptica (especialmente Mi9); parâmetros de atraso serão varridos como hipóteses de engenharia, não tratados como tempos biológicos medidos.
+- **Branch:** `data/fafb-v783-inputs`; PR #1 permanece aberto e `main` não foi alterada.
 
 ## 8. Estratégia de execução atual — GitHub-first
 
