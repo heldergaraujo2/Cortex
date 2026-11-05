@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** o fluxo estrutural/espacial FAFB e o diagnóstico espaço-temporal foram validados no GitHub. A auditoria T4 #82 encontrou 53.284 linhas candidatas. O protótipo sintético de integração assinada foi implementado; CI #130 aprovou 73 testes em Python 3.11–3.13 e executou o demo CLI. A assimetria 0,236258 é apenas sintética, não DSI biológico. Próxima subetapa: ligar o modelo às arestas reais e validar sinais/cobertura sem alterar o baseline v0. Estratégia GitHub-first; testes locais adiados até necessidade técnica. Ver aditivo e docs/CONTINUIDADE.md.  
+**Status global:** auditoria e importação estrutural de T4 validadas com dados reais (#82 e #99): 53.284 arestas, 7.028 IDs pré-sinápticos e 6.236 IDs T4. Protótipo sintético T4 implementado. CI #137 aprovou 81 testes em Python 3.11–3.13 e executou o demo. Próxima subetapa: obter neurotransmissores verificados e mapear geometria/colunas dos candidatos antes de assinar arestas e ligar o modelo aos dados reais. Assimetria sintética 0,236258 não é DSI biológico. Estratégia GitHub-first. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -611,3 +611,23 @@ O índice não é DSI, não identifica PD/ND e não usa posições reais dos neu
 Cortex CI #130 passou com 73 testes em cada versão Python 3.11, 3.12 e 3.13. O comando `python scripts/run_t4_mechanism_demo.py --output t4_mechanism_demo.json` também foi executado em todas as três versões, produzindo os mesmos valores.
 
 **Estado da Fase 7:** em andamento. Próxima tarefa: preservar e importar as arestas reais dos tipos candidatos, diferenciar `nt_type` previsto de `nt_type_verified`, mapear cobertura/posições quando disponíveis e construir experimentos reais com ablações. Não alegar seletividade biológica antes de validar os dados e o mapeamento PD/ND.
+
+
+## Aditivo — importação estrutural real dos inputs T4 (2026-11-05)
+
+Foi adicionado o módulo `cortex/t4_inputs.py`, que preserva as linhas de conexão de Mi1/Tm3/Mi4/Mi9/C3/TmY15/CT1 para T4a–T4d, sem deduplicação e sem inferir sinal. O script `scripts/import_t4_input_edges.py` produz o relatório `fafb_v783_t4_input_edges.json`.
+
+### Validação com FAFB v783
+- Workflow FAFB Data Validation #99, run `41949691726`, sucesso.
+- Artefato ID `13381150256`; relatório de arestas incluído.
+- 53.284 linhas preservadas, igual ao total da auditoria independente.
+- 7.028 IDs pré-sinápticos distintos; 6.236 IDs T4 pós-sinápticos.
+- 143 grupos por tipo pré/pós, neuropilo e `nt_type`.
+- ME_L 25.904 linhas; ME_R 26.656; LOP_L 245; LOP_R 368; LO_L 60; LO_R 47; AME_L 3; UNASGD 1.
+
+### CI
+Cortex CI #137 passou com 81 testes em Python 3.11, 3.12 e 3.13 e executou `scripts/run_t4_mechanism_demo.py` nas três versões.
+
+### Próximo gate
+O CSV `consolidated_cell_types` versionado não contém `nt_type_verified`; o arquivo de conexões contém apenas `nt_type`. O Codex diferencia previsão e anotação verificada. O próximo trabalho é encontrar a fonte curada, mapear espacialmente os candidatos pré-sinápticos e construir perfis por T4-alvo. Até então, não atribuir sinal fisiológico confirmado por aresta.
+
