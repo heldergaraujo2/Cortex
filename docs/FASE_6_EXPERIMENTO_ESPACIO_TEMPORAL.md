@@ -107,3 +107,46 @@ A nova execução CI deve validar esta correção antes de aceitar os resultados
 ### Progressão uniforme da frente
 
 A implementação preserva bins de projeção vazios entre o mínimo e o máximo observados. Assim, uma lacuna na malha não é removida para acelerar artificialmente a frente. O passo é uma unidade inteira da projeção da malha, não um intervalo de tempo biológico nem uma distância física calibrada.
+
+
+## Resultado real final — execução corrigida no GitHub Actions
+
+**FAFB v783 Data Validation #71:** sucesso no commit `784f30d43811da795fbda5ddadcbb5599ef91a8c`. O artefato inclui relatórios de validação, manifesto, baseline ME_L/ME_R e diagnósticos espaço-temporais ME_L/ME_R. https://github.com/heldergaraujo2/Cortex/actions/runs/41945748140
+
+**Cortex CI #109:** 61 testes aprovados em cada versão Python 3.11, 3.12 e 3.13. https://github.com/heldergaraujo2/Cortex/actions/runs/41945747960
+
+### Cobertura e população medida
+
+- A tabela real tem 45.528 linhas e 45.528 root IDs únicos; SHA-256 `bdf4ce7f62cc63493d53eefad3816ff2dfd08b190e97b35a492e0e453df2f0f6`.
+- 10.637/11.355 IDs do piloto têm atribuição; 718 permanecem sem atribuição.
+- Cobertura L1 global: 1.572/1.775 = 88,56%. No experimento: 783 L1 atribuídos no hemisfério left e 789 no right. Não se calcula cobertura específica por lado para L1 sem atribuição, pois o lado desses IDs é desconhecido nesta tabela.
+- Readout T4 limitado ao hemisfério estimulado: 2.986 células left (T4a 713, T4b 750, T4c 775, T4d 748) e 2.999 right (T4a 728, T4b 743, T4c 778, T4d 750).
+
+### Resposta por eixo da malha medular
+
+| Hemisfério | Eixo | Assimetria integrada entre +/− | Pico T4 + | Pico T4 − |
+|---|---|---:|---:|---:|
+| left / ME_L | p | 0,8359% | 0,021546 | 0,021539 |
+| left / ME_L | q | 0,2204% | 0,023776 | 0,023733 |
+| left / ME_L | v | 0,5120% | 0,021716 | 0,021793 |
+| right / ME_R | p | 0,9783% | 0,021803 | 0,021872 |
+| right / ME_R | q | 0,0440% | 0,023590 | 0,023540 |
+| right / ME_R | v | 0,4656% | 0,021751 | 0,021654 |
+
+Controles:
+- Sem estímulo: pico T4 = 0 em todos os cenários.
+- Flash ON global: atividade T4 integrada 0,995097 (ME_L) e 0,993021 (ME_R).
+- Frentes opostas: cada L1 atribuído é ativado uma vez; direções opostas são reversões exatas, com energia e duração iguais.
+- Bins inteiros de projeção vazios são mantidos; não há compressão de lacunas.
+
+### Interpretação
+
+**CONFIRMADO:** os estímulos sintéticos espaço-temporais são gerados a partir da malha p/q medular real, os dois sentidos são comparáveis em energia, o controlo sem estímulo permanece em zero e a resposta T4 é determinística.
+
+**OBSERVAÇÃO DO MODELO:** a assimetria integrada entre sentidos opostos ficou entre 0,044% e 0,978%, ou seja, muito pequena nesta implementação.
+
+**NÃO DEMONSTRADO:** seletividade direcional biológica. O índice é apenas assimetria computacional; não é DSI. O circuito ainda não inclui Mi4/Mi9/C3/CT1, sinais inibitórios, atrasos fisiológicos, integração dendrítica não linear ou parâmetros calibrados. Também não converte direções medulares em direções do campo visual.
+
+### Estado do gate
+
+A preparação no repositório e a validação no GitHub estão concluídas. O próximo gate é a primeira execução no PC Windows, usando `scripts/run_first_pc_validation.ps1`. A Fase 6 só será encerrada depois de comparar os resultados locais com estes relatórios da CI.
