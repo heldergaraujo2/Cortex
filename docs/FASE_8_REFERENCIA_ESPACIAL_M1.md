@@ -163,3 +163,27 @@ A importação foi executada pelo workflow [Import eyemap_T4 reference data](htt
 A proveniência e a ressalva de licença estão em `data/external/eyemap_T4/README.md`. Os arquivos permanecem dados de terceiros. A licença específica dos arquivos não está separadamente indicada; preservar atribuição e restrição não comercial conservadoramente até confirmação dos autores.
 
 **Estado do Gate 8A:** os insumos agora estão disponíveis no repositório, mas o script R ainda precisa ser executado contra eles. Nenhuma contagem de neurônios, taxa de correspondência, cobertura ou conclusão anatômica é inferida apenas da importação.
+
+
+## Resultados empíricos iniciais do Gate 8A (2026-11-05)
+
+Execução: [workflow R 4.4.1 #1](https://github.com/heldergaraujo2/Cortex/actions/runs/42048886029), concluído com sucesso.
+
+| Objeto/medida | Resultado |
+|---|---:|
+| `Mi1` | 780 elementos |
+| `anno_Mi1` | 780 linhas |
+| `Mi1_M10_xyz` | 779 x 3 |
+| `Mi1_neu_ind` | 779 inteiros |
+| `anno_Mi1_DRA` | 42 linhas |
+| Correspondências posicionais finitas em `anno_Mi1` | 778/780 |
+| Correspondências posicionais finitas no DRA | 42/42 |
+| IDs duplicados em `anno_Mi1` | 0 |
+
+Duas exceções foram localizadas na saída detalhada: `skid=17325656` (linha 779, `Mi1_neu_ind=780`, fora da matriz M10 de 779 linhas) e `skid=17328033` (linha 780, sem índice correspondente porque o vetor tem 779 posições). Ambas permanecem sem coordenada atribuída.
+
+O código dos autores usa `Mi1_neu_ind[match(anno_Mi1_DRA$skid, anno_Mi1$skid)]` para selecionar as 42 células DRA na figura 2; as 42 correspondem a coordenadas finitas na execução. Isso não autoriza estender a cobertura a todas as 780 anotações. A diferença de comprimentos e os dois casos precisam ser explicados pela estrutura dos objetos e pelo critério de inclusão/exclusão dos autores.
+
+**Estado:** inventário R executado; cobertura geral parcial (778/780) e DRA completa (42/42). Gate 8A ainda não está aprovado para mapeamento geral completo. Não ajustar índice, excluir células nem preencher coordenadas sem evidência documental/estrutural.
+
+O artefato `phase8-mi1-inventory` contém `object_inventory.csv`, `mapping_summary.csv`, `mi1_skid_to_m10_mapping.csv` e `mapping_status.txt`. A etapa diagnóstica adicional de estrutura dos objetos está sendo executada para esclarecer os dois casos.
