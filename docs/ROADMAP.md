@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** Fases 1–3 concluídas no escopo documentado. No fluxo FAFB, Fase 4 espacial/colunar e Fase 5 baseline rate-based v0 concluídas. A Fase 6 (malha medular e frentes espaço-temporais) passou CI e execução real ME_L/ME_R em 2026-11-05; 61 testes passaram em Python 3.11–3.13. Preparação no repositório concluída; primeiro teste local no PC Windows pendente. Não foi demonstrada seletividade direcional nem fidelidade biológica. Ver aditivo e docs/CONTINUIDADE.md.  
+**Status global:** no fluxo experimental FAFB, as fases estruturais e o diagnóstico espaço-temporal foram validados no GitHub, incluindo ME_L/ME_R e 61 testes em Python 3.11–3.13. A Fase 7 foi iniciada com auditoria dos tipos candidatos a inputs T4 e dos rótulos `nt_type`; CI e relatório real dessa auditoria ainda pendentes de inspeção. Estratégia atual GitHub-first; testes locais Windows adiados até necessidade de profiling, compatibilidade ou escala. Não foi demonstrada inibição fisiológica, atraso biológico ou seletividade direcional. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -562,3 +562,25 @@ A primeira execução real das frentes mostrou um erro de escopo: a entrada L1 e
 ## Gate de handoff — primeiro teste local no PC (2026-11-05)
 
 A preparação de código, dados, controles, testes e relatórios da Fase 6 foi concluída no GitHub. A execução real #71 validou ME_L e ME_R, e CI #109 aprovou 61 testes em cada versão Python 3.11–3.13. O próximo passo não é outra fase de modelagem: é validar no ambiente Windows do projeto com `scripts/run_first_pc_validation.ps1`, comparar os relatórios locais com a CI e conferir desempenho/compatibilidade. A Fase 6 permanece aguardando esse gate local.
+
+
+## Aditivo — Fase 7: auditoria de evidências dos inputs T4 (2026-11-05)
+
+A Fase 7 começa com inventário dos dados, não com atribuição automática de sinais sinápticos. O script `scripts/audit_t4_inputs.py` analisa as anotações primárias e as linhas da tabela de conectividade para os candidatos Mi1, Tm3, Mi4, Mi9, C3, TmY15 e CT1 que terminam em T4a–T4d.
+
+O relatório separa cada combinação de tipo pré/pós, neuropilo e `nt_type`. O rótulo é preservado como dado observado no produto, sem convertê-lo automaticamente em excitação/inibição. `syn_count` permanece uma medida estrutural, não eficácia fisiológica.
+
+### Entregáveis implementados nesta subetapa
+- Auditoria real de cobertura dos tipos candidatos e das conexões para T4.
+- Contagens de linhas e soma de `syn_count` separadas por neuropilo e `nt_type`.
+- Testes sintéticos para cobertura, separação de neuropilos/rótulos, IDs duplicados e contagens inválidas.
+- Execução no workflow FAFB e publicação de `fafb_v783_t4_input_audit.json`.
+
+### Critério para avançar à modelagem
+1. CI aprovada em Python 3.11–3.13.
+2. Workflow real executado com os dados FAFB v783.
+3. Artefato examinado e cobertura dos tipos candidatos documentada.
+4. Semântica de `nt_type` confirmada na documentação do produto/fontes primárias antes de qualquer mapeamento para sinal.
+5. Para cada tipo sem evidência suficiente, manter sinal/dinâmica como desconhecidos e não simular uma inibição inventada.
+
+A execução CI desta subetapa ainda precisa ser inspecionada. Até essa inspeção, a Fase 7 está **em andamento**, não concluída.
