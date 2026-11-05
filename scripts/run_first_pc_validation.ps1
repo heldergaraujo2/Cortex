@@ -9,6 +9,19 @@ if ($CurrentBranch -ne $ExpectedBranch) {
     throw "Branch incorreta: '$CurrentBranch'. Mude para '$ExpectedBranch' antes de executar."
 }
 
+git diff --quiet
+if ($LASTEXITCODE -ne 0) { throw "Há alterações locais não commitadas. Preserve-as e revise o git status antes de testar." }
+git diff --cached --quiet
+if ($LASTEXITCODE -ne 0) { throw "Há alterações staged locais. Preserve-as e revise o git status antes de testar." }
+
+git fetch origin
+if ($LASTEXITCODE -ne 0) { throw "Falha em git fetch origin." }
+$LocalSha = (git rev-parse HEAD).Trim()
+$RemoteSha = (git rev-parse "origin/$ExpectedBranch").Trim()
+if ($LocalSha -ne $RemoteSha) {
+    throw "A branch local não está sincronizada com origin/$ExpectedBranch. Execute git pull --ff-only e rode novamente."
+}
+
 $RequiredFiles = @(
     "data/raw/fafb_v783/consolidated_cell_types.csv.gz",
     "data/raw/fafb_v783/connections_princeton.csv.gz",
