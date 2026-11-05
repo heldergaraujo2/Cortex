@@ -28,6 +28,7 @@ class CoordinateRecord:
     z: float
     sample_count: int
     bbox_diagonal: float
+    duplicate_rows_ignored: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,7 +45,8 @@ def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
     """Aggregate repeated supervoxel positions per root ID using per-axis medians."""
     source = Path(path)
     samples_by_root: dict[str, list[tuple[float, float, float]]] = defaultdict(list)
-    seen_root_supervoxels: set[tuple[str, str]] = set()
+    seen_root_supervoxels: dict[tuple[str, str], tuple[float, float, float]] = {}
+    duplicate_rows_by_root: Counter[str] = Counter()
     with gzip.open(source, "rt", encoding="utf-8-sig", newline="") as stream:
         reader = csv.DictReader(stream)
         required = {"root_id", "position", "supervoxel_id"}
@@ -56,11 +58,6 @@ def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
             if not root_id or not supervoxel_id:
                 raise ValueError(f"{source.name}:{line_number}: empty root_id/supervoxel_id")
             pair = (root_id, supervoxel_id)
-            if pair in seen_root_supervoxels:
-                raise ValueError(
-                    f"{source.name}:{line_number}: duplicate root_id/supervoxel_id {pair}"
-                )
-            seen_root_supervoxels.add(pair)
             values = re.findall(
                 r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?",
                 row.get("position") or "",
@@ -72,7 +69,18 @@ def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
             xyz = tuple(float(value) for value in values)
             if not all(math.isfinite(value) for value in xyz):
                 raise ValueError(f"{source.name}:{line_number}: non-finite position")
-            samples_by_root[root_id].append((xyz[0], xyz[1], xyz[2]))
+            point = (xyz[0], xyz[1], xyz[2])
+            previous = seen_root_supervoxels.get(pair)
+            if previous is not None:
+                if all(math.isclose(a, b, rel_tol=0.0, abs_tol=1e-9)
+                       for a, b in zip(previous, point)):
+                    duplicate_rows_by_root[root_id] += 1
+                    continue
+                raise ValueError(
+                    f"{source.name}:{line_number}: conflicting duplicate root_id/supervoxel_id {pair}"
+                )
+            seen_root_supervoxels[pair] = point
+            samples_by_root[root_id].append(point)
 
     result: dict[str, CoordinateRecord] = {}
     for root_id, points in samples_by_root.items():
@@ -83,7 +91,8 @@ def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
         )
         bbox_diagonal = math.sqrt(sum(value * value for value in ranges))
         result[root_id] = CoordinateRecord(
-            root_id, medians[0], medians[1], medians[2], len(points), bbox_diagonal
+            root_id, medians[0], medians[1], medians[2], len(points), bbox_diagonal,
+            duplicate_rows_by_root[root_id],
         )
     return result
 
@@ -267,7 +276,15 @@ def audit_coordinate_to_column_mapping(
         "dataset": "FlyWire FAFB v783",
         "coordinate_source": coordinates_file.name,
         "coordinate_file_sha256": hashlib.sha256(coordinates_file.read_bytes()).hexdigest(),
-        "coordinate_rows": sum(record.sample_count for record in coordinates.values()),
+        "coordinate_rows": sum(
+            record.sample_count + record.duplicate_rows_ignored for record in coordinates.values()
+        ),
+        "unique_supervoxel_position_rows": sum(
+            record.sample_count for record in coordinates.values()
+        ),
+        "exact_duplicate_supervoxel_rows_ignored": sum(
+            record.duplicate_rows_ignored for record in coordinates.values()
+        ),
         "unique_coordinate_root_ids": len(coordinates),
         "coordinate_root_ids_with_multiple_samples": sum(
             record.sample_count > 1 for record in coordinates.values()
