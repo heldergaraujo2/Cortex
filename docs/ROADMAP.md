@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** Fase 1 — bootstrap remoto concluído; Fase 2 — seleção do circuito e desenho experimental concluídos; Fase 3 — importação estrutural do subgrafo piloto concluída e validada por GitHub Actions; Fase 4 — validação espacial/colunar e desenho da primeira baseline dinâmica por iniciar.  
+**Status global:** Fases 1–3 concluídas no escopo documentado. Marco experimental FAFB: Fase 4 espacial/colunar concluída com dados reais em 2026-11-04; Fase 5 baseline dinâmica estrutural v0 implementada na branch de trabalho, aguardando CI e leitura dos resultados reais ME_L/ME_R. Ver aditivo no final e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -501,3 +501,22 @@ A Fase 3 começa com a aquisição autorizada dos produtos mínimos, verificaç�
 - IDs e subtipos preservados; unidades e regras de agregação documentadas.
 - Baseline sintética reproduzível, com testes e métricas definidos antes de interpretar resultados.
 - Nenhuma afirmação de seletividade direcional sem comparação adequada e validação espacial.
+
+
+## Aditivo de execução experimental FAFB — 2026-11-04
+
+Este aditivo acompanha o fluxo de trabalho do piloto L1/Mi1/Tm3/T4 e não renumera as fases arquiteturais gerais descritas acima.
+
+### Marco espacial concluído (Fase 4 do piloto)
+
+O arquivo real `column_assignment.csv.gz` foi adicionado à branch de dados. O workflow FAFB v783 Data Validation #36 terminou com sucesso e publicou relatório real. Foram lidos 45.528 registros/IDs únicos, sem root IDs não mapeados; 1.581 pares hemisfério/coluna (785 left, 796 right). Dos 11.355 IDs piloto, 10.637 têm atribuição; 718 não têm. A cobertura por tipo e o SHA-256 constam em docs/CONTINUIDADE.md, seção 7.14.
+
+A conclusão limita-se à integridade, correspondência de IDs e cobertura. Não estabelece unidades/projeção de x/y, vizinhança retinotópica, seletividade direcional ou completude biológica.
+
+### Fase 5 do piloto — baseline rate-based v0
+
+Foi implementada uma atualização abstrata determinística, síncrona e limitada a [0,1], com entradas L1 e readout T4. Uma execução usa um único neuropilo. Pesos são normalizados a partir de syn_count dentro desse neuropilo; a interpretação é explicitamente uma hipótese de engenharia. Plasticidade e sinais de neurotransmissores não são modelados.
+
+Experimentos definidos: pulso ON sintético, controlo sem estímulo e ablações separadas de Mi1/Tm3. Métricas: série temporal média T4, pico e curvas por subtipo. O modelo não usa geometria espacial nem testa movimento ou seletividade direcional.
+
+Critérios para fechar este gate: testes sintéticos passam; CI executa em Python 3.11–3.13; workflows reais ME_L e ME_R terminam; artefatos mostram relatórios completos, configuração e proveniência; o controlo sem estímulo permanece nulo e o pulso produz resposta quando existem caminhos elegíveis. Resultados negativos devem ser mantidos e explicados, nunca corrigidos por ajuste retroativo.
