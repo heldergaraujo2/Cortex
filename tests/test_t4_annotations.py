@@ -50,8 +50,9 @@ def test_audit_compares_edge_and_neuron_predictions_without_signing(tmp_path):
     assert report["candidate_input_edge_rows"] == 5
     assert report["edge_rows_with_presynaptic_annotation"] == 5
     assert report["edge_rows_missing_presynaptic_annotation"] == 0
-    assert report["by_presynaptic_primary_type"][0]["edge_vs_neuron_prediction_match_rows"] == 1
-    assert report["by_presynaptic_primary_type"][0]["edge_vs_neuron_prediction_mismatch_rows"] == 1
+    mi1 = next(row for row in report["by_presynaptic_primary_type"] if row["presynaptic_primary_type"] == "Mi1")
+    assert mi1["edge_vs_neuron_prediction_match_rows"] == 1
+    assert mi1["edge_vs_neuron_prediction_mismatch_rows"] == 1
     assert report["nt_type_verified_available_in_product"] is False
     assert report["synaptic_sign_assigned"] is False
 
