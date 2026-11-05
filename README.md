@@ -51,3 +51,8 @@ A auditoria e a importação estrutural real da Fase 7 preservaram 53.284 linhas
 **Limites atuais:** o modelo não representa ainda inibição fisiológica calibrada, atrasos biológicos, dinâmica de membrana, plasticidade, aprendizagem ou seletividade direcional validada. Os índices de assimetria dos experimentos anteriores são diagnósticos de engenharia, não DSI biológico. `syn_count` é uma medida estrutural e `nt_type` não deve ser convertido em sinal funcional sem validação da semântica e da cobertura.
 
 O fluxo atual é GitHub-first. A validação local Windows e o profiling no hardware do responsável foram adiados até que sejam tecnicamente necessários. A branch experimental `data/fafb-v783-inputs` permanece separada de `main`; não integrar sem revisão e decisão explícita.
+
+
+## Proveniência dos dados
+
+A origem, checksums, licença e referências dos produtos FAFB v783 estão documentados em `docs/DATA_PROVENANCE.md`. Os dados públicos FlyWire v783 são CC BY-NC 4.0; respeitar atribuição e uso não comercial.
