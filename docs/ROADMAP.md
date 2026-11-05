@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** o fluxo estrutural/espacial FAFB e o diagnóstico espaço-temporal foram validados no GitHub. A auditoria real da Fase 7 leu 5.342.446 linhas de conectividade e encontrou 53.284 linhas candidatas de entradas para T4; o workflow #82 terminou com sucesso. Cortex CI #122 passou com 65 testes em Python 3.11–3.13. Próxima subetapa: modelo T4 assinado experimental, mantendo sinais e atrasos por aresta sob controle de evidência. Estratégia GitHub-first; testes locais Windows adiados até necessidade técnica. Não foi demonstrada seletividade direcional biológica. Ver aditivo e docs/CONTINUIDADE.md.  
+**Status global:** o fluxo estrutural/espacial FAFB e o diagnóstico espaço-temporal foram validados no GitHub. A auditoria T4 #82 encontrou 53.284 linhas candidatas. O protótipo sintético de integração assinada foi implementado; CI #130 aprovou 73 testes em Python 3.11–3.13 e executou o demo CLI. A assimetria 0,236258 é apenas sintética, não DSI biológico. Próxima subetapa: ligar o modelo às arestas reais e validar sinais/cobertura sem alterar o baseline v0. Estratégia GitHub-first; testes locais adiados até necessidade técnica. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -586,3 +586,28 @@ O relatório separa cada combinação de tipo pré/pós, neuropilo e `nt_type`. 
 A execução real foi concluída no FAFB Data Validation #82 (run `41948702974`), com artefato `fafb-v783-validation-report` ID `13380560010`. Foram observadas 53.284 linhas candidatas de entradas para T4 em todos os neuropilos, das quais 52.560 em ME_L/ME_R. Os rótulos `nt_type` totalizaram ACH 31.333, GABA 17.098 e GLUT 4.853 linhas; o relatório completo e as contagens por classe/região estão em `docs/FASE_7_AUDITORIA_INPUTS_T4.md`.
 
 A Cortex CI #122 passou com 65 testes em Python 3.11, 3.12 e 3.13. Esta subetapa de auditoria está concluída; a Fase 7 permanece **em andamento** até o modelo assinado, seus controlos e as análises de sensibilidade serem implementados e validados.
+
+
+## Aditivo — protótipo sintético de integração assinada T4 (2026-11-05)
+
+Foi criado `cortex/t4_mechanism.py` como módulo separado da baseline rate-based v0. O modelo distingue:
+- polaridade da resposta do neurónio pré-sináptico;
+- sinal do efeito pós-sináptico;
+- offset espacial sintético;
+- filtro temporal, atraso abstrato e ganho.
+
+A configuração exploratória inclui um braço ACH rápido Mi1/Tm3, um braço GABA lento Mi4/C3/CT1/TmY15 e um braço Mi9 glutamatérgico inibitório cuja resposta OFF produz desinibição perante estímulo ON. Os valores de offset, tau, atraso e ganho são hipóteses de engenharia, não medidas FAFB nem parâmetros biológicos calibrados.
+
+### Resultado de demonstração sintética
+- Sweep direto: integral 2,107407.
+- Sweep inverso: integral 1,301926.
+- Assimetria sintética: 0,236258.
+- Controlo sem estímulo: zero.
+- Braço excitatório isolado/simétrico: assimetria zero.
+
+O índice não é DSI, não identifica PD/ND e não usa posições reais dos neurónios. O demo CLI é executado na CI.
+
+### Validação
+Cortex CI #130 passou com 73 testes em cada versão Python 3.11, 3.12 e 3.13. O comando `python scripts/run_t4_mechanism_demo.py --output t4_mechanism_demo.json` também foi executado em todas as três versões, produzindo os mesmos valores.
+
+**Estado da Fase 7:** em andamento. Próxima tarefa: preservar e importar as arestas reais dos tipos candidatos, diferenciar `nt_type` previsto de `nt_type_verified`, mapear cobertura/posições quando disponíveis e construir experimentos reais com ablações. Não alegar seletividade biológica antes de validar os dados e o mapeamento PD/ND.
