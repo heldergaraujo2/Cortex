@@ -3,8 +3,8 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-11-05  
-**Versão:** 2.2 — auditoria FAFB T4 concluída e protótipo sintético de integração assinada implementado  
-**Estado geral:** a auditoria real FAFB encontrou 53.284 linhas candidatas de inputs T4; o workflow #82 terminou com sucesso. Foi implementado um protótipo sintético de três braços (excitação ACH, inibição GABA e desinibição Mi9), com atraso/filtros configuráveis. Cortex CI #130 aprovou 73 testes em Python 3.11–3.13 e executou o demo CLI em todas as versões; assimetria sintética = 0,236258, sem alegação de DSI biológico. O modelo ainda não consome arestas reais nem posições celulares FAFB. Relatórios: `docs/FASE_7_AUDITORIA_INPUTS_T4.md` e `docs/FASE_7_MODELO_T4_ASSINADO.md`.  
+**Versão:** 2.3 — importador estrutural de 53.284 arestas T4 validado com dados reais  
+**Estado geral:** a auditoria e o importador T4 foram executados com sucesso no FAFB v783 (#82 e #99). O importador preserva 53.284 linhas, 7.028 IDs pré-sinápticos, 6.236 IDs T4 e 143 grupos tipo/neuropilo/nt_type sem atribuir sinal. O protótipo sintético T4 continua separado da baseline v0. Cortex CI #137 aprovou 81 testes em Python 3.11–3.13 e executou o demo em todas as versões. A assimetria 0,236258 é sintética, não DSI biológico. Próximo gate: obter anotações verificadas e mapear a geometria das classes adicionais. Relatórios: `docs/FASE_7_AUDITORIA_INPUTS_T4.md` e `docs/FASE_7_MODELO_T4_ASSINADO.md`.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; testes e experimentos remotos primeiro. PC reservado para profiling, validação Windows ou quando houver necessidade concreta.  
@@ -233,6 +233,17 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 - **Documento:** `docs/FASE_7_MODELO_T4_ASSINADO.md`.
 - **Conclusão:** protótipo computacional sintético validado; mecanismo biológico, parâmetros fisiológicos, posições de inputs e seletividade direcional real continuam não demonstrados.
 
+## 7.22 Fase 7 — importação estrutural das arestas reais T4 (2026-11-05)
+
+- **Implementação:** `cortex/t4_inputs.py`, `tests/test_t4_inputs.py` e `scripts/import_t4_input_edges.py`.
+- **Preservação:** importa linhas dirigidas de Mi1/Tm3/Mi4/Mi9/C3/TmY15/CT1 para T4a–T4d, preservando IDs, neuropilo, `syn_count` e `nt_type`; não deduplica nem atribui sinal.
+- **Execução real:** FAFB Data Validation #99, run `41949691726`, sucesso; artefato ID `13381150256`, contendo `fafb_v783_t4_input_edges.json`.
+- **Resultado:** 53.284 linhas; 7.028 IDs pré-sinápticos distintos; 6.236 IDs T4 pós-sinápticos; 143 grupos. Linhas por neuropilo: ME_L 25.904; ME_R 26.656; LOP_L 245; LOP_R 368; LO_L 60; LO_R 47; AME_L 3; UNASGD 1.
+- **CI:** #135 e #137 passaram com 81 testes em Python 3.11, 3.12 e 3.13. #137 executou também o demo sintético T4 em todas as versões.
+- **Limite crítico:** o CSV consolidado de tipos contém somente `root_id`, `primary_type`, `additional_type(s)`; o CSV de conexões contém `nt_type`, não `nt_type_verified`. A documentação Codex diferencia previsão e verificação curada. Não existe base no snapshot atual para assinar cada aresta como fisiologicamente excitatória/inibitória.
+- **Conclusão:** importação estrutural real confirmada; sinal por aresta, eficácia, atrasos e geometria funcional continuam não resolvidos.
+- **Próxima subetapa:** obter uma fonte de neurotransmissores verificados e mapear espacialmente os candidatos pré-sinápticos; depois criar perfis estruturais por alvo T4 e integrar ao modelo sem alterar baseline v0.
+
 ## 8. Estratégia de execução atual — GitHub-first
 
 O responsável decidiu adiar o primeiro teste local no Windows e continuar o desenvolvimento no GitHub. Esta decisão é compatível com as tarefas atuais: a CI executa testes automatizados e os workflows podem processar os arquivos FAFB já presentes na branch.
@@ -245,11 +256,11 @@ O responsável decidiu adiar o primeiro teste local no Windows e continuar o des
 5. Fazer o primeiro teste local quando houver profiling, necessidade de bibliotecas específicas, limite de runner, validação Windows ou uma comparação de desempenho que não possa ser feita remotamente.
 
 ### Próximo gate remoto
-- Ampliar o importador num módulo separado para preservar IDs e arestas reais de Mi1/Tm3/Mi4/Mi9/C3/TmY15/CT1 para T4, sem alterar a baseline v0.
-- Distinguir rótulos `nt_type` previstos de anotações `nt_type_verified` curadas; não mapear rótulos mistos diretamente para sinal funcional por aresta.
-- Investigar cobertura espacial das classes adicionais e caminhos pré-sinápticos; manter offsets e atrasos desconhecidos quando não houver dados.
-- Executar ablações e sensibilidade com as arestas reais e comparar ME_L/ME_R.
-- Não calcular DSI biológico antes de validar a orientação local de T4, estímulo e readout PD/ND.
+- Procurar/obter produto FAFB v783 com `nt_type_verified` ou fonte curada equivalente; os CSVs atualmente versionados não contêm esse campo.
+- Investigar a geometria dos 7.028 IDs pré-sinápticos candidatos usando coordenadas e fontes de coluna validadas; não inferir p/q de coordenadas brutas sem transformação documentada.
+- Construir perfis estruturais por T4-alvo/subtipo, mantendo separação por neuropilo e rótulo.
+- Integrar ao modelo apenas sinais sustentados por evidência; manter demais arestas como sinal desconhecido.
+- Executar ablações/sensibilidade e comparar ME_L/ME_R; não calcular DSI biológico sem mapear PD/ND.
 
 ## 9. Formato obrigatório para atualizações futuras
 
