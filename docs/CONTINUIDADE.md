@@ -642,3 +642,5 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **CONFIRMADO:** CI #189 aprovado em três versões de Python; scripts públicos referenciam os objetos RData e usam centros M10 de Mi1 para construir a referência anatômica.
 - **DESCONHECIDO:** dimensões, alinhamento dos índices, IDs CATMAID por Mi1, cobertura dos 780 neurônios e crosswalk para FAFB v783.
 - **Próximo gate:** obter os RData sem perda, inspecionar estrutura/rownames/listas e produzir inventário de identidade reproduzível. Só depois executar crosswalk CATMAID→FlyWire e validar correspondência de snapshot.
+
+- **Refinamento de evidência no código dos autores:** `Fig_2_EM.R` indexa `Mi1_M10_xyz` por `Mi1_neu_ind[match(anno_Mi1_DRA$skid, anno_Mi1$skid)]`; `proc_eyemap.R` carrega `Mi1_M10_xyz` de `neu_Mi1.RData`. Isso confirma que o código usa uma cadeia explícita CATMAID `skid` → índice local → linha de coordenada M10 para as anotações mostradas. Cobertura total, unicidade e crosswalk para FAFB v783 continuam desconhecidos. Detalhamento atualizado em `docs/FASE_8_REFERENCIA_ESPACIAL_M1.md`.
