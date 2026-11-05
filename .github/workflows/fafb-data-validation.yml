@@ -10,6 +10,7 @@ on:
       - "cortex/visual_stimuli.py"
       - "cortex/t4_inputs.py"
       - "cortex/t4_annotations.py"
+      - "cortex/t4_profiles.py"
       - "scripts/inspect_fafb_data.py"
       - "scripts/import_fafb_pilot.py"
       - "scripts/inspect_fafb_columns.py"
@@ -18,9 +19,11 @@ on:
       - "scripts/audit_t4_inputs.py"
       - "scripts/import_t4_input_edges.py"
       - "scripts/audit_t4_neuron_annotations.py"
+      - "scripts/summarize_t4_target_profiles.py"
       - "tests/test_t4_input_audit.py"
       - "tests/test_t4_inputs.py"
       - "tests/test_t4_annotations.py"
+      - "tests/test_t4_profiles.py"
       - "tests/test_connectome.py"
       - "tests/test_spatial.py"
       - "tests/test_dynamics.py"
@@ -79,6 +82,12 @@ jobs:
           python scripts/audit_t4_neuron_annotations.py
           --data-dir data/raw/fafb_v783
           --output fafb_v783_t4_neuron_annotations.json
+      - name: Build T4 target profiles from real edges and column assignments
+        run: >-
+          python scripts/summarize_t4_target_profiles.py
+          --data-dir data/raw/fafb_v783
+          --column-file data/raw/fafb_v783/column_assignment.csv.gz
+          --output fafb_v783_t4_target_profiles.json
       - name: Run structural and spatial unit tests
         run: python -m pytest -q
       - name: Run deterministic baseline for ME_L
@@ -121,4 +130,5 @@ jobs:
             fafb_v783_t4_input_audit.json
             fafb_v783_t4_input_edges.json
             fafb_v783_t4_neuron_annotations.json
+            fafb_v783_t4_target_profiles.json
           if-no-files-found: warn
