@@ -11,10 +11,10 @@ import gzip
 import hashlib
 import math
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from statistics import mean
+from statistics import mean, median
 from typing import Iterable
 
 from cortex.spatial import ColumnAssignment
@@ -26,6 +26,8 @@ class CoordinateRecord:
     x: float
     y: float
     z: float
+    sample_count: int
+    bbox_diagonal: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,20 +41,30 @@ class MappingSample:
 
 
 def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
+    """Aggregate repeated supervoxel positions per root ID using per-axis medians."""
     source = Path(path)
-    result: dict[str, CoordinateRecord] = {}
+    samples_by_root: dict[str, list[tuple[float, float, float]]] = defaultdict(list)
+    seen_root_supervoxels: set[tuple[str, str]] = set()
     with gzip.open(source, "rt", encoding="utf-8-sig", newline="") as stream:
         reader = csv.DictReader(stream)
-        required = {"root_id", "position"}
+        required = {"root_id", "position", "supervoxel_id"}
         if not reader.fieldnames or not required.issubset(reader.fieldnames):
             raise ValueError(f"{source.name}: expected columns {sorted(required)}")
         for line_number, row in enumerate(reader, start=2):
             root_id = (row.get("root_id") or "").strip()
-            if not root_id:
-                raise ValueError(f"{source.name}:{line_number}: empty root_id")
-            if root_id in result:
-                raise ValueError(f"{source.name}:{line_number}: duplicate root_id {root_id}")
-            values = re.findall(r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?", row.get("position") or "")
+            supervoxel_id = (row.get("supervoxel_id") or "").strip()
+            if not root_id or not supervoxel_id:
+                raise ValueError(f"{source.name}:{line_number}: empty root_id/supervoxel_id")
+            pair = (root_id, supervoxel_id)
+            if pair in seen_root_supervoxels:
+                raise ValueError(
+                    f"{source.name}:{line_number}: duplicate root_id/supervoxel_id {pair}"
+                )
+            seen_root_supervoxels.add(pair)
+            values = re.findall(
+                r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?",
+                row.get("position") or "",
+            )
             if len(values) != 3:
                 raise ValueError(
                     f"{source.name}:{line_number}: expected 3D position, got {row.get('position')!r}"
@@ -60,7 +72,19 @@ def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
             xyz = tuple(float(value) for value in values)
             if not all(math.isfinite(value) for value in xyz):
                 raise ValueError(f"{source.name}:{line_number}: non-finite position")
-            result[root_id] = CoordinateRecord(root_id, xyz[0], xyz[1], xyz[2])
+            samples_by_root[root_id].append((xyz[0], xyz[1], xyz[2]))
+
+    result: dict[str, CoordinateRecord] = {}
+    for root_id, points in samples_by_root.items():
+        medians = tuple(median(point[axis] for point in points) for axis in range(3))
+        ranges = tuple(
+            max(point[axis] for point in points) - min(point[axis] for point in points)
+            for axis in range(3)
+        )
+        bbox_diagonal = math.sqrt(sum(value * value for value in ranges))
+        result[root_id] = CoordinateRecord(
+            root_id, medians[0], medians[1], medians[2], len(points), bbox_diagonal
+        )
     return result
 
 
@@ -243,7 +267,27 @@ def audit_coordinate_to_column_mapping(
         "dataset": "FlyWire FAFB v783",
         "coordinate_source": coordinates_file.name,
         "coordinate_file_sha256": hashlib.sha256(coordinates_file.read_bytes()).hexdigest(),
-        "coordinate_rows": len(coordinates),
+        "coordinate_rows": sum(record.sample_count for record in coordinates.values()),
+        "unique_coordinate_root_ids": len(coordinates),
+        "coordinate_root_ids_with_multiple_samples": sum(
+            record.sample_count > 1 for record in coordinates.values()
+        ),
+        "maximum_coordinate_samples_per_root": max(
+            (record.sample_count for record in coordinates.values()), default=0
+        ),
+        "mean_coordinate_samples_per_root": mean(
+            record.sample_count for record in coordinates.values()
+        ) if coordinates else None,
+        "median_coordinate_samples_per_root": median(
+            record.sample_count for record in coordinates.values()
+        ) if coordinates else None,
+        "maximum_coordinate_bbox_diagonal": max(
+            (record.bbox_diagonal for record in coordinates.values()), default=0.0
+        ),
+        "coordinate_aggregation_method": (
+            "per-axis median of supplied supervoxel positions sharing the same root_id; "
+            "not interpreted as soma or arborization centroid"
+        ),
         "column_assignment_rows": len(assignment_rows),
         "assignment_rows_with_coordinates": len(samples),
         "assignment_rows_missing_coordinates": len(missing_coordinate_ids),
