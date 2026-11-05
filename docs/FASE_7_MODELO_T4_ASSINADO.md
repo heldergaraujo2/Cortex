@@ -72,21 +72,25 @@ A suíte cobre:
 
 A execução do CLI foi adicionada ao workflow CI #130; seu resultado ainda deve ser inspecionado antes de encerrar este gate.
 
-## 6. Integração estrutural real concluída e próximo desenvolvimento
+## 6. Integração estrutural e auditoria das previsões concluídas
 
-O importador separado já existe em `cortex/t4_inputs.py`; `scripts/import_t4_input_edges.py` preserva as 53.284 linhas candidatas, 7.028 IDs pré-sinápticos, 6.236 IDs T4 pós-sinápticos e 143 grupos por tipo/neuropilo/rótulo. O workflow FAFB #99 executou a importação sobre os dados reais e terminou com sucesso. O relatório `fafb_v783_t4_input_edges.json` está no artefato do workflow.
+O importador separado `cortex/t4_inputs.py` preserva as 53.284 linhas candidatas, 7.028 IDs pré-sinápticos, 6.236 IDs T4 e 143 grupos por tipo/neuropilo/rótulo. O workflow FAFB #99 executou a importação sobre os dados reais e terminou com sucesso.
 
-A suíte CI #137 passou com 81 testes em Python 3.11, 3.12 e 3.13; o demo sintético também foi executado nas três versões.
+Também foi obtido em CI o produto público `neurons.csv.gz` do snapshot 783. O módulo `cortex/t4_annotations.py` compara as previsões por neurónio com os rótulos das linhas de conexão:
+- 7.028/7.028 IDs pré-sinápticos encontrados.
+- 50.630 linhas têm previsão não vazia; 2.654 linhas correspondem a neurónios sem rótulo.
+- Zero divergências entre rótulos não vazios por neurónio e rótulos da conexão.
+- Mi9 é o caso menos robusto: 3.700 linhas GLUT, 544 GABA, 2 ACH e 1.434 sem rótulo; score mediano 0,58.
 
-Próximos passos:
-1. Obter um produto de anotações que inclua `nt_type_verified` ou outra fonte curada equivalente; os três CSVs atuais não incluem esse campo.
-2. Mapear os 7.028 IDs pré-sinápticos à geometria/colunas, sem inferir coluna a partir de coordenadas brutas sem transformação validada.
-3. Construir perfis estruturais por T4-alvo e por subtipo, mantendo as arestas sem sinal quando a evidência não for suficiente.
-4. Integrar apenas as conexões com evidência de sinal suficiente ao modelo experimental, sem alterar a baseline v0.
-5. Depois fazer ablações, sensibilidade e comparações ME_L/ME_R com dados reais; só calcular DSI após mapear PD/ND.
+Esta concordância é apenas consistência interna dos produtos Codex, não validação independente. O ficheiro contém `nt_type` previsto e `nt_type_score`, mas não `nt_type_verified`. Nenhuma aresta recebeu sinal fisiológico confirmado.
 
-## 7. Fontes
+O workflow FAFB #110 terminou com sucesso e publicou `fafb_v783_t4_neuron_annotations.json`. A suíte Cortex CI #148 aprovou 86 testes em Python 3.11, 3.12 e 3.13; a execução do teste adicional para rótulo vazio ainda precisa de ser confirmada numa CI que inclua a última atualização de testes.
 
-- Shinomiya et al. (2017), *The comprehensive connectome of a neural substrate for ‘ON’ motion detection in Drosophila*, eLife: https://elifesciences.org/articles/24394.
-- Gruntman, Romani & Reiser (2018), *Simple integration of fast excitation and offset, delayed inhibition computes directional selectivity in Drosophila*, Nature Neuroscience: https://www.nature.com/articles/s41593-017-0046-4.
-- FlyWire Codex FAQ: https://codex.flywire.ai/faq — diferencia `nt_type` previsto de `nt_type_verified` curado.
+### Próximos passos
+1. Confirmar na próxima CI a cobertura do teste de rótulo vazio e manter a suíte verde.
+2. Construir perfis estruturais por T4-alvo/subtipo, separando neuropilo, tipo pré-sináptico, `nt_type`, score e `syn_count`.
+3. Juntar os alvos T4 à `column_assignment` existente; investigar coordenadas e uma fonte de coluna validada para os 7.028 IDs pré-sinápticos adicionais. Não inferir p/q diretamente de coordenadas brutas.
+4. Investigar uma fonte independente/curada para neurotransmissores verificados e receptores pós-sinápticos. O dump Codex v783 disponível não contém `nt_type_verified`.
+5. Só então construir canais assinados derivados dos dados, mantendo desconhecidos os casos de baixa confiança ou sem evidência.
+6. Executar ablações e sensibilidade ME_L/ME_R sem alterar a baseline v0; DSI biológico continua bloqueado até validar orientação e PD/ND.
+
