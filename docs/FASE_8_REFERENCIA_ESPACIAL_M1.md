@@ -149,3 +149,17 @@ Rscript D:\Cortex\scripts\inspect_mi1_reference.R `
 ```
 
 Ajustar os caminhos locais conforme necessário. O script não chama `source()`, não executa os scripts de figura, não grava nos arquivos de origem e não faz chamadas à CATMAID/FlyWire. A saída descreve apenas a cadeia de índices local do artigo; não constitui crosswalk para FAFB v783. A ferramenta foi adicionada ao branch, mas **ainda não foi executada contra os RData originais**, pois os bytes binários não puderam ser obtidos neste ambiente. Nenhum resultado quantitativo deve ser presumido antes dessa execução.
+
+
+## Atualização — dados de referência importados (2026-11-05)
+
+Os dois arquivos RData requeridos pelo Gate 8A agora estão versionados em `data/external/eyemap_T4/`:
+
+- `neu_Mi1.RData` — upstream Git blob SHA `ee941396f53e813b0e12d5a1fcc64abdfec321db`.
+- `Mi1_ind.RData` — upstream Git blob SHA `bc4933282664a84361c8318d8b4a1d54a728529a`.
+
+A importação foi executada pelo workflow [Import eyemap_T4 reference data](https://github.com/heldergaraujo2/Cortex/actions/runs/42048560799), que baixou os arquivos do repositório original e comparou `git hash-object` com os Git blob SHA publicados pelos autores. O workflow terminou com sucesso; portanto, a identidade byte a byte dos dois arquivos está verificada.
+
+A proveniência e a ressalva de licença estão em `data/external/eyemap_T4/README.md`. Os arquivos permanecem dados de terceiros. A licença específica dos arquivos não está separadamente indicada; preservar atribuição e restrição não comercial conservadoramente até confirmação dos autores.
+
+**Estado do Gate 8A:** os insumos agora estão disponíveis no repositório, mas o script R ainda precisa ser executado contra eles. Nenhuma contagem de neurônios, taxa de correspondência, cobertura ou conclusão anatômica é inferida apenas da importação.
