@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** Fase 1 — bootstrap remoto concluído; Fase 2 — seleção do circuito e desenho experimental concluídos; Fase 3 — aquisição e validação dos dados reais por iniciar (gate de acesso aos produtos).  
+**Status global:** auditoria, importação e perfis estruturais T4 validados (#82, #99, #110, #128): 53.284 arestas; 6.236 T4-alvos, dos quais 5.981 atribuídos a coluna/hemisfério; zero divergências de lado. CI #165 passou com 95 testes em Python 3.11–3.13. O dump não contém `nt_type_verified`; previsões não são validação biológica. Próxima subetapa: mapear espacialmente os candidatos pré-sinápticos e buscar evidência independente de sinal. Protótipo sintético não calibrado. Estratégia GitHub-first. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -113,6 +113,8 @@ O projeto não deve afirmar que reproduz a consciência, a inteligência geral o
 - Dados brutos grandes não são commitados inadvertidamente.
 
 ## Fase 3 — Importação, normalização e integridade do connectoma
+
+**Estado:** concluída para o subgrafo estrutural piloto. Os três produtos FAFB v783 foram validados, o importador produziu um manifesto reproduzível no GitHub Actions e os testes de integridade passaram. Isto não conclui a validação espacial/funcional nem significa que exista uma simulação neural.
 
 ### Objetivos
 - Construir um pipeline de importação robusto e testável, independente do simulador.
@@ -470,6 +472,199 @@ Entregáveis concluídos:
 - manifesto JSON, especificação tipada e testes adicionados;
 - três testes da especificação passaram no ambiente temporário de validação.
 
-Limite explícito: root IDs concretos, número real de células/arestas, cabeçalhos/tamanhos exatos dos produtos Codex e mapeamento espacial de colunas ainda não foram verificados. A FAQ oficial descreve downloads de produtos estáticos para usuários públicos, mas o exemplo de download programático inclui `api_token`. Esse token de API Codex é distinto do token CAVE/FlyWire usado para operações ao vivo/protegidas. O acesso interativo e os endpoints concretos ainda não foram testados com credenciais válidas. Não foi descarregado dado bruto.
+Limite explícito no momento em que esta nota histórica foi escrita: root IDs concretos, número real de células/arestas, cabeçalhos/tamanhos exatos e mapeamento espacial ainda não tinham sido verificados. A Fase 3 subsequente resolveu a aquisição e a validação estrutural, conforme `docs/SCIENTIFIC_SOURCES.md` e `docs/CONTINUIDADE.md`; a validação espacial/colunar continua pendente.
 
 A Fase 3 começa com a aquisição autorizada dos produtos mínimos, verificação dos metadados/licença/cabeçalhos e extração real do circuito. Se a correspondência espacial não estiver disponível no produto selecionado, a tarefa direcional deve ser reduzida a validação topológica até existir uma fonte adequada.
+
+
+## Fase 4 — Correspondência espacial/colunar e baseline dinâmica
+
+**Estado (2026-10-28): em andamento parcial.** O parser estrito, relatório de cobertura e testes sintéticos para `column_assignment.csv.gz` foram adicionados (`cortex/spatial.py`, `scripts/inspect_fafb_columns.py`, `tests/test_spatial.py`, `docs/VALIDACAO_ESPACIAL.md`). A inspeção mais recente da branch não encontrou o arquivo real; portanto, cobertura empírica, semântica dos campos e baseline continuam bloqueadas.
+
+### Objetivos
+- Verificar se o arquivo oficial `column_assignment.csv.gz` associa de forma rastreável os neurónios do piloto a colunas/posições visuais adequadas.
+- Documentar o significado e as unidades de `coordinates.position`; não inferir que a coordenada disponível é soma, centroide ou ponto funcional sem fonte.
+- Construir uma extração espacial pequena e rastreável que preserve os IDs, subtipos T4a–T4d, hemisfério/neuropilo quando disponível e proveniência.
+- Definir primeiro uma baseline sintética sem pretensão biológica e uma baseline topológica que não afirme seletividade direcional.
+- Só depois, se o mapeamento sustentar a tarefa, especificar dinâmica temporal, parâmetros, métricas e controlos.
+
+### Entregáveis
+- Relatório de cobertura espacial/colunar para L1, Mi1, Tm3 e T4a–T4d.
+- Regra de associação entre posições visuais, colunas e neurónios, com fonte e incertezas.
+- Fixture sintética pequena e testes da transformação espacial.
+- Especificação pré-registada para a primeira baseline dinâmica, incluindo parâmetros desconhecidos e controlos.
+
+### Critérios de saída
+- `column_assignment.csv.gz` real do snapshot v783 é presente, tem SHA-256/cabeçalho/linhas registrados e passa validação estrutural; fixtures sintéticas não contam como validação dos dados reais.
+- A cobertura real de L1, Mi1, Tm3 e T4a–T4d foi calculada e reportada, com IDs não mapeados e ausências explícitas.
+- O mapeamento de coluna está apoiado por colunas reais e fonte oficial, ou a tarefa é explicitamente reduzida a uma experiência topológica sem afirmação de movimento espacial.
+- IDs e subtipos preservados; unidades e regras de agregação documentadas.
+- Baseline sintética reproduzível, com testes e métricas definidos antes de interpretar resultados.
+- Nenhuma afirmação de seletividade direcional sem comparação adequada e validação espacial.
+
+
+## Aditivo de execução experimental FAFB — 2026-11-04
+
+Este aditivo acompanha o fluxo de trabalho do piloto L1/Mi1/Tm3/T4 e não renumera as fases arquiteturais gerais descritas acima.
+
+### Marco espacial concluído (Fase 4 do piloto)
+
+O arquivo real `column_assignment.csv.gz` foi adicionado à branch de dados. O workflow FAFB v783 Data Validation #36 terminou com sucesso e publicou relatório real. Foram lidos 45.528 registros/IDs únicos, sem root IDs não mapeados; 1.581 pares hemisfério/coluna (785 left, 796 right). Dos 11.355 IDs piloto, 10.637 têm atribuição; 718 não têm. A cobertura por tipo e o SHA-256 constam em docs/CONTINUIDADE.md, seção 7.14.
+
+A conclusão limita-se à integridade, correspondência de IDs e cobertura. Não estabelece unidades/projeção de x/y, vizinhança retinotópica, seletividade direcional ou completude biológica.
+
+### Fase 5 do piloto — baseline rate-based v0
+
+Foi implementada uma atualização abstrata determinística, síncrona e limitada a [0,1], com entradas L1 e readout T4. Uma execução usa um único neuropilo. Pesos são normalizados a partir de syn_count dentro desse neuropilo; a interpretação é explicitamente uma hipótese de engenharia. Plasticidade e sinais de neurotransmissores não são modelados.
+
+Experimentos definidos: pulso ON sintético, controlo sem estímulo e ablações separadas de Mi1/Tm3. Métricas: série temporal média T4, pico e curvas por subtipo. O modelo não usa geometria espacial nem testa movimento ou seletividade direcional.
+
+Critérios para fechar este gate: testes sintéticos passam; CI executa em Python 3.11–3.13; workflows reais ME_L e ME_R terminam; artefatos mostram relatórios completos, configuração e proveniência; o controlo sem estímulo permanece nulo e o pulso produz resposta quando existem caminhos elegíveis. Resultados negativos devem ser mantidos e explicados, nunca corrigidos por ajuste retroativo.
+
+
+## Aditivo — encerramento da baseline dinâmica FAFB v0 e próximo gate (2026-11-04)
+
+A Fase 5 do fluxo experimental do piloto foi concluída como baseline computacional estrutural mínima. O workflow FAFB Data Validation #48 executou os relatórios reais ME_L e ME_R com sucesso no commit `2868cd7046fd474bcb1cf7bc33dc818454fd9aa9`. A Cortex CI #86 aprovou 45 testes em cada versão Python 3.11, 3.12 e 3.13.
+
+Resultados, parâmetros, ablações e limitações estão em `docs/FASE_5_BASELINE_DINAMICA.md` e `docs/CONTINUIDADE.md` seção 7.16. O modelo usa pulso global em L1, propagação rate-based positiva e pesos estruturais normalizados por alvo dentro de um único neuropilo. A comparação de ablações mantém pesos e população T4 fixos.
+
+**Conclusão limitada:** a baseline demonstra que a implementação propaga uma entrada sintética por arestas do subgrafo e produz respostas determinísticas. A maior redução na ablação Mi1 é uma observação do modelo de engenharia, não prova de dominância biológica. Não há estímulo visual espacial, direção, plasticidade, sinal inibitório ou calibração fisiológica.
+
+### Fase 6 — preparação de experimento espaço-temporal direcional
+
+Antes de codificar direção:
+1. Verificar em fonte oficial a semântica, unidades, orientação e relação entre `p/q`, `column_id`, hemisfério e `x/y`; não assumir que os campos são intercambiáveis.
+2. Verificar se existe correspondência rastreável entre posições/colunas e tipos neuronais relevantes; manter explicitamente os 718 IDs piloto sem atribuição.
+3. Definir estímulos sintéticos espaço-temporais em duas direções opostas, flash estático e controlo sem estímulo, com energia total comparável.
+4. Confirmar em fontes científicas a interpretação direcional dos subtipos T4a–T4d antes de rotular qualquer saída como direção preferida.
+5. Comparar baseline sem espaço, baseline temporal simples e subgrafo conectômico; pré-definir métricas e ablações.
+6. Considerar entradas adicionais conhecidas de T4 que ficaram fora do piloto e quantificar a incompletude antes de alegações funcionais.
+
+**Critério de avanço:** só executar uma métrica de seletividade direcional quando orientação espacial e associação dos subtipos estiverem apoiadas por fonte verificável. Caso contrário, limitar a Fase 6 a validação espacial e resposta temporal não direcional.
+
+
+## Aditivo — Fase 6: malha medular e diagnóstico espaço-temporal (2026-11-04)
+
+A literatura primária de FAFB permite usar p/q como coordenadas discretas da malha hexagonal da medula. +p aponta anterodorsal, +q posterodorsal e +v dorsal; as projeções usadas para ordenar a frente são 2p-q, 2q-p e p+q. A malha da retina é invertida em relação à medula pelo quiasma, e o mapeamento para espaço visual exige um eye map. Portanto, o Cortex mantém o experimento em coordenadas da medula e não o chama de movimento no campo visual.
+
+Foi adicionado um gerador de frentes L1 para +p/−p, +q/−q e +v/−v. Em cada par, a direção oposta é uma reversão exata da mesma sequência, com a mesma energia de entrada. O relatório inclui flash global, ausência de estímulo, respostas T4 por subtipo e um índice de assimetria de engenharia (não DSI biológico). O workflow passa a executar os diagnósticos para ME_L e ME_R e publicar os relatórios.
+
+**Limite científico:** a rede atual não inclui entradas inibitórias Mi4/Mi9/C3/CT1, atrasos fisiológicos ou dinâmica de membrana. A literatura mostra que seletividade direcional requer deslocamento espacial, filtragem temporal assimétrica e interação não linear. Nenhuma direção preferida será atribuída globalmente a T4a–T4d nesta fase.
+
+**Próximo gate:** passar CI, examinar os dois relatórios e verificar os controles/energia/simetria. Os primeiros testes locais no PC só começam após este gate.
+
+
+### Revisão metodológica Fase 6 — readout bilateral corrigido (2026-11-05)
+
+A primeira execução real das frentes mostrou um erro de escopo: a entrada L1 era de um hemisfério, mas a média T4 incluía os dois. Os valores de resposta e assimetria do artefato #56 ficam supersedidos. O código agora restringe o readout T4 aos IDs explicitamente atribuídos ao mesmo hemisfério e reporta cobertura L1 global separadamente, sem inferir o lado dos neurónios sem atribuição. A nova CI e os relatórios corrigidos são obrigatórios antes de avançar para testes locais.
+
+
+## Gate de handoff — primeiro teste local adiado (GitHub-first, 2026-11-05)
+
+A Fase 6 foi validada no GitHub com execução real ME_L/ME_R e a CI de referência passou. O responsável decidiu adiar a validação local Windows e continuar o desenvolvimento remoto. O script `scripts/run_first_pc_validation.ps1` permanece disponível para quando houver necessidade de profiling, compatibilidade Windows, escala ou medição no hardware local. A ausência de teste local não bloqueia as próximas subetapas remotas, mas impede alegações de compatibilidade/desempenho no PC.
+
+
+## Aditivo — Fase 7: auditoria de evidências dos inputs T4 (2026-11-05)
+
+A Fase 7 começa com inventário dos dados, não com atribuição automática de sinais sinápticos. O script `scripts/audit_t4_inputs.py` analisa as anotações primárias e as linhas da tabela de conectividade para os candidatos Mi1, Tm3, Mi4, Mi9, C3, TmY15 e CT1 que terminam em T4a–T4d.
+
+O relatório separa cada combinação de tipo pré/pós, neuropilo e `nt_type`. O rótulo é preservado como dado observado no produto, sem convertê-lo automaticamente em excitação/inibição. `syn_count` permanece uma medida estrutural, não eficácia fisiológica.
+
+### Entregáveis implementados nesta subetapa
+- Auditoria real de cobertura dos tipos candidatos e das conexões para T4.
+- Contagens de linhas e soma de `syn_count` separadas por neuropilo e `nt_type`.
+- Testes sintéticos para cobertura, separação de neuropilos/rótulos, IDs duplicados e contagens inválidas.
+- Execução no workflow FAFB e publicação de `fafb_v783_t4_input_audit.json`.
+
+### Critério para avançar à modelagem
+1. CI aprovada em Python 3.11–3.13.
+2. Workflow real executado com os dados FAFB v783.
+3. Artefato examinado e cobertura dos tipos candidatos documentada.
+4. Semântica de `nt_type` confirmada na documentação do produto/fontes primárias antes de qualquer mapeamento para sinal.
+5. Para cada tipo sem evidência suficiente, manter sinal/dinâmica como desconhecidos e não simular uma inibição inventada.
+
+A execução real foi concluída no FAFB Data Validation #82 (run `41948702974`), com artefato `fafb-v783-validation-report` ID `13380560010`. Foram observadas 53.284 linhas candidatas de entradas para T4 em todos os neuropilos, das quais 52.560 em ME_L/ME_R. Os rótulos `nt_type` totalizaram ACH 31.333, GABA 17.098 e GLUT 4.853 linhas; o relatório completo e as contagens por classe/região estão em `docs/FASE_7_AUDITORIA_INPUTS_T4.md`.
+
+A Cortex CI #122 passou com 65 testes em Python 3.11, 3.12 e 3.13. Esta subetapa de auditoria está concluída; a Fase 7 permanece **em andamento** até o modelo assinado, seus controlos e as análises de sensibilidade serem implementados e validados.
+
+
+## Aditivo — protótipo sintético de integração assinada T4 (2026-11-05)
+
+Foi criado `cortex/t4_mechanism.py` como módulo separado da baseline rate-based v0. O modelo distingue:
+- polaridade da resposta do neurónio pré-sináptico;
+- sinal do efeito pós-sináptico;
+- offset espacial sintético;
+- filtro temporal, atraso abstrato e ganho.
+
+A configuração exploratória inclui um braço ACH rápido Mi1/Tm3, um braço GABA lento Mi4/C3/CT1/TmY15 e um braço Mi9 glutamatérgico inibitório cuja resposta OFF produz desinibição perante estímulo ON. Os valores de offset, tau, atraso e ganho são hipóteses de engenharia, não medidas FAFB nem parâmetros biológicos calibrados.
+
+### Resultado de demonstração sintética
+- Sweep direto: integral 2,107407.
+- Sweep inverso: integral 1,301926.
+- Assimetria sintética: 0,236258.
+- Controlo sem estímulo: zero.
+- Braço excitatório isolado/simétrico: assimetria zero.
+
+O índice não é DSI, não identifica PD/ND e não usa posições reais dos neurónios. O demo CLI é executado na CI.
+
+### Validação
+Cortex CI #130 passou com 73 testes em cada versão Python 3.11, 3.12 e 3.13. O comando `python scripts/run_t4_mechanism_demo.py --output t4_mechanism_demo.json` também foi executado em todas as três versões, produzindo os mesmos valores.
+
+**Estado da Fase 7:** em andamento. Próxima tarefa: preservar e importar as arestas reais dos tipos candidatos, diferenciar `nt_type` previsto de `nt_type_verified`, mapear cobertura/posições quando disponíveis e construir experimentos reais com ablações. Não alegar seletividade biológica antes de validar os dados e o mapeamento PD/ND.
+
+
+## Aditivo — importação estrutural real dos inputs T4 (2026-11-05)
+
+Foi adicionado o módulo `cortex/t4_inputs.py`, que preserva as linhas de conexão de Mi1/Tm3/Mi4/Mi9/C3/TmY15/CT1 para T4a–T4d, sem deduplicação e sem inferir sinal. O script `scripts/import_t4_input_edges.py` produz o relatório `fafb_v783_t4_input_edges.json`.
+
+### Validação com FAFB v783
+- Workflow FAFB Data Validation #99, run `41949691726`, sucesso.
+- Artefato ID `13381150256`; relatório de arestas incluído.
+- 53.284 linhas preservadas, igual ao total da auditoria independente.
+- 7.028 IDs pré-sinápticos distintos; 6.236 IDs T4 pós-sinápticos.
+- 143 grupos por tipo pré/pós, neuropilo e `nt_type`.
+- ME_L 25.904 linhas; ME_R 26.656; LOP_L 245; LOP_R 368; LO_L 60; LO_R 47; AME_L 3; UNASGD 1.
+
+### CI
+Cortex CI #137 passou com 81 testes em Python 3.11, 3.12 e 3.13 e executou `scripts/run_t4_mechanism_demo.py` nas três versões.
+
+### Próximo gate
+O CSV `consolidated_cell_types` versionado não contém `nt_type_verified`; o arquivo de conexões contém apenas `nt_type`. O Codex diferencia previsão e anotação verificada. O próximo trabalho é encontrar a fonte curada, mapear espacialmente os candidatos pré-sinápticos e construir perfis por T4-alvo. Até então, não atribuir sinal fisiológico confirmado por aresta.
+
+
+
+## Aditivo — previsões neuronais e confiança dos inputs T4 (2026-11-05)
+
+O workflow FAFB #110 baixou o produto público `neurons.csv.gz` do snapshot 783 (139.255 registos; SHA-256 `6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719`) e executou `scripts/audit_t4_neuron_annotations.py`. Cortex CI #155 aprovou 88 testes em Python 3.11, 3.12 e 3.13 e executou o demo sintético T4.
+
+Resultados:
+- 7.028/7.028 IDs pré-sinápticos candidatos mapeados.
+- 50.630 linhas de conexão com previsão `nt_type` não vazia.
+- 2.654 linhas com previsão vazia.
+- Zero divergências entre `nt_type` previsto do neurónio e o rótulo da linha de conexão para previsões não vazias.
+- Score mediano: C3 0,78; CT1 0,66; Mi1 0,63; Mi4 0,87; Mi9 0,58; Tm3 0,70; TmY15 0,81.
+
+Esta concordância é consistência interna entre dois campos Codex, não validação independente. O produto contém `nt_type` e `nt_type_score`, mas não `nt_type_verified`; não atribuir sinal fisiológico confirmado por aresta. Mi9 tem mistura de rótulos e 1.434 linhas sem previsão, exigindo investigação individual.
+
+Próxima tarefa:
+1. Gerar perfis estruturais por T4-alvo/subtipo.
+2. Associar os T4 à coluna/hemisfério já disponíveis.
+3. Encontrar transformação espacial validada ou outra fonte de coluna para os candidatos pré-sinápticos adicionais.
+4. Investigar fontes independentes/curadas para neurotransmissores e receptores.
+5. Só depois converter entradas sustentadas em sinais assinados e executar ablações/varreduras.
+
+
+
+## Aditivo — perfis estruturais por T4-alvo (2026-11-05)
+
+O FAFB Data Validation #128 executou `scripts/summarize_t4_target_profiles.py` e publicou `fafb_v783_t4_target_profiles.json`.
+
+- 6.236 alvos T4 com pelo menos uma aresta candidata.
+- 5.981 alvos com atribuição de coluna/hemisfério; 255 sem.
+- 51.387 linhas de aresta ligadas a alvo atribuído; 1.897 ligadas a alvo sem atribuição.
+- Zero divergências entre o sufixo hemisférico do neuropilo e o hemisfério atribuído ao alvo.
+- Cobertura: T4a 98,901%; T4b 99,070%; T4c 90,968%; T4d 95,475%.
+- 221 grupos agregados e 6.236 perfis individuais.
+- Cortex CI #165: 95 testes aprovados em Python 3.11, 3.12 e 3.13.
+
+A junção resolve a coluna/hemisfério do alvo T4, mas não a posição dos candidatos pré-sinápticos adicionais. Não usar posição do alvo como substituto de offset espacial do input. Próxima tarefa: validar transformação de coordenadas/morfologia para Mi4, Mi9, C3, CT1 e TmY15, mantendo incerteza explícita.

@@ -44,8 +44,15 @@ Esta arquitetura é uma decisão de planeamento, ainda não implementada nem val
 
 ## Estado atual
 
-O repositório já contém um scaffold Python mínimo, contratos tipados para mensagens entre instâncias, testes unitários e workflow de CI para Python 3.11–3.13. Isso ainda não é um simulador neural: não existe importador de connectoma, dinâmica neuronal, plasticidade nem memória coletiva implementada.
+O repositório contém um pipeline reproduzível para o subgrafo piloto do FlyWire FAFB v783, validação estrutural e espacial, um baseline determinístico rate-based e diagnósticos de frentes espaço-temporais sobre a malha medular p/q. Os workflows GitHub Actions executam testes e experimentos reais ME_L/ME_R; a última linha de base documentada aprovou 61 testes em Python 3.11, 3.12 e 3.13.
 
-O dataset selecionado para o primeiro protótipo é FlyWire FAFB v783 (cérebro adulto feminino completo, incluindo lobos ópticos; sem cordão nervoso), com licença pública CC BY-NC 4.0 e atribuição obrigatória. BANC v888 fica como possível extensão futura para circuitos cérebro–cordão nervoso. Nenhum dataset foi baixado; antes disso, serão verificados os metadados e os produtos concretos necessários para um circuito pequeno.
+A Fase 7 já audita e importa 53.284 arestas T4 e constrói 6.236 perfis estruturais por alvo, com 5.981 alvos atribuídos a coluna/hemisfério e zero divergências de lado. O produto `neurons.csv.gz` cobre todos os 7.028 IDs pré-sinápticos; 50.630 linhas têm previsão `nt_type` não vazia, 2.654 vazias e nenhuma divergência interna com o rótulo da aresta. Isso é consistência de previsões Codex, não validação biológica; o dump não inclui `nt_type_verified`. O protótipo sintético T4 permanece separado do baseline v0. Cortex CI #165 aprovou 95 testes em Python 3.11–3.13. Próximo passo: mapear espacialmente os candidatos pré-sinápticos. Relatórios: `docs/FASE_7_AUDITORIA_INPUTS_T4.md`, `docs/FASE_7_MODELO_T4_ASSINADO.md` e `docs/FASE_7_PERFIS_T4.md`.
 
-A auditoria do PC será feita quando a execução local for necessária para validar recursos reais; existe agora um diagnóstico de leitura apenas em `python -m cortex.diagnostics`, que não instala nada nem escreve arquivos.
+**Limites atuais:** o modelo não representa ainda inibição fisiológica calibrada, atrasos biológicos, dinâmica de membrana, plasticidade, aprendizagem ou seletividade direcional validada. Os índices de assimetria dos experimentos anteriores são diagnósticos de engenharia, não DSI biológico. `syn_count` é uma medida estrutural e `nt_type` não deve ser convertido em sinal funcional sem validação da semântica e da cobertura.
+
+O fluxo atual é GitHub-first. A validação local Windows e o profiling no hardware do responsável foram adiados até que sejam tecnicamente necessários. A branch experimental `data/fafb-v783-inputs` permanece separada de `main`; não integrar sem revisão e decisão explícita.
+
+
+## Proveniência dos dados
+
+A origem, checksums, licença e referências dos produtos FAFB v783 estão documentados em `docs/DATA_PROVENANCE.md`. Os dados públicos FlyWire v783 são CC BY-NC 4.0; respeitar atribuição e uso não comercial.

@@ -1,0 +1,145 @@
+name: FAFB v783 Data Validation
+
+on:
+  pull_request:
+    paths:
+      - "data/raw/fafb_v783/**"
+      - "cortex/connectome.py"
+      - "cortex/spatial.py"
+      - "cortex/dynamics.py"
+      - "cortex/visual_stimuli.py"
+      - "cortex/t4_inputs.py"
+      - "cortex/t4_annotations.py"
+      - "cortex/t4_profiles.py"
+      - "cortex/spatial_mapping.py"
+      - "scripts/inspect_fafb_data.py"
+      - "scripts/import_fafb_pilot.py"
+      - "scripts/inspect_fafb_columns.py"
+      - "scripts/run_fafb_baseline.py"
+      - "scripts/run_fafb_spatiotemporal.py"
+      - "scripts/audit_t4_inputs.py"
+      - "scripts/import_t4_input_edges.py"
+      - "scripts/audit_t4_neuron_annotations.py"
+      - "scripts/summarize_t4_target_profiles.py"
+      - "scripts/audit_spatial_coordinate_mapping.py"
+      - "tests/test_t4_input_audit.py"
+      - "tests/test_t4_inputs.py"
+      - "tests/test_t4_annotations.py"
+      - "tests/test_t4_profiles.py"
+      - "tests/test_spatial_mapping.py"
+      - "tests/test_connectome.py"
+      - "tests/test_spatial.py"
+      - "tests/test_dynamics.py"
+      - "tests/test_visual_stimuli.py"
+      - ".github/workflows/fafb-data-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Cortex package
+        run: python -m pip install '.[dev]'
+      - name: Inspect compressed CSV files
+        run: python scripts/inspect_fafb_data.py
+      - name: Import reduced pilot and build manifest
+        run: >-
+          python scripts/import_fafb_pilot.py
+          --data-dir data/raw/fafb_v783
+          --output fafb_v783_pilot_manifest.json
+      - name: Inspect visual column assignment when supplied
+        shell: bash
+        run: |
+          if [ -f data/raw/fafb_v783/column_assignment.csv.gz ]; then
+            python scripts/inspect_fafb_columns.py
+          else
+            echo "::warning::column_assignment.csv.gz is not in this branch; real-data spatial coverage remains pending."
+          fi
+      - name: Audit annotated candidate inputs to T4
+        run: >-
+          python scripts/audit_t4_inputs.py
+          --data-dir data/raw/fafb_v783
+          --output fafb_v783_t4_input_audit.json
+      - name: Import real candidate T4 input edges without assigning signs
+        run: >-
+          python scripts/import_t4_input_edges.py
+          --data-dir data/raw/fafb_v783
+          --output fafb_v783_t4_input_edges.json
+      - name: Download FAFB v783 per-neuron transmitter predictions
+        run: >-
+          curl --fail --location --retry 3
+          --output data/raw/fafb_v783/neurons.csv.gz
+          https://storage.googleapis.com/flywire-data/codex/data/fafb/783/neurons.csv.gz
+      - name: Audit neuron-level neurotransmitter predictions for T4 inputs
+        run: >-
+          python scripts/audit_t4_neuron_annotations.py
+          --data-dir data/raw/fafb_v783
+          --output fafb_v783_t4_neuron_annotations.json
+      - name: Build T4 target profiles from real edges and column assignments
+        run: >-
+          python scripts/summarize_t4_target_profiles.py
+          --data-dir data/raw/fafb_v783
+          --column-file data/raw/fafb_v783/column_assignment.csv.gz
+          --output fafb_v783_t4_target_profiles.json
+      - name: Audit coordinate-to-column mapping feasibility with leave-one-type-out hemisphere checks
+        run: >-
+          python scripts/audit_spatial_coordinate_mapping.py
+          --data-dir data/raw/fafb_v783
+          --column-file data/raw/fafb_v783/column_assignment.csv.gz
+          --coordinates-file data/raw/fafb_v783/coordinates.csv.gz
+          --output fafb_v783_coordinate_mapping_audit.json
+      - name: Run structural and spatial unit tests
+        run: python -m pytest -q
+      - name: Run deterministic baseline for ME_L
+        run: >-
+          python scripts/run_fafb_baseline.py
+          --data-dir data/raw/fafb_v783
+          --neuropil ME_L
+          --output fafb_v783_baseline_ME_L.json
+      - name: Run deterministic baseline for ME_R
+        run: >-
+          python scripts/run_fafb_baseline.py
+          --data-dir data/raw/fafb_v783
+          --neuropil ME_R
+          --output fafb_v783_baseline_ME_R.json
+      - name: Run paired medulla lattice stimulus diagnostics for ME_L
+        run: >-
+          python scripts/run_fafb_spatiotemporal.py
+          --data-dir data/raw/fafb_v783
+          --neuropil ME_L
+          --output fafb_v783_spatiotemporal_ME_L.json
+      - name: Run paired medulla lattice stimulus diagnostics for ME_R
+        run: >-
+          python scripts/run_fafb_spatiotemporal.py
+          --data-dir data/raw/fafb_v783
+          --neuropil ME_R
+          --output fafb_v783_spatiotemporal_ME_R.json
+      - name: Upload validation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fafb-v783-validation-report
+          path: |
+            fafb_v783_validation_report.json
+            fafb_v783_pilot_manifest.json
+            fafb_v783_column_assignment_report.json
+            fafb_v783_baseline_ME_L.json
+            fafb_v783_baseline_ME_R.json
+            fafb_v783_spatiotemporal_ME_L.json
+            fafb_v783_spatiotemporal_ME_R.json
+            fafb_v783_t4_input_audit.json
+            fafb_v783_t4_input_edges.json
+            fafb_v783_t4_neuron_annotations.json
+            fafb_v783_t4_target_profiles.json
+            fafb_v783_coordinate_mapping_audit.json
+          if-no-files-found: warn
