@@ -541,3 +541,14 @@ Antes de codificar direção:
 6. Considerar entradas adicionais conhecidas de T4 que ficaram fora do piloto e quantificar a incompletude antes de alegações funcionais.
 
 **Critério de avanço:** só executar uma métrica de seletividade direcional quando orientação espacial e associação dos subtipos estiverem apoiadas por fonte verificável. Caso contrário, limitar a Fase 6 a validação espacial e resposta temporal não direcional.
+
+
+## Aditivo — Fase 6: malha medular e diagnóstico espaço-temporal (2026-11-04)
+
+A literatura primária de FAFB permite usar p/q como coordenadas discretas da malha hexagonal da medula. +p aponta anterodorsal, +q posterodorsal e +v dorsal; as projeções usadas para ordenar a frente são 2p-q, 2q-p e p+q. A malha da retina é invertida em relação à medula pelo quiasma, e o mapeamento para espaço visual exige um eye map. Portanto, o Cortex mantém o experimento em coordenadas da medula e não o chama de movimento no campo visual.
+
+Foi adicionado um gerador de frentes L1 para +p/−p, +q/−q e +v/−v. Em cada par, a direção oposta é uma reversão exata da mesma sequência, com a mesma energia de entrada. O relatório inclui flash global, ausência de estímulo, respostas T4 por subtipo e um índice de assimetria de engenharia (não DSI biológico). O workflow passa a executar os diagnósticos para ME_L e ME_R e publicar os relatórios.
+
+**Limite científico:** a rede atual não inclui entradas inibitórias Mi4/Mi9/C3/CT1, atrasos fisiológicos ou dinâmica de membrana. A literatura mostra que seletividade direcional requer deslocamento espacial, filtragem temporal assimétrica e interação não linear. Nenhuma direção preferida será atribuída globalmente a T4a–T4d nesta fase.
+
+**Próximo gate:** passar CI, examinar os dois relatórios e verificar os controles/energia/simetria. Os primeiros testes locais no PC só começam após este gate.
