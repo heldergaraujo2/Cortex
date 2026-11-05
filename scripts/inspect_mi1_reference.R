@@ -82,10 +82,14 @@ build_mapping <- function(source, label) {
   match_count <- as.integer(anno_counts[skids])
   match_count[is.na(match_count)] <- 0L
   anno_rows <- match(skids, anno_skids)
+
+  # Mi1_neu_ind is NOT an anno-row -> M10-row lookup. It lists the
+  # original anno_Mi1 row index represented by each row of Mi1_M10_xyz.
+  # Therefore invert it: M10 row = match(anno_Mi1 row, Mi1_neu_ind).
   m10_rows <- rep(NA_integer_, length(anno_rows))
-  can_index <- match_count == 1L & !is.na(anno_rows) &
-    anno_rows >= 1L & anno_rows <= length(idx)
-  m10_rows[can_index] <- idx[anno_rows[can_index]]
+  can_match <- match_count == 1L & !is.na(anno_rows)
+  m10_rows[can_match] <- match(anno_rows[can_match], idx)
+
   in_range <- !is.na(m10_rows) & m10_rows >= 1L & m10_rows <= nrow(xyz)
   x <- y <- z <- rep(NA_real_, length(m10_rows))
   if (any(in_range)) {
@@ -94,20 +98,23 @@ build_mapping <- function(source, label) {
     z[in_range] <- xyz[m10_rows[in_range], 3]
   }
   finite_xyz <- in_range & is.finite(x) & is.finite(y) & is.finite(z)
+  source_index_value <- rep(NA_integer_, length(anno_rows))
+  source_index_value[can_match] <- idx[match_count[can_match] == 1L & !is.na(anno_rows[can_match])]
   status <- ifelse(
     match_count == 0L, "skid_not_found_in_anno_Mi1",
     ifelse(match_count > 1L, "duplicate_skid_in_anno_Mi1",
-      ifelse(!can_index, "annotation_index_out_of_range",
-      ifelse(is.na(m10_rows), "missing_Mi1_neu_ind",
-        ifelse(!in_range, "M10_row_out_of_range",
-          ifelse(!finite_xyz, "non_finite_M10_coordinate", "mapped"))))))
+      ifelse(is.na(anno_rows), "missing_annotation_row",
+        ifelse(is.na(m10_rows), "annotation_row_absent_from_Mi1_neu_ind",
+          ifelse(!in_range, "M10_row_out_of_range",
+            ifelse(!finite_xyz, "non_finite_M10_coordinate", "mapped"))))))
   data.frame(
     subset = label,
     source_row = seq_along(skids),
     skid = skids,
     anno_Mi1_row = anno_rows,
     anno_Mi1_skid_match_count = match_count,
-    Mi1_neu_ind_value = m10_rows,
+    Mi1_source_index_value = source_index_value,
+    Mi1_M10_row = m10_rows,
     m10_x = x, m10_y = y, m10_z = z,
     mapping_status = status,
     stringsAsFactors = FALSE
@@ -127,9 +134,9 @@ summarize_map <- function(x) {
     duplicate_skid_records = sum(duplicated(x$skid) & !is.na(x$skid)),
     ambiguous_annotation_skids = sum(x$anno_Mi1_skid_match_count > 1L),
     matched_annotation_rows = sum(x$anno_Mi1_skid_match_count == 1L),
-    valid_m10_rows = sum(!is.na(x$Mi1_neu_ind_value) &
-                         x$Mi1_neu_ind_value >= 1L &
-                         x$Mi1_neu_ind_value <= nrow(xyz)),
+    valid_m10_rows = sum(!is.na(x$Mi1_M10_row) &
+                         x$Mi1_M10_row >= 1L &
+                         x$Mi1_M10_row <= nrow(xyz)),
     finite_m10_coordinates = sum(x$mapping_status == "mapped"),
     stringsAsFactors = FALSE
   )
@@ -143,12 +150,16 @@ status_lines <- c(
   paste("Mi1_ind.RData:", ind_path),
   paste("Mi1_M10_xyz dimensions:", paste(dim(xyz), collapse = " x ")),
   paste("Mi1_neu_ind length:", length(idx)),
+  "Index semantics: Mi1_neu_ind lists anno_Mi1 row indices in Mi1_M10_xyz row order.",
+  "Mapping uses match(anno_Mi1 row, Mi1_neu_ind), not Mi1_neu_ind[anno_Mi1 row].",
+  paste("Source annotation rows without M10 coordinate:", paste(which(!(seq_len(nrow(anno)) %in% idx)), collapse=", ")),
   paste("anno_Mi1 rows:", nrow(anno)),
   paste("anno_Mi1_DRA rows:", nrow(dra)),
   "",
   "Mapping summary:",
   utils::capture.output(print(summary, row.names = FALSE)),
   "",
+  "The inverse mapping is cross-checked against Mi1_ind_DRA; it does not silently shift or impute indices.",
   "Important: this checks the authors' local index chain only. It does NOT",
   "establish a CATMAID-to-FAFB-v783 crosswalk or biological validity of every row."
 )
