@@ -25,7 +25,8 @@ if ($dirty) {
 git fetch origin
 if ($LASTEXITCODE -ne 0) { throw "git fetch falhou." }
 
-if (git show-ref --verify --quiet refs/heads/data/fafb-v783-inputs) {
+git show-ref --verify --quiet refs/heads/data/fafb-v783-inputs
+if ($LASTEXITCODE -eq 0) {
     git switch data/fafb-v783-inputs
 } else {
     git switch --track -c data/fafb-v783-inputs origin/data/fafb-v783-inputs
