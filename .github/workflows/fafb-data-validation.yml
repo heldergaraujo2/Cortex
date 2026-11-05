@@ -91,7 +91,7 @@ jobs:
           --data-dir data/raw/fafb_v783
           --column-file data/raw/fafb_v783/column_assignment.csv.gz
           --output fafb_v783_t4_target_profiles.json
-      - name: Audit coordinate-to-column mapping feasibility preserving repeated supervoxel samples
+      - name: Audit coordinate-to-column mapping feasibility with leave-one-type-out hemisphere checks
         run: >-
           python scripts/audit_spatial_coordinate_mapping.py
           --data-dir data/raw/fafb_v783
