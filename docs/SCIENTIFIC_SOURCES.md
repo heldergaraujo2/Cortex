@@ -149,3 +149,25 @@ O workflow [FAFB v783 Data Validation, run 19](https://github.com/heldergaraujo2
 - O workflow de testes [Cortex CI, run 61](https://github.com/heldergaraujo2/Cortex/actions/runs/40786637777) passou em Python 3.11, 3.12 e 3.13 com 23 testes, incluindo a rejeição de gzip corrompido.
 
 **Conclusão científica limitada:** a presença de conexões estruturais para os quatro pares é confirmada nos produtos usados. Não se demonstrou que esse subgrafo reproduz movimento visual, seletividade direcional ou uma dinâmica biológica. A correspondência espacial/colunar continua pendente; `coordinates.csv.gz` não substitui a validação de `column_assignment.csv.gz`.
+
+
+## 5. Fontes para a malha espacial e visão de movimento (Fase 6)
+
+9. **Seung (2024), “Predicting visual function by interpreting a neuronal wiring diagram”, Nature 634, 113–123.** https://doi.org/10.1038/s41586-024-07953-5  
+   Fonte primária para coordenadas hexagonais p/q da medula FAFB, direções +p (anterodorsal), +q (posterodorsal), +v (dorsal), projeções sobre eixos da malha e a inversão entre a malha retiniana e a malha da medula causada pelo quiasma óptico. O artigo também esclarece que a malha hexagonal é uma representação de vizinhança e não uma métrica física uniforme.
+
+10. **Zhao et al. (2025), “Eye structure shapes neuron function in Drosophila motion vision”, Nature 646, 135–142.** https://doi.org/10.1038/s41586-025-09276-5  
+    Fonte primária para a orientação dendrítica de T4 e a variação das direções preferidas locais ao longo do campo visual; estabelece que mapear direções da medula para o olho exige uma correspondência espacial entre colunas e omatídios, não uma simples troca de eixos.
+
+11. **Borst, Haag & Mauss (2020), “How fly neurons compute the direction of visual motion”, J Comp Physiol A 206, 109–124.** https://doi.org/10.1007/s00359-019-01375-9  
+    Revisão dos requisitos computacionais para seletividade direcional: entradas com deslocamento espacial, filtragem temporal assimétrica e interação não linear; T4/T5 são a primeira etapa com representação direcional.
+
+12. **Salazar-Gatzimas et al. (2018), “The Emergence of Directional Selectivity in the Visual Motion Pathway of Drosophila”, Neuron 94, 168–182.e10.** https://doi.org/10.1016/j.neuron.2017.03.010  
+    Evidência de entradas excitatórias Mi1/Tm3 e inibitórias Mi4/Mi9 em T4; sustenta a decisão de não tratar a atual rede positiva L1/Mi1/Tm3/T4 como um modelo suficiente de seletividade direcional.
+
+13. **FlyWire Codex FAQ — FAFB v783.** https://codex.flywire.ai/faq?dataset=fafb  
+    Fonte oficial para o snapshot estático FAFB v783, produtos de download e uso de dados exportados. A FAQ não define por si só todas as unidades e semânticas de cada campo da tabela `column_assignment.csv.gz`; por isso, o projeto usa p/q apenas no âmbito em que a literatura FAFB os define e mantém x/y sem interpretação.
+
+### Decisão de implementação
+
+A Fase 6 usa p/q como coordenadas discretas da malha da medula, com frentes +p/−p, +q/−q e +v/−v. Não transforma essas frentes em movimentos do campo visual. A assimetria entre duas execuções é uma métrica de diagnóstico de engenharia, nunca DSI biológico. A rede piloto ainda não inclui entradas inibitórias conhecidas de T4 nem parâmetros temporais fisiologicamente calibrados.
