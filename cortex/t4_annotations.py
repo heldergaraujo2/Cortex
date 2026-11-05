@@ -68,6 +68,10 @@ def audit_t4_neuron_annotations(
     agreements_by_type: dict[str, Counter[str]] = defaultdict(Counter)
     annotated_edge_rows = 0
     missing_edge_rows = 0
+    empty_prediction_rows = 0
+    nonempty_prediction_rows = 0
+    prediction_match_rows = 0
+    prediction_mismatch_rows = 0
     unique_candidate_ids = {edge.pre_root_id for edge in edges}
     for edge in edges:
         edge_labels[edge.nt_type] += 1
@@ -77,11 +81,18 @@ def audit_t4_neuron_annotations(
             continue
         annotated_edge_rows += 1
         predictions_by_type[edge.pre_type][annotation.nt_type] += 1
+        if annotation.nt_type == "(empty)":
+            empty_prediction_rows += 1
+            agreements_by_type[edge.pre_type]["empty_prediction"] += 1
+            continue
+        nonempty_prediction_rows += 1
         if annotation.nt_type_score is not None:
             scores_by_type[edge.pre_type].append(annotation.nt_type_score)
         if annotation.nt_type == edge.nt_type:
+            prediction_match_rows += 1
             agreements_by_type[edge.pre_type]["match"] += 1
         else:
+            prediction_mismatch_rows += 1
             agreements_by_type[edge.pre_type]["mismatch"] += 1
 
     prediction_summary = []
@@ -93,9 +104,10 @@ def audit_t4_neuron_annotations(
             "neuron_nt_type_prediction_counts": dict(sorted(predictions_by_type[cell_type].items())),
             "edge_vs_neuron_prediction_match_rows": agreements_by_type[cell_type]["match"],
             "edge_vs_neuron_prediction_mismatch_rows": agreements_by_type[cell_type]["mismatch"],
-            "nt_type_score_count": len(scores),
-            "nt_type_score_mean": mean(scores) if scores else None,
-            "nt_type_score_median": median(scores) if scores else None,
+            "edge_rows_with_empty_neuron_prediction": agreements_by_type[cell_type]["empty_prediction"],
+            "nt_type_score_count_nonempty_predictions": len(scores),
+            "nt_type_score_mean_nonempty_predictions": mean(scores) if scores else None,
+            "nt_type_score_median_nonempty_predictions": median(scores) if scores else None,
         })
 
     return {
@@ -108,6 +120,10 @@ def audit_t4_neuron_annotations(
         "unique_candidate_presynaptic_root_ids_with_annotation": len(unique_candidate_ids & set(annotations)),
         "edge_rows_with_presynaptic_annotation": annotated_edge_rows,
         "edge_rows_missing_presynaptic_annotation": missing_edge_rows,
+        "edge_rows_with_nonempty_neuron_prediction": nonempty_prediction_rows,
+        "edge_rows_with_empty_neuron_prediction": empty_prediction_rows,
+        "edge_vs_neuron_prediction_match_rows": prediction_match_rows,
+        "edge_vs_neuron_prediction_mismatch_rows": prediction_mismatch_rows,
         "edge_nt_type_counts_as_supplied": dict(sorted(edge_labels.items())),
         "by_presynaptic_primary_type": prediction_summary,
         "nt_type_verified_available_in_product": False,
