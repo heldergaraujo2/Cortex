@@ -36,9 +36,24 @@ foreach ($File in $RequiredFiles) {
 
 $Python = Join-Path $RepoRoot ".venv\Scripts\python.exe"
 if (-not (Test-Path $Python)) {
-    Write-Host "Criando ambiente virtual local .venv..."
-    py -3.12 -m venv .venv
-    if ($LASTEXITCODE -ne 0) { throw "Não foi possível criar .venv com Python 3.12." }
+    $PythonVersion = $null
+    foreach ($Version in @("3.12", "3.13", "3.11")) {
+        & py "-$Version" --version *> $null
+        if ($LASTEXITCODE -eq 0) {
+            $PythonVersion = $Version
+            break
+        }
+    }
+    if ($null -eq $PythonVersion) {
+        throw "Instale Python 3.11, 3.12 ou 3.13 com o Python Launcher (py)."
+    }
+    Write-Host "Criando ambiente virtual local .venv com Python $PythonVersion..."
+    & py "-$PythonVersion" -m venv .venv
+    if ($LASTEXITCODE -ne 0) { throw "Não foi possível criar .venv." }
+}
+$DetectedPython = (& $Python --version).Trim()
+if ($DetectedPython -notmatch "Python 3\.(11|12|13)\.") {
+    throw "Versão Python não validada pela CI: $DetectedPython. Use Python 3.11, 3.12 ou 3.13."
 }
 
 Write-Host "Instalando dependências apenas no ambiente virtual do projeto..."
