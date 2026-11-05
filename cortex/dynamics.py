@@ -78,9 +78,8 @@ def build_rate_network(
     if ablate_type not in {None, "Mi1", "Tm3"}:
         raise ValueError("ablate_type must be None, 'Mi1', or 'Tm3'")
 
-    neuron_types = {
-        rid: kind for rid, kind in connectome.cell_types.items()
-        if is_pilot_type(kind) and kind != ablate_type
+    full_neuron_types = {
+        rid: kind for rid, kind in connectome.cell_types.items() if is_pilot_type(kind)
     }
     selected = []
     for edge in connectome.connections:
@@ -88,16 +87,17 @@ def build_rate_network(
             edge.neuropil == neuropil
             and (_group(edge.pre_type), _group(edge.post_type)) in _ALLOWED
             and edge.syn_count >= minimum_synapses
-            and edge.pre_root_id in neuron_types
-            and edge.post_root_id in neuron_types
+            and edge.pre_root_id in full_neuron_types
+            and edge.post_root_id in full_neuron_types
         ):
             selected.append(edge)
 
+    # Normalize once on the intact graph. Ablations remove pathways afterwards
+    # without renormalizing the remaining inputs (which would hide their loss).
     incoming_totals: dict[str, int] = defaultdict(int)
     for edge in selected:
         incoming_totals[edge.post_root_id] += edge.syn_count
-
-    rate_edges = tuple(
+    full_rate_edges = tuple(
         RateEdge(
             edge.pre_root_id, edge.post_root_id,
             edge.syn_count / incoming_totals[edge.post_root_id],
@@ -105,12 +105,20 @@ def build_rate_network(
         )
         for edge in selected
     )
-    incoming_targets = {edge.post_root_id for edge in rate_edges}
+
+    neuron_types = {
+        rid: kind for rid, kind in full_neuron_types.items() if kind != ablate_type
+    }
+    rate_edges = tuple(
+        edge for edge in full_rate_edges
+        if edge.pre_root_id in neuron_types and edge.post_root_id in neuron_types
+    )
     input_ids = tuple(sorted(rid for rid, kind in neuron_types.items() if kind == "L1"))
+    # Keep the same T4 readout population in every ablation, including cells
+    # that lose all modeled inputs. Their zero response is part of the result.
     by_subtype = {
         subtype: tuple(sorted(
-            rid for rid, kind in neuron_types.items()
-            if kind == subtype and rid in incoming_targets
+            rid for rid, kind in neuron_types.items() if kind == subtype
         ))
         for subtype in ("T4a", "T4b", "T4c", "T4d")
     }
