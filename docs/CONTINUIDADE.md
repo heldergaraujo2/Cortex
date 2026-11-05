@@ -3,8 +3,8 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-11-05  
-**Versão:** 2.5 — previsões T4 auditadas e 88 testes aprovados em três versões Python  
-**Estado geral:** auditoria/importação FAFB T4 concluídas (#82, #99, #110). Foram preservadas 53.284 arestas, 7.028 IDs pré-sinápticos e 6.236 IDs T4. O produto `neurons.csv.gz` cobre todos os IDs: 50.630 linhas têm previsão não vazia, 2.654 vazias e zero divergências internas. Cortex CI #155 passou com 88 testes em Python 3.11, 3.12 e 3.13 e executou o demo T4. O dump não contém `nt_type_verified`; consistência interna não é validação biológica independente. Próximo gate: perfis por T4-alvo e mapeamento espacial dos candidatos pré-sinápticos.  
+**Versão:** 2.6 — perfis estruturais reais por alvo T4 concluídos  
+**Estado geral:** auditoria, importação e anotação T4 concluídas (#82, #99, #110); perfis por alvo/coluna executados com sucesso no FAFB #128. Das 6.236 células T4 com inputs candidatos, 5.981 têm coluna/hemisfério atribuído e 255 não; 51.387 linhas de aresta estão ligadas a alvos atribuídos, 1.897 não; zero divergências de hemisfério. Cortex CI #165 passou com 95 testes em Python 3.11–3.13. O modelo assinado continua sintético; faltam posições/colunas dos candidatos pré-sinápticos e evidência fisiológica por aresta.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; testes e experimentos remotos primeiro. PC reservado para profiling, validação Windows ou quando houver necessidade concreta.  
@@ -257,6 +257,19 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 - **Limite:** concordância entre os dois campos Codex é consistência interna, não validação independente. O produto tem `nt_type` previsto e `nt_type_score`, mas não `nt_type_verified`. Nenhum sinal fisiológico por aresta foi atribuído.
 - **Próxima subetapa:** construir perfis por T4-alvo e subtipo; juntar os alvos T4 à coluna existente e investigar uma fonte espacial validada para os candidatos pré-sinápticos adicionais.
 
+## 7.24 Fase 7 — perfis estruturais por alvo T4 e coluna (2026-11-05)
+
+- **Implementação:** `cortex/t4_profiles.py`, `tests/test_t4_profiles.py`, `scripts/summarize_t4_target_profiles.py`.
+- **Execução real:** FAFB Data Validation #128, run `41951942609`, sucesso; artefato ID `13381252165`; relatório `fafb_v783_t4_target_profiles.json`.
+- **Junção:** 53.284 arestas candidatas para 6.236 alvos T4 distintos; junção exata por `post_root_id` com `column_assignment.csv.gz`.
+- **Cobertura:** 5.981 alvos atribuídos, 255 não atribuídos; 51.387 linhas de aresta com alvo atribuído, 1.897 sem.
+- **Por subtipo:** T4a 1.440/1.456 (98,901%); T4b 1.492/1.506 (99,070%); T4c 1.551/1.705 (90,968%); T4d 1.498/1.569 (95,475%).
+- **Consistência:** zero divergências entre o sufixo de lado do neuropilo e o hemisfério da atribuição do T4-alvo.
+- **Estrutura:** 221 grupos agregados e 6.236 perfis individuais. `syn_count` permanece contagem estrutural, não eficácia.
+- **CI #165:** 95 testes aprovados em Python 3.11, 3.12 e 3.13.
+- **Limite:** a atribuição resolve o alvo T4, não os candidatos pré-sinápticos Mi4/Mi9/C3/CT1/TmY15. Não calcular offsets/direção com base apenas na posição do alvo.
+- **Próxima subetapa:** investigar mapeamento espacial validado dos 7.028 IDs pré-sinápticos, construir perfis por coluna e procurar evidência independente de receptores/sinal.
+
 ## 8. Estratégia de execução atual — GitHub-first
 
 O responsável decidiu adiar o primeiro teste local no Windows e continuar o desenvolvimento no GitHub. Esta decisão é compatível com as tarefas atuais: a CI executa testes automatizados e os workflows podem processar os arquivos FAFB já presentes na branch.
@@ -269,11 +282,12 @@ O responsável decidiu adiar o primeiro teste local no Windows e continuar o des
 5. Fazer o primeiro teste local quando houver profiling, necessidade de bibliotecas específicas, limite de runner, validação Windows ou uma comparação de desempenho que não possa ser feita remotamente.
 
 ### Próximo gate remoto
-- Construir perfis estruturais por T4-alvo/subtipo com arestas, score de neurotransmissor, neuropilo e syn_count.
-- Associar T4-alvos à `column_assignment` existente e investigar como mapear espacialmente os 7.028 IDs pré-sinápticos candidatos; não inferir p/q de coordenadas brutas sem transformação documentada.
-- O snapshot Codex v783 tem previsões `nt_type`/`nt_type_score`, mas não `nt_type_verified`; procurar fonte curada independente antes de atribuir sinal fisiológico confirmado.
-- Integrar ao modelo apenas sinais sustentados por evidência; manter casos vazios/ambíguos como desconhecidos.
-- Executar ablações/sensibilidade e comparar ME_L/ME_R; não calcular DSI biológico sem mapear PD/ND.
+- Investigar uma transformação espacial validada para os 7.028 IDs pré-sinápticos candidatos; a coluna atual cobre somente L1, Mi1, Tm3 e T4.
+- Usar coordenadas/morfologia apenas após validar semântica e desempenho em tipos com atribuição conhecida; não inferir p/q de coordenadas brutas.
+- Construir perfis estruturais por coluna e subtipo a partir dos 6.236 perfis T4 existentes, mantendo neuropilo, rótulo, score e syn_count separados.
+- Procurar evidência independente/curada de receptores e neurotransmissores; o dump v783 não contém `nt_type_verified`.
+- Integrar sinais somente quando sustentados; manter desconhecidos os casos vazios/ambíguos.
+- Executar ablações/sensibilidade ME_L/ME_R; DSI biológico continua bloqueado até mapear PD/ND.
 
 ## 9. Formato obrigatório para atualizações futuras
 
