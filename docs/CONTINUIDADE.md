@@ -8,7 +8,7 @@
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; o PC só será necessário para profiling ou validação de desempenho local.  
-**Próximo passo único:** Fase 6 — validar a semântica/orientação das coordenadas de coluna e desenhar estímulos visuais espaço-temporais opostos com controles, antes de atribuir direções a T4a–T4d.
+**Próximo passo único:** executar o primeiro teste local no PC Windows com `scripts/run_first_pc_validation.ps1`, depois de sincronizar com segurança a branch `data/fafb-v783-inputs`.
 
 ---
 
