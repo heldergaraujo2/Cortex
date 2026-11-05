@@ -48,6 +48,9 @@ def test_coordinate_mapping_audit_reports_holdouts_without_mapping_candidates(tm
     assert report["candidate_cells_mapped"] is False
     assert report["deterministic_random_holdout"]["status"] == "ok"
     assert report["leave_one_cell_type_out"]
+    hemisphere_by_type = report["hemisphere_nearest_centroid_leave_one_cell_type_out"]
+    assert len(hemisphere_by_type) == 2
+    assert all(row["status"] == "ok" for row in hemisphere_by_type)
 
 
 def test_coordinate_loader_rejects_invalid_position(tmp_path):
