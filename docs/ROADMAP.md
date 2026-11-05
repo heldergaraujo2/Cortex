@@ -552,3 +552,8 @@ Foi adicionado um gerador de frentes L1 para +p/−p, +q/−q e +v/−v. Em cada
 **Limite científico:** a rede atual não inclui entradas inibitórias Mi4/Mi9/C3/CT1, atrasos fisiológicos ou dinâmica de membrana. A literatura mostra que seletividade direcional requer deslocamento espacial, filtragem temporal assimétrica e interação não linear. Nenhuma direção preferida será atribuída globalmente a T4a–T4d nesta fase.
 
 **Próximo gate:** passar CI, examinar os dois relatórios e verificar os controles/energia/simetria. Os primeiros testes locais no PC só começam após este gate.
+
+
+### Revisão metodológica Fase 6 — readout bilateral corrigido (2026-11-05)
+
+A primeira execução real das frentes mostrou um erro de escopo: a entrada L1 era de um hemisfério, mas a média T4 incluía os dois. Os valores de resposta e assimetria do artefato #56 ficam supersedidos. O código agora restringe o readout T4 aos IDs explicitamente atribuídos ao mesmo hemisfério e reporta cobertura L1 global separadamente, sem inferir o lado dos neurónios sem atribuição. A nova CI e os relatórios corrigidos são obrigatórios antes de avançar para testes locais.
