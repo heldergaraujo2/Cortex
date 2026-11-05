@@ -656,3 +656,16 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - Workflow: `.github/workflows/import-eyemap-reference-data.yml`; run #1: https://github.com/heldergaraujo2/Cortex/actions/runs/42048560799 (sucesso). PR #2 permanece Draft; `main` e PR #1 preservados.
 
 - Revisão estática do script: a correspondência agora rejeita explicitamente `skid` duplicado em `anno_Mi1` como ambíguo, sem aceitar o primeiro resultado de `match()`; a saída registra a contagem de correspondências por ID. Ainda não há execução real do script nem teste R local neste ambiente.
+
+
+## 7.22 Gate 8A — primeira execução real dos RData (2026-11-05)
+
+- Workflow [Run Mi1 anatomical reference inventory](https://github.com/heldergaraujo2/Cortex/actions/runs/42048886029) executou com sucesso em R 4.4.1 usando os dois arquivos importados e byte-verificados.
+- Inventário real: `Mi1_M10_xyz` = 779 x 3; `Mi1_neu_ind` = 779 inteiros; `anno_Mi1` = 780 linhas; `anno_Mi1_DRA` = 42 linhas; objeto `Mi1` = 780 elementos.
+- Resultado da associação posicional exploratória: 778/780 registros de `anno_Mi1` com índice M10 finito; DRA = 42/42. Não há `skid` duplicado em `anno_Mi1` nem no conjunto DRA.
+- Dois casos não mapeados foram identificados e preservados, sem correção automática: `skid=17325656` (linha 779, índice local 780 fora do limite de 779 coordenadas) e `skid=17328033` (linha 780, sem posição correspondente em `Mi1_neu_ind`).
+- O artigo/código dos autores usa explicitamente `Mi1_neu_ind[match(anno_Mi1_DRA$skid, anno_Mi1$skid)]` na figura 2, e `proc_eyemap.R` consome `Mi1_M10_xyz`. Isso sustenta a cadeia para o subconjunto DRA usado ali, mas não explica por si só os dois casos gerais.
+- **Interpretação:** Gate 8A produziu um inventário real e reprodutível; a correspondência geral ainda tem duas exceções. Não atribuir coordenadas a esses IDs, não deslocar índices e não afirmar cobertura completa de 780 Mi1.
+- Artefato de saída: `phase8-mi1-inventory`, workflow run #1, 4 arquivos CSV/TXT. Retenção 30 dias.
+- Adicionado `scripts/inspect_mi1_reference_structure.R` para examinar os objetos `Mi1`, `Mi1_ind_PR`, `Mi1_ind_noPR`, `Mi1_ind_DRA`, nomes/rownames e a sequência integral de `Mi1_neu_ind`. A execução estrutural subsequente está em andamento; ainda não interpretar a causa dos dois casos até examinar essa saída.
+- Próxima etapa: interpretar a estrutura e o papel dos índices com base nos scripts dos autores; depois desenhar um crosswalk separado CATMAID→FlyWire v783, sem extrapolar a regressão XYZ→p/q rejeitada anteriormente.
