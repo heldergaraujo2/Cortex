@@ -79,10 +79,17 @@ def test_network_uses_one_neuropil_and_only_declared_edges():
     assert sum(e.weight for e in network.edges if e.post_root_id == "t4") == pytest.approx(1.0)
 
 
-def test_ablation_removes_selected_pathway():
-    network = build_rate_network(_connectome(), "ME_L", ablate_type="Mi1")
-    assert "m1" not in network.neuron_types
-    assert all(e.pre_type != "Mi1" and e.post_type != "Mi1" for e in network.edges)
+def test_ablation_removes_pathway_without_renormalizing_or_changing_readout():
+    intact = build_rate_network(_connectome(), "ME_L")
+    ablated = build_rate_network(_connectome(), "ME_L", ablate_type="Mi1")
+    assert "m1" not in ablated.neuron_types
+    assert all(e.pre_type != "Mi1" and e.post_type != "Mi1" for e in ablated.edges)
+    assert ablated.readout_ids == intact.readout_ids
+    remaining_tm3 = [
+        edge for edge in ablated.edges if edge.pre_root_id == "tm" and edge.post_root_id == "t4"
+    ]
+    assert len(remaining_tm3) == 1
+    assert remaining_tm3[0].weight == pytest.approx(0.5)
 
 
 def test_experiment_includes_controls_and_ablations():
