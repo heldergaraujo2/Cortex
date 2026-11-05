@@ -169,6 +169,7 @@ A proveniência e a ressalva de licença estão em `data/external/eyemap_T4/READ
 
 Execuções R 4.4.1:
 - [Inventário estrutural #2](https://github.com/heldergaraujo2/Cortex/actions/runs/42049602085) — sucesso; artefato estrutural inspecionado.
+- [Inventário final com export dos 779 IDs](https://github.com/heldergaraujo2/Cortex/actions/runs/42051240825) — sucesso; export validado e incluído no artefato.
 - [Inventário com mapeamento inverso e cross-check DRA](https://github.com/heldergaraujo2/Cortex/actions/runs/42050752606) — sucesso; R 4.4.1 executou o script corrigido e publicou o artefato.
 
 | Objeto/medida | Resultado observado |
@@ -191,7 +192,7 @@ O script `scripts/inspect_mi1_reference.R` foi corrigido para inverter a relaç�
 
 **Estado:** estrutura e semântica do vetor fortemente indicadas; cobertura local de 779/780 pelo mapeamento inverso, com uma exclusão explícita. O script corrigido executou com sucesso e o cross-check automatizado DRA foi TRUE (42/42, correspondência exata em ordem). Gate 8A está aprovado somente para a relação local CATMAID-index-M10, não para o crosswalk FAFB v783 nem para validação biológica da grade. Ainda não existe crosswalk CATMAID→FAFB v783, nem validação biológica de toda a grade.
 
-O artefato corrigido [phase8-mi1-inventory](https://github.com/heldergaraujo2/Cortex/actions/runs/42050752606) inclui `dra_index_crosscheck.csv`, `mapping_summary.csv`, `mi1_skid_to_m10_mapping.csv`, `mapping_status.txt`, `mi1_object_structure.txt` e `object_inventory.csv`.
+O artefato corrigido [phase8-mi1-inventory](https://github.com/heldergaraujo2/Cortex/actions/runs/42051240825) inclui `dra_index_crosscheck.csv`, `mapping_summary.csv`, `mi1_skid_to_m10_mapping.csv`, `mapping_status.txt`, `mi1_object_structure.txt` e `object_inventory.csv`.
 
 
 ## Preparação do crosswalk CATMAID → FlyWire FAFB v783
