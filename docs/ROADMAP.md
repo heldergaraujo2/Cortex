@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** auditoria/importação T4 e previsões neuronais validadas (#82, #99, #110): 53.284 arestas, 7.028 IDs pré-sinápticos, 6.236 IDs T4; 50.630 linhas com previsão não vazia, 2.654 vazias e zero divergências internas. Cortex CI #155 passou com 88 testes em Python 3.11–3.13 e executou o demo. O dump não contém `nt_type_verified`; consistência interna não é validação biológica. Próxima subetapa: perfis por T4-alvo e mapeamento espacial. Protótipo sintético não calibrado. Estratégia GitHub-first. Ver aditivo e docs/CONTINUIDADE.md.  
+**Status global:** auditoria, importação e perfis estruturais T4 validados (#82, #99, #110, #128): 53.284 arestas; 6.236 T4-alvos, dos quais 5.981 atribuídos a coluna/hemisfério; zero divergências de lado. CI #165 passou com 95 testes em Python 3.11–3.13. O dump não contém `nt_type_verified`; previsões não são validação biológica. Próxima subetapa: mapear espacialmente os candidatos pré-sinápticos e buscar evidência independente de sinal. Protótipo sintético não calibrado. Estratégia GitHub-first. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -653,3 +653,18 @@ Próxima tarefa:
 4. Investigar fontes independentes/curadas para neurotransmissores e receptores.
 5. Só depois converter entradas sustentadas em sinais assinados e executar ablações/varreduras.
 
+
+
+## Aditivo — perfis estruturais por T4-alvo (2026-11-05)
+
+O FAFB Data Validation #128 executou `scripts/summarize_t4_target_profiles.py` e publicou `fafb_v783_t4_target_profiles.json`.
+
+- 6.236 alvos T4 com pelo menos uma aresta candidata.
+- 5.981 alvos com atribuição de coluna/hemisfério; 255 sem.
+- 51.387 linhas de aresta ligadas a alvo atribuído; 1.897 ligadas a alvo sem atribuição.
+- Zero divergências entre o sufixo hemisférico do neuropilo e o hemisfério atribuído ao alvo.
+- Cobertura: T4a 98,901%; T4b 99,070%; T4c 90,968%; T4d 95,475%.
+- 221 grupos agregados e 6.236 perfis individuais.
+- Cortex CI #165: 95 testes aprovados em Python 3.11, 3.12 e 3.13.
+
+A junção resolve a coluna/hemisfério do alvo T4, mas não a posição dos candidatos pré-sinápticos adicionais. Não usar posição do alvo como substituto de offset espacial do input. Próxima tarefa: validar transformação de coordenadas/morfologia para Mi4, Mi9, C3, CT1 e TmY15, mantendo incerteza explícita.
