@@ -658,17 +658,15 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - Revisão estática do script: a correspondência agora rejeita explicitamente `skid` duplicado em `anno_Mi1` como ambíguo, sem aceitar o primeiro resultado de `match()`; a saída registra a contagem de correspondências por ID. Ainda não há execução real do script nem teste R local neste ambiente.
 
 
-## 7.22 Gate 8A — primeira execução real dos RData (2026-11-05)
+## 7.22 Gate 8A — semântica dos índices Mi1/M10 corrigida (2026-11-05)
 
-- Workflow [Run Mi1 anatomical reference inventory](https://github.com/heldergaraujo2/Cortex/actions/runs/42048886029) executou com sucesso em R 4.4.1 usando os dois arquivos importados e byte-verificados.
-- Inventário real: `Mi1_M10_xyz` = 779 x 3; `Mi1_neu_ind` = 779 inteiros; `anno_Mi1` = 780 linhas; `anno_Mi1_DRA` = 42 linhas; objeto `Mi1` = 780 elementos.
-- Resultado da associação posicional exploratória: 778/780 registros de `anno_Mi1` com índice M10 finito; DRA = 42/42. Não há `skid` duplicado em `anno_Mi1` nem no conjunto DRA.
-- Dois casos não mapeados foram identificados e preservados, sem correção automática: `skid=17325656` (linha 779, índice local 780 fora do limite de 779 coordenadas) e `skid=17328033` (linha 780, sem posição correspondente em `Mi1_neu_ind`).
-- O artigo/código dos autores usa explicitamente `Mi1_neu_ind[match(anno_Mi1_DRA$skid, anno_Mi1$skid)]` na figura 2, e `proc_eyemap.R` consome `Mi1_M10_xyz`. Isso sustenta a cadeia para o subconjunto DRA usado ali, mas não explica por si só os dois casos gerais.
-- **Interpretação:** Gate 8A produziu um inventário real e reprodutível; a correspondência geral ainda tem duas exceções. Não atribuir coordenadas a esses IDs, não deslocar índices e não afirmar cobertura completa de 780 Mi1.
-- Artefato de saída: `phase8-mi1-inventory`, workflow run #1, 4 arquivos CSV/TXT. Retenção 30 dias.
-- Adicionado `scripts/inspect_mi1_reference_structure.R` para examinar os objetos `Mi1`, `Mi1_ind_PR`, `Mi1_ind_noPR`, `Mi1_ind_DRA`, nomes/rownames e a sequência integral de `Mi1_neu_ind`. A execução estrutural subsequente está em andamento; ainda não interpretar a causa dos dois casos até examinar essa saída.
-- Próxima etapa: interpretar a estrutura e o papel dos índices com base nos scripts dos autores; depois desenhar um crosswalk separado CATMAID→FlyWire v783, sem extrapolar a regressão XYZ→p/q rejeitada anteriormente.
+- Workflow estrutural [#2](https://github.com/heldergaraujo2/Cortex/actions/runs/42049602085) executou com sucesso em R 4.4.1. Artefato estrutural inspecionado.
+- Objetos: `Mi1` = 780 elementos; `anno_Mi1` = 780 linhas; `Mi1_M10_xyz` = 779 x 3; `Mi1_neu_ind` = 779 inteiros únicos; `anno_Mi1_DRA` = 42 linhas.
+- `Mi1_neu_ind` contém todos os índices de `anno_Mi1` exceto 752. Logo, o vetor lista a linha de anotação representada por cada linha da matriz M10. Para converter anotação → linha M10, usar `match(anno_row, Mi1_neu_ind)`, não `Mi1_neu_ind[anno_row]`.
+- A linha de anotação ausente é 752, `skid=15578998`. Não inventar coordenada para esse neurônio.
+- O mapeamento inverso dos 42 IDs DRA reproduz `Mi1_ind_DRA` em ordem exata (42/42), conforme inspeção do artefato estrutural. Este é o cross-check independente que faltava.
+- Consequência: os dois casos antes apontados nas linhas 779/780 não estão sem coordenadas; o mapeamento inverso os associa às linhas M10 778/779. A conclusão anterior de 778/780 era resultado de tratar incorretamente o vetor como lookup direto e fica substituída por esta análise.
+- `Fig_2_EM.R` linha 123 usa a expressão direta `Mi1_neu_ind[match(...)]`, divergente de `Mi1_ind_DRA` para os dois últimos DRA. Registrar como possível bug/erro de indexação na figura dos autores; não usar essa linha como regra de mapeamento quando conflita com a lista DRA e a relação estrutural.
+- Script corrigido: `scripts/inspect_mi1_reference.R` agora inverte a relação e escreve `dra_index_crosscheck.csv`. Workflow de validação corrigida: [#4](https://github.com/heldergaraujo2/Cortex/actions/runs/42050752606).
+- **Estado:** semântica dos índices fortemente indicada; cobertura local esperada 779/780 com uma exclusão explícita. Gate 8A aguarda a execução bem-sucedida do script corrigido. Nenhum crosswalk CATMAID→FAFB v783 foi produzido. Não extrapolar a regressão XYZ→p/q rejeitada.
 
-
-- **Achado estrutural preliminar (artefato do workflow estrutural #2, run em execução no momento do registro):** `Mi1` tem 780 elementos e seus nomes começam/terminam com os mesmos IDs vistos em `anno_Mi1$skid`; `Mi1_neu_ind` tem 779 valores inteiros únicos, sequenciais de 1 a 780 com ausência do índice 752; `Mi1_M10_xyz` tem 779 linhas. Isso sugere uma lista de índices de origem com um elemento excluído, e não deve ser confundido automaticamente com posições 1..779 da matriz M10. A equivalência exata será confrontada com `Mi1_ind_DRA` e a expressão usada pelos autores antes de qualquer correção no mapeamento.
