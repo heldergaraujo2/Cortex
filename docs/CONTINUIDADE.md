@@ -482,7 +482,7 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Documentação:** `docs/VALIDACAO_ESPACIAL.md` explica esquema, limites e distinção entre `x/y` e `p/q`; `docs/ROADMAP.md` agora exige explicitamente a validação do arquivo original.
 - **Referência de coordenadas:** o FAQ do Codex descreve a visualização FlyWire em voxels de 4 × 4 × 40 nm, mas isso não basta para inferir automaticamente unidades/semântica dos campos `x/y` de `column_assignment`. Não foi aplicada transformação nem conversão.
 - **Evidência:** **CONFIRMADO** que o parser, CLI, testes e workflow foram adicionados à branch; **DESCONHECIDO** a cobertura real, os tipos presentes, a distribuição de colunas e as relações espaciais até ler o arquivo original.
-- **Gate bloqueador / próximo passo único:** disponibilizar `column_assignment.csv.gz` em `data/raw/fafb_v783/` na branch `data/fafb-v783-inputs` (arquivo esperado na máquina local anteriormente: `D:\\Cortex-data\\FAFB-v783\\column_assignment.csv.gz`), sem alterar `main` nem integrar o PR. Depois, a CI deve gerar o relatório real; só então interpretar cobertura e decidir se há base para uma baseline espacial.
+- **Gate bloqueador / próximo passo naquele registo:** disponibilizar `column_assignment.csv.gz`. **RESOLVIDO posteriormente:** ver seção 7.14, que registra upload, SHA-256, cobertura real e conclusão do gate em 2026-11-04.
 
 
 ## 7.14 Fecho da validação espacial e início da baseline dinâmica (2026-11-04)
