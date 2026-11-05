@@ -2,12 +2,13 @@
 
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
-**Última atualização:** 2026-10-28  
-**Versão:** 1.5 — gate de importação estrutural do piloto concluído  
-**Estado geral:** Fase 1 — bootstrap remoto concluído no escopo verificado. Fase 2 — seleção e desenho experimental concluídos. Fase 3 — três produtos FAFB v783 foram validados; o importador real executou no GitHub Actions, gerou manifesto com hashes e 59.218 linhas de conexões do subgrafo piloto. A CI passou em Python 3.11–3.13 com 23 testes, incluindo rejeição de gzip corrompido. Nenhuma simulação neural foi implementada.  
+**Última atualização:** 2026-11-04  
+**Versão:** 1.7 — Fase 4 espacial validada; baseline dinâmica v0 implementada, aguardando execução real  
+**Estado geral:** Fases 1–3 concluídas no escopo documentado. Fase 4 (validação espacial/colunar do piloto FAFB v783) concluída no gate de ingestão e cobertura. Fase 5 (baseline dinâmica estrutural mínima) iniciada: motor rate-based determinístico, testes, CLI e workflow para ME_L/ME_R adicionados à branch de trabalho; ainda não declarar resultados reais nem conclusão antes da CI executar e os artefatos serem examinados.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
-**Política de execução:** GitHub-first; usar o PC apenas quando necessário para profiling ou validação de desempenho local.  
-**Próximo passo:** iniciar a Fase 4: verificar `column_assignment.csv.gz`, a semântica/unidades das coordenadas e a correspondência espacial/colunar antes de qualquer baseline de movimento.
+**Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
+**Política de execução:** GitHub-first; o PC só será necessário para profiling ou validação de desempenho local.  
+**Próximo passo único:** verificar as execuções CI acionadas pelos commits da baseline, inspecionar os relatórios reais ME_L/ME_R e decidir se a Fase 5 atende aos critérios de saída.
 
 ---
 
@@ -470,9 +471,9 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Próxima fase:** Fase 4 — validar `column_assignment.csv.gz`, unidades e semântica das coordenadas, cobertura por subtipo T4 e só depois definir baseline espacial/dinâmica.
 
 
-## 7.13 Fase 4 — preparação do validador espacial, gate real ainda aberto (2026-10-28)
+## 7.13 Fase 4 — preparação do validador espacial (registro histórico de 2026-10-28; gate posteriormente concluído)
 
-- **Estado honesto:** Fase 4 iniciada, mas NÃO concluída. A branch `data/fafb-v783-inputs` contém os três produtos da Fase 3, mas a última listagem de `data/raw/fafb_v783/` não encontrou `column_assignment.csv.gz`.
+- **Estado naquele momento:** Fase 4 iniciada, mas ainda NÃO concluída em 2026-10-28. A pendência foi resolvida posteriormente, conforme o registro 7.14.
 - **Código novo:** `cortex/spatial.py` implementa leitor estrito para as colunas esperadas `root_id, hemisphere, type, column_id, x, y, p, q`; calcula SHA-256; valida `p/q` como inteiros e `x/y` como números finitos; conta IDs sem correspondência e cobertura por tipo primário; distingue colunas por `(hemisphere, column_id)`.
 - **CLI:** `scripts/inspect_fafb_columns.py` combina o arquivo de colunas com as anotações primárias existentes e produz um relatório JSON fora do Git por padrão.
 - **Testes sintéticos:** `tests/test_spatial.py` cobre cobertura por tipo, hemisférios, IDs sem correspondência, cabeçalhos ausentes, `p/q` inválidos, coordenadas `x` inválidas, arquivo ausente e gzip corrompido. Estes testes verificam o código, não a exportação biológica real.
@@ -482,3 +483,32 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Referência de coordenadas:** o FAQ do Codex descreve a visualização FlyWire em voxels de 4 × 4 × 40 nm, mas isso não basta para inferir automaticamente unidades/semântica dos campos `x/y` de `column_assignment`. Não foi aplicada transformação nem conversão.
 - **Evidência:** **CONFIRMADO** que o parser, CLI, testes e workflow foram adicionados à branch; **DESCONHECIDO** a cobertura real, os tipos presentes, a distribuição de colunas e as relações espaciais até ler o arquivo original.
 - **Gate bloqueador / próximo passo único:** disponibilizar `column_assignment.csv.gz` em `data/raw/fafb_v783/` na branch `data/fafb-v783-inputs` (arquivo esperado na máquina local anteriormente: `D:\\Cortex-data\\FAFB-v783\\column_assignment.csv.gz`), sem alterar `main` nem integrar o PR. Depois, a CI deve gerar o relatório real; só então interpretar cobertura e decidir se há base para uma baseline espacial.
+
+
+## 7.14 Fecho da validação espacial e início da baseline dinâmica (2026-11-04)
+
+### Fecho da Fase 4 — evidência real
+
+- **CONFIRMADO:** `column_assignment.csv.gz` foi enviado à branch `data/fafb-v783-inputs` no commit `235e01bbb6360af977f8a0b2533ae2793340597e`; tamanho 462.838 bytes.
+- **CONFIRMADO:** execução FAFB v783 Data Validation #36, commit `235e01bbb6360af977f8a0b2533ae2793340597e`, terminou com sucesso: https://github.com/heldergaraujo2/Cortex/actions/runs/41942497302.
+- **CONFIRMADO:** Cortex CI #74 passou em Python 3.11, 3.12 e 3.13: https://github.com/heldergaraujo2/Cortex/actions/runs/41942497333.
+- **Relatório espacial real:** 45.528 linhas e 45.528 root IDs únicos; zero IDs sem correspondência com a tabela de tipos primários; 1.581 pares únicos (hemisfério, column_id), sendo 785 no hemisfério esquerdo e 796 no direito.
+- **Cobertura dos 11.355 IDs do piloto:** 10.637 com atribuição e 718 sem atribuição. Cobertura: L1 88,56%; Mi1 100%; Tm3 85,36%; T4a 98,90%; T4b 99,07%; T4c 90,82%; T4d 95,47%.
+- **SHA-256 de column_assignment:** `bdf4ce7f62cc63493d53eefad3816ff2dfd08b190e97b35a492e0e453df2f0f6`.
+- **Limite:** o relatório preserva x/y e p/q sem inferir unidades, projeção ou transformação retinotópica. Cobertura espacial não prova seletividade direcional nem completude biológica do circuito.
+- **Conclusão:** Fase 4 concluída para ingestão, integridade estrutural e cálculo de cobertura espacial/colunar do piloto. Sem afirmar interpretação física dos campos x/y nem funcionalidade visual.
+
+### Início da Fase 5 — implementação da baseline v0
+
+- **Código adicionado:** `cortex/dynamics.py` com taxa abstrata limitada a [0,1], atualização síncrona determinística e grafo restrito a um neuropilo por execução.
+- **Regra de pesos:** `syn_count` normalizado pela soma de entradas de cada neurónio pós-sináptico, dentro do neuropilo escolhido. É uma hipótese de engenharia, não eficácia sináptica medida.
+- **Controles:** pulso ON sintético, ausência de estímulo, ablação de Mi1 e ablação de Tm3. Plasticidade desligada.
+- **Métricas:** série temporal da taxa média T4, pico, passo do pico e séries por subtipo T4a–T4d.
+- **CLI:** `scripts/run_fafb_baseline.py`; os neuropilos ME_L e ME_R são executados separadamente e nunca somados.
+- **Testes:** `tests/test_dynamics.py` cobre propagação em dois estágios, determinismo, controlo zero, limites de estado, validação de parâmetros, separação por neuropilo e ablações.
+- **Documento:** `docs/FASE_5_BASELINE_DINAMICA.md`.
+- **Workflow:** `.github/workflows/fafb-data-validation.yml` foi atualizado para executar a baseline real ME_L e ME_R e publicar os dois relatórios.
+- **HIPÓTESE DE ENGENHARIA:** a dinâmica rate-based e a normalização estrutural são uma baseline mínima útil para testar propagação.
+- **DESCONHECIDO:** se parâmetros/dinâmica representam neurónios biológicos; se o subcircuito reduzido reproduz comportamento visual; se há seletividade direcional. Esta baseline não testa movimento, espaço visual, sinal neurotransmissor ou aprendizagem.
+- **Estado da Fase 5 neste registo:** implementação adicionada, execução real/CI ainda pendente. Não marcar como concluída até verificar os workflows e examinar os relatórios ME_L/ME_R.
+- **Próximo passo prioritário:** acompanhar as execuções CI do commit mais recente, corrigir qualquer falha e analisar os dois relatórios reais. Não integrar PR #1 nem alterar `main`.
