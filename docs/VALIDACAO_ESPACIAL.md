@@ -34,7 +34,7 @@ Fontes de referência:
 
 ## Estado do gate
 
-**Código e testes de unidade preparados; validação espacial real ainda não concluída.** Na branch `data/fafb-v783-inputs`, o arquivo `column_assignment.csv.gz` ainda não foi encontrado na última inspeção. Até ser adicionado, não é correto declarar a Fase 4 concluída nem começar a baseline espacial/dinâmica.
+**Resolvido em 2026-11-04:** `column_assignment.csv.gz` foi adicionado à branch e a inspeção real passou. Os números e o SHA-256 medidos estão registrados na seção seguinte. A Fase 4 está concluída no gate de ingestão/cobertura; a interpretação geométrica e a conversão para coordenadas visuais são gates distintos da Fase 6.
 
 
 ## Resultado da validação real — 2026-11-04
@@ -48,3 +48,12 @@ A execução FAFB v783 Data Validation #36 terminou com sucesso no commit `235e0
 - Cobertura: L1 88,56%; Mi1 100%; Tm3 85,36%; T4a 98,90%; T4b 99,07%; T4c 90,82%; T4d 95,47%.
 
 **Conclusão do gate de ingestão/cobertura:** aprovado. Isto não valida unidades, semântica física ou transformação retinotópica de x/y, nem prova seletividade direcional. A Fase 5 usa esta informação apenas como evidência de cobertura e mantém a dinâmica sem geometria visual.
+
+
+## Interpretação da malha p/q — Fase 6
+
+A literatura primária sobre FAFB descreve p/q como coordenadas discretas da malha hexagonal de colunas da **medula**. No referencial medular, +p é anterodorsal, +q posterodorsal e +v dorsal. As projeções para ordenar frentes são `2p-q`, `2q-p` e `p+q`, respectivamente (Seung, Nature 2024, https://doi.org/10.1038/s41586-024-07953-5).
+
+A malha da retina é esquerda-direita invertida em relação à malha da medula pelo quiasma óptico. Portanto, o Cortex não rotula +p/−p/+q/−q/+v/−v como direções de movimento no campo visual. A transformação para o olho exige uma correspondência olho-medula e uma geometria que varia ao longo do campo visual (Zhao et al., Nature 2025, https://doi.org/10.1038/s41586-025-09276-5).
+
+Os campos `x/y` continuam sem interpretação operacional. A implementação espacial da Fase 6 utiliza apenas `p/q` como índices da malha e mantém os hemisférios separados.
