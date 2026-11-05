@@ -84,7 +84,7 @@ Também foi obtido em CI o produto público `neurons.csv.gz` do snapshot 783. O 
 
 Esta concordância é apenas consistência interna dos produtos Codex, não validação independente. O ficheiro contém `nt_type` previsto e `nt_type_score`, mas não `nt_type_verified`. Nenhuma aresta recebeu sinal fisiológico confirmado.
 
-O workflow FAFB #110 terminou com sucesso e publicou `fafb_v783_t4_neuron_annotations.json`. A suíte Cortex CI #148 aprovou 86 testes em Python 3.11, 3.12 e 3.13; a execução do teste adicional para rótulo vazio ainda precisa de ser confirmada numa CI que inclua a última atualização de testes.
+O workflow FAFB #110 terminou com sucesso e publicou `fafb_v783_t4_neuron_annotations.json`. A suíte Cortex CI #155 aprovou 88 testes em Python 3.11, 3.12 e 3.13 e executou o demo CLI em todas as versões. A execução FAFB #110 validou também a auditoria real de previsões por neurónio.
 
 ### Próximos passos
 1. Confirmar na próxima CI a cobertura do teste de rótulo vazio e manter a suíte verde.
