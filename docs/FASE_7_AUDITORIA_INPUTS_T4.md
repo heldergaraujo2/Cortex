@@ -95,7 +95,7 @@ O resultado é misto por classe. Exemplos:
 5. Comparar estímulos preferenciais e nulos, flash estático e ausência de estímulo, com ablações por classe.
 6. Só usar o termo DSI após definir corretamente a orientação local do T4 e validar a correspondência espacial relevante.
 
-## 6. Fontes científicas
+## 7. Fontes científicas
 
 - Shinomiya et al. (2017), *The comprehensive connectome of a neural substrate for ‘ON’ motion detection in Drosophila*, eLife: https://elifesciences.org/articles/24394 — anatomia das entradas T4, fenótipos de neurotransmissores propostos e organização dendrítica; a polaridade de Mi9 é dependente do receptor.
 - Gruntman et al. (2018), *Simple integration of fast excitation and offset, delayed inhibition computes directional selectivity in Drosophila*, eLife: https://www.nature.com/articles/s41593-017-0046-4 — evidência fisiológica de integração de excitação rápida com inibição espacialmente deslocada e atrasada.
@@ -138,6 +138,6 @@ O manifesto de validação informa que `consolidated_cell_types.csv.gz` contém 
 - Cortex CI #137: 81 testes aprovados em Python 3.11, 3.12 e 3.13; o demo T4 também foi executado em todas as versões.
 - O workflow FAFB #99 executou com sucesso o novo importador sobre os dados reais.
 
-## 7. Limites
+## 8. Limites
 
 Este relatório não demonstra seletividade direcional, não calibra o modelo neuronal e não identifica o sinal funcional de cada sinapse. O próximo passo é um modelo experimental de integração assinada, comparado a controles e claramente separado dos resultados biológicos confirmados.
