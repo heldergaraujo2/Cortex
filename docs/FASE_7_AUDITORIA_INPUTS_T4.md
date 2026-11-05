@@ -102,6 +102,42 @@ O resultado é misto por classe. Exemplos:
 - Behnia & Desplan (2015), *Visual motion detection in Drosophila*, Annual Review of Neuroscience: https://doi.org/10.1146/annurev-neuro-080422-111929 — revisão da arquitetura e dos papéis dos canais pré-sinápticos.
 - FlyWire Codex FAQ: https://codex.flywire.ai/faq — distinção entre `nt_type` previsto e `nt_type_verified` curado, estrutura dirigida das conexões e múltiplas linhas por neuropilo.
 
+## 6. Importação das arestas reais concluída
+
+Foi acrescentado `cortex/t4_inputs.py` e o comando `scripts/import_t4_input_edges.py`. O importador preserva as linhas dirigidas de candidatos para T4 sem deduplicar, sem converter `nt_type` em sinal e sem inferir eficácia/atraso.
+
+- Workflow FAFB v783 Data Validation #99: run `41949691726`, sucesso.
+- Artefato `fafb-v783-validation-report`, ID `13381150256`; SHA-256 do ZIP: `675a4358607bf1e5f1045edb15d63e979f73463bc38ef497361d8e11b8bf79e5`.
+- Relatório novo: `fafb_v783_t4_input_edges.json`.
+- Linhas preservadas: 53.284, exatamente o mesmo total da auditoria.
+- IDs pré-sinápticos distintos: 7.028.
+- IDs T4 pós-sinápticos distintos: 6.236.
+- Grupos pré-tipo/pós-tipo/neuropilo/`nt_type`: 143.
+
+Distribuição de linhas por neuropilo:
+| Neuropilo | Linhas | Soma estrutural de syn_count |
+|---|---:|---:|
+| ME_L | 25.904 | 283.045 |
+| ME_R | 26.656 | 291.314 |
+| LOP_L | 245 | 314 |
+| LOP_R | 368 | 494 |
+| LO_L | 60 | 73 |
+| LO_R | 47 | 64 |
+| AME_L | 3 | 7 |
+| UNASGD | 1 | 1 |
+
+A igualdade entre 53.284 linhas no importador e na auditoria confirma que o filtro por tipo pré/pós não perdeu nem acrescentou linhas. O resumo preserva separadamente o neuropilo e o rótulo de neurotransmissor; duplicatas de linhas não são silenciosamente fundidas.
+
+### Limite de anotação confirmado pelo schema
+
+O manifesto de validação informa que `consolidated_cell_types.csv.gz` contém apenas `root_id`, `primary_type` e `additional_type(s)`; a tabela `connections_princeton.csv.gz` contém `nt_type`, mas não `nt_type_verified`. A FAQ oficial do Codex diferencia rótulos previstos de anotações verificadas/curadas. Portanto, **o snapshot local atual não fornece a coluna verificada necessária para atribuir sinal funcional confirmado por aresta**. O importador preserva `nt_type` como rótulo fornecido e mantém `synaptic_sign_assigned=false`.
+
+### Testes desta subetapa
+
+- Cortex CI #135: 81 testes aprovados em Python 3.11, 3.12 e 3.13.
+- Cortex CI #137: 81 testes aprovados em Python 3.11, 3.12 e 3.13; o demo T4 também foi executado em todas as versões.
+- O workflow FAFB #99 executou com sucesso o novo importador sobre os dados reais.
+
 ## 7. Limites
 
 Este relatório não demonstra seletividade direcional, não calibra o modelo neuronal e não identifica o sinal funcional de cada sinapse. O próximo passo é um modelo experimental de integração assinada, comparado a controles e claramente separado dos resultados biológicos confirmados.
