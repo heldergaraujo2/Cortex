@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** auditoria e importação estrutural de T4 validadas com dados reais (#82 e #99): 53.284 arestas, 7.028 IDs pré-sinápticos e 6.236 IDs T4. Protótipo sintético T4 implementado. CI #137 aprovou 81 testes em Python 3.11–3.13 e executou o demo. Próxima subetapa: obter neurotransmissores verificados e mapear geometria/colunas dos candidatos antes de assinar arestas e ligar o modelo aos dados reais. Assimetria sintética 0,236258 não é DSI biológico. Estratégia GitHub-first. Ver aditivo e docs/CONTINUIDADE.md.  
+**Status global:** auditoria/importação T4 e previsões neuronais validadas com dados reais (#82, #99, #110): 53.284 arestas, 7.028 IDs pré-sinápticos e 6.236 IDs T4; 50.630 linhas têm previsão não vazia, 2.654 vazias e zero divergências internas com o rótulo da aresta. O dump não contém `nt_type_verified`; consistência interna não é validação biológica. Próxima subetapa: perfis por T4-alvo e mapeamento espacial das classes. Protótipo sintético permanece não calibrado. Estratégia GitHub-first. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -630,4 +630,26 @@ Cortex CI #137 passou com 81 testes em Python 3.11, 3.12 e 3.13 e executou `scri
 
 ### Próximo gate
 O CSV `consolidated_cell_types` versionado não contém `nt_type_verified`; o arquivo de conexões contém apenas `nt_type`. O Codex diferencia previsão e anotação verificada. O próximo trabalho é encontrar a fonte curada, mapear espacialmente os candidatos pré-sinápticos e construir perfis por T4-alvo. Até então, não atribuir sinal fisiológico confirmado por aresta.
+
+
+
+## Aditivo — previsões neuronais e confiança dos inputs T4 (2026-11-05)
+
+O workflow FAFB #110 baixou o produto público `neurons.csv.gz` do snapshot 783 (139.255 registos; SHA-256 `6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719`) e executou `scripts/audit_t4_neuron_annotations.py`.
+
+Resultados:
+- 7.028/7.028 IDs pré-sinápticos candidatos mapeados.
+- 50.630 linhas de conexão com previsão `nt_type` não vazia.
+- 2.654 linhas com previsão vazia.
+- Zero divergências entre `nt_type` previsto do neurónio e o rótulo da linha de conexão para previsões não vazias.
+- Score mediano: C3 0,78; CT1 0,66; Mi1 0,63; Mi4 0,87; Mi9 0,58; Tm3 0,70; TmY15 0,81.
+
+Esta concordância é consistência interna entre dois campos Codex, não validação independente. O produto contém `nt_type` e `nt_type_score`, mas não `nt_type_verified`; não atribuir sinal fisiológico confirmado por aresta. Mi9 tem mistura de rótulos e 1.434 linhas sem previsão, exigindo investigação individual.
+
+Próxima tarefa:
+1. Gerar perfis estruturais por T4-alvo/subtipo.
+2. Associar os T4 à coluna/hemisfério já disponíveis.
+3. Encontrar transformação espacial validada ou outra fonte de coluna para os candidatos pré-sinápticos adicionais.
+4. Investigar fontes independentes/curadas para neurotransmissores e receptores.
+5. Só depois converter entradas sustentadas em sinais assinados e executar ablações/varreduras.
 
