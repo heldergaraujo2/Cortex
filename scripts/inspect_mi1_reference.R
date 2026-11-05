@@ -35,7 +35,7 @@ describe_object <- function(nm) {
   )
 }
 inventory <- do.call(rbind, lapply(all_objects, describe_object))
-write.csv(inventory, file.path(out_dir, "object_inventory.csv"), row.names = FALSE)
+utils::write.csv(inventory, file.path(out_dir, "object_inventory.csv"), row.names = FALSE)
 
 required <- c("Mi1_M10_xyz", "Mi1_neu_ind", "anno_Mi1", "anno_Mi1_DRA")
 missing <- required[!vapply(required, exists, logical(1), envir = env, inherits = FALSE)]
@@ -110,7 +110,7 @@ build_mapping <- function(source, label) {
 full_map <- build_mapping(anno, "all_anno_Mi1")
 dra_map <- build_mapping(dra, "anno_Mi1_DRA")
 mapping <- rbind(full_map, dra_map)
-write.csv(mapping, file.path(out_dir, "mi1_skid_to_m10_mapping.csv"), row.names = FALSE)
+utils::write.csv(mapping, file.path(out_dir, "mi1_skid_to_m10_mapping.csv"), row.names = FALSE)
 
 summarize_map <- function(x) {
   data.frame(
@@ -127,7 +127,7 @@ summarize_map <- function(x) {
   )
 }
 summary <- rbind(summarize_map(full_map), summarize_map(dra_map))
-write.csv(summary, file.path(out_dir, "mapping_summary.csv"), row.names = FALSE)
+utils::write.csv(summary, file.path(out_dir, "mapping_summary.csv"), row.names = FALSE)
 
 status_lines <- c(
   "Read-only Mi1 reference inventory completed.",
@@ -139,7 +139,7 @@ status_lines <- c(
   paste("anno_Mi1_DRA rows:", nrow(dra)),
   "",
   "Mapping summary:",
-  capture.output(print(summary, row.names = FALSE)),
+  utils::capture.output(print(summary, row.names = FALSE)),
   "",
   "Important: this checks the authors' local index chain only. It does NOT",
   "establish a CATMAID-to-FAFB-v783 crosswalk or biological validity of every row."
