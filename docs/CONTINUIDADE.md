@@ -3,8 +3,8 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-11-05  
-**Versão:** 2.1 — auditoria real dos inputs candidatos a T4 concluída; modelo assinado é o próximo passo  
-**Estado geral:** o pipeline FAFB v783 e os diagnósticos espaço-temporais anteriores permanecem validados. Na Fase 7, a auditoria real leu 5.342.446 linhas de conectividade e encontrou 53.284 linhas candidatas de tipos pré-sinápticos para T4; o workflow #82 terminou com sucesso. Cortex CI #122 aprovou 65 testes em Python 3.11–3.13. Os dados mostram candidatos e rótulos `nt_type` mistos; nenhum sinal funcional individual, atraso biológico ou seletividade direcional foi demonstrado. Relatório em `docs/FASE_7_AUDITORIA_INPUTS_T4.md`.  
+**Versão:** 2.2 — auditoria FAFB T4 concluída e protótipo sintético de integração assinada implementado  
+**Estado geral:** a auditoria real FAFB encontrou 53.284 linhas candidatas de inputs T4; o workflow #82 terminou com sucesso. Foi implementado um protótipo sintético de três braços (excitação ACH, inibição GABA e desinibição Mi9), com atraso/filtros configuráveis. Cortex CI #130 aprovou 73 testes em Python 3.11–3.13 e executou o demo CLI em todas as versões; assimetria sintética = 0,236258, sem alegação de DSI biológico. O modelo ainda não consome arestas reais nem posições celulares FAFB. Relatórios: `docs/FASE_7_AUDITORIA_INPUTS_T4.md` e `docs/FASE_7_MODELO_T4_ASSINADO.md`.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; testes e experimentos remotos primeiro. PC reservado para profiling, validação Windows ou quando houver necessidade concreta.  
@@ -221,6 +221,18 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 - **Próxima subetapa:** construir um módulo experimental T4 assinado e separado do baseline v0. Distinguir neurotransmissor, efeito pós-sináptico e polaridade da resposta pré-sináptica (especialmente Mi9); parâmetros de atraso serão varridos como hipóteses de engenharia, não tratados como tempos biológicos medidos.
 - **Branch:** `data/fafb-v783-inputs`; PR #1 permanece aberto e `main` não foi alterada.
 
+## 7.21 Fase 7 — protótipo sintético T4 com entradas assinadas (2026-11-05)
+
+- **Implementação:** `cortex/t4_mechanism.py` separa sinal pós-sináptico, polaridade da resposta pré-sináptica, offset espacial, constante temporal, atraso e ganho.
+- **Braços exploratórios:** Mi1/Tm3 ACH (+); Mi4/C3/CT1/TmY15 GABA (-); Mi9 GLUT com resposta OFF e efeito inibitório pós-sináptico, representado como desinibição em estímulo ON.
+- **Salvaguarda:** posições, ganhos, tau e atrasos são parâmetros de engenharia não calibrados; não são extraídos de FAFB. O módulo não consome ainda IDs/arestas reais nem mapeamento de campo visual.
+- **Demonstração:** `scripts/run_t4_mechanism_demo.py` compara varreduras sintéticas opostas com o mesmo número de eventos. Saídas CI: integral forward 2,107407; reverse 1,301926; assimetria sintética 0,236258. O resultado não é DSI biológico nem identifica PD/ND.
+- **Controlos:** sem estímulo resulta em zero; braço direto isolado e simétrico não gera assimetria; entrada GABA reduz a resposta do braço direto; Mi9 com polaridade OFF e sinapse inibitória gera drive líquido positivo (desinibição) no modelo.
+- **CI #129:** 73 testes passaram em Python 3.11, 3.12 e 3.13.
+- **CI #130:** 73 testes passaram nas três versões e o CLI foi executado em todas, reproduzindo os mesmos valores da demonstração.
+- **Documento:** `docs/FASE_7_MODELO_T4_ASSINADO.md`.
+- **Conclusão:** protótipo computacional sintético validado; mecanismo biológico, parâmetros fisiológicos, posições de inputs e seletividade direcional real continuam não demonstrados.
+
 ## 8. Estratégia de execução atual — GitHub-first
 
 O responsável decidiu adiar o primeiro teste local no Windows e continuar o desenvolvimento no GitHub. Esta decisão é compatível com as tarefas atuais: a CI executa testes automatizados e os workflows podem processar os arquivos FAFB já presentes na branch.
@@ -233,10 +245,11 @@ O responsável decidiu adiar o primeiro teste local no Windows e continuar o des
 5. Fazer o primeiro teste local quando houver profiling, necessidade de bibliotecas específicas, limite de runner, validação Windows ou uma comparação de desempenho que não possa ser feita remotamente.
 
 ### Próximo gate remoto
-- CI geral: novos testes de auditoria T4 passam em Python 3.11–3.13.
-- Workflow FAFB: auditoria real termina e publica `fafb_v783_t4_input_audit.json`.
-- O relatório é examinado para confirmar classes presentes, ligações candidatas, neuropilos e valores `nt_type`.
-- Só depois será especificado o modelo de sinais e atrasos; não inferir inibição apenas pelo nome de uma classe ou por um rótulo não validado.
+- Ampliar o importador num módulo separado para preservar IDs e arestas reais de Mi1/Tm3/Mi4/Mi9/C3/TmY15/CT1 para T4, sem alterar a baseline v0.
+- Distinguir rótulos `nt_type` previstos de anotações `nt_type_verified` curadas; não mapear rótulos mistos diretamente para sinal funcional por aresta.
+- Investigar cobertura espacial das classes adicionais e caminhos pré-sinápticos; manter offsets e atrasos desconhecidos quando não houver dados.
+- Executar ablações e sensibilidade com as arestas reais e comparar ME_L/ME_R.
+- Não calcular DSI biológico antes de validar a orientação local de T4, estímulo e readout PD/ND.
 
 ## 9. Formato obrigatório para atualizações futuras
 
