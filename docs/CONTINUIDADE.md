@@ -669,3 +669,6 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - Artefato de saída: `phase8-mi1-inventory`, workflow run #1, 4 arquivos CSV/TXT. Retenção 30 dias.
 - Adicionado `scripts/inspect_mi1_reference_structure.R` para examinar os objetos `Mi1`, `Mi1_ind_PR`, `Mi1_ind_noPR`, `Mi1_ind_DRA`, nomes/rownames e a sequência integral de `Mi1_neu_ind`. A execução estrutural subsequente está em andamento; ainda não interpretar a causa dos dois casos até examinar essa saída.
 - Próxima etapa: interpretar a estrutura e o papel dos índices com base nos scripts dos autores; depois desenhar um crosswalk separado CATMAID→FlyWire v783, sem extrapolar a regressão XYZ→p/q rejeitada anteriormente.
+
+
+- **Achado estrutural preliminar (artefato do workflow estrutural #2, run em execução no momento do registro):** `Mi1` tem 780 elementos e seus nomes começam/terminam com os mesmos IDs vistos em `anno_Mi1$skid`; `Mi1_neu_ind` tem 779 valores inteiros únicos, sequenciais de 1 a 780 com ausência do índice 752; `Mi1_M10_xyz` tem 779 linhas. Isso sugere uma lista de índices de origem com um elemento excluído, e não deve ser confundido automaticamente com posições 1..779 da matriz M10. A equivalência exata será confrontada com `Mi1_ind_DRA` e a expressão usada pelos autores antes de qualquer correção no mapeamento.
