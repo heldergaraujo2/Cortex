@@ -69,3 +69,14 @@ def test_scheduled_input_control_stays_zero():
         network, (frozenset(), frozenset(), frozenset())
     )
     assert result["metrics"]["peak_mean_t4_rate"] == 0.0
+
+
+
+def test_missing_projection_bins_remain_empty_frames():
+    sparse = (
+        ColumnAssignment("a", "left", "L1", "1", 0, 0, 0, 0),
+        ColumnAssignment("b", "left", "L1", "2", 0, 0, 2, 0),
+    )
+    schedule = build_lattice_schedule(sparse, {"a", "b"}, "left", "p", 1)
+    assert schedule.progress_values == (0, 2, 4)
+    assert schedule.frames == (frozenset({"a"}), frozenset(), frozenset({"b"}))
