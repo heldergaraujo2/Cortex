@@ -6,6 +6,7 @@ on:
       - research/phase-8-anatomical-column-reference
     paths:
       - scripts/inspect_mi1_reference.R
+      - scripts/inspect_mi1_reference_structure.R
       - data/external/eyemap_T4/**
       - .github/workflows/run-mi1-reference-inventory.yml
   workflow_dispatch:
