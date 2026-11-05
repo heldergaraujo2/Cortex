@@ -165,25 +165,30 @@ A proveniência e a ressalva de licença estão em `data/external/eyemap_T4/READ
 **Estado do Gate 8A:** os insumos agora estão disponíveis no repositório, mas o script R ainda precisa ser executado contra eles. Nenhuma contagem de neurônios, taxa de correspondência, cobertura ou conclusão anatômica é inferida apenas da importação.
 
 
-## Resultados empíricos iniciais do Gate 8A (2026-11-05)
+## Resultados empíricos e correção da semântica dos índices (2026-11-05)
 
-Execução: [workflow R 4.4.1 #1](https://github.com/heldergaraujo2/Cortex/actions/runs/42048886029), concluído com sucesso.
+Execuções R 4.4.1:
+- [Inventário estrutural #2](https://github.com/heldergaraujo2/Cortex/actions/runs/42049602085) — sucesso; artefato estrutural inspecionado.
+- [Inventário com mapeamento inverso e cross-check DRA](https://github.com/heldergaraujo2/Cortex/actions/runs/42050752606) — execução iniciada para validar a correção no script.
 
-| Objeto/medida | Resultado |
+| Objeto/medida | Resultado observado |
 |---|---:|
 | `Mi1` | 780 elementos |
 | `anno_Mi1` | 780 linhas |
 | `Mi1_M10_xyz` | 779 x 3 |
-| `Mi1_neu_ind` | 779 inteiros |
+| `Mi1_neu_ind` | 779 índices inteiros únicos |
 | `anno_Mi1_DRA` | 42 linhas |
-| Correspondências posicionais finitas em `anno_Mi1` | 778/780 |
-| Correspondências posicionais finitas no DRA | 42/42 |
-| IDs duplicados em `anno_Mi1` | 0 |
+| Linhas de anotação presentes em `Mi1_neu_ind` | 779/780 |
+| Linha de anotação ausente | 752 |
+| `skid` da linha 752 | `15578998` |
+| DRA derivado por mapeamento inverso | 42/42, ordem exata |
 
-Duas exceções foram localizadas na saída detalhada: `skid=17325656` (linha 779, `Mi1_neu_ind=780`, fora da matriz M10 de 779 linhas) e `skid=17328033` (linha 780, sem índice correspondente porque o vetor tem 779 posições). Ambas permanecem sem coordenada atribuída.
+**Correção conceitual:** a estrutura demonstra que `Mi1_neu_ind` lista, na ordem das linhas de `Mi1_M10_xyz`, os índices correspondentes em `anno_Mi1`. Portanto, para uma anotação com linha `k`, a linha M10 é `match(k, Mi1_neu_ind)`. Não se deve usar `Mi1_neu_ind[k]` como se o vetor fosse um mapa direto. A expressão inversa reproduz exatamente `Mi1_ind_DRA` (42 índices, mesma ordem), um cross-check independente fornecido no arquivo dos autores.
 
-O código dos autores usa `Mi1_neu_ind[match(anno_Mi1_DRA$skid, anno_Mi1$skid)]` para selecionar as 42 células DRA na figura 2; as 42 correspondem a coordenadas finitas na execução. Isso não autoriza estender a cobertura a todas as 780 anotações. A diferença de comprimentos e os dois casos precisam ser explicados pela estrutura dos objetos e pelo critério de inclusão/exclusão dos autores.
+Assim, a interpretação anterior de duas células finais sem coordenadas estava errada: os IDs nas linhas 779 e 780 podem ser associados às linhas M10 778 e 779, respectivamente. A única anotação sem coordenada na lista é a linha 752 (`skid=15578998`). Não se imputa nem inventa coordenada para ela.
 
-**Estado:** inventário R executado; cobertura geral parcial (778/780) e DRA completa (42/42). Gate 8A ainda não está aprovado para mapeamento geral completo. Não ajustar índice, excluir células nem preencher coordenadas sem evidência documental/estrutural.
+O script `scripts/inspect_mi1_reference.R` foi corrigido para inverter a relação e registrar um cross-check exato com `Mi1_ind_DRA`. A linha 123 de `Fig_2_EM.R` usa a expressão direta `Mi1_neu_ind[match(...)]`, que diverge do índice DRA de referência para as duas células finais; registrar como possível inconsistência no script de figura, não como evidência para alterar os dados.
 
-O artefato `phase8-mi1-inventory` contém `object_inventory.csv`, `mapping_summary.csv`, `mi1_skid_to_m10_mapping.csv` e `mapping_status.txt`. A etapa diagnóstica adicional de estrutura dos objetos está sendo executada para esclarecer os dois casos.
+**Estado:** estrutura e semântica do vetor fortemente indicadas; cobertura local de 779/780 pelo mapeamento inverso, com uma exclusão explícita. Gate 8A depende da execução bem-sucedida do script corrigido e da confirmação do cross-check automatizado. Ainda não existe crosswalk CATMAID→FAFB v783, nem validação biológica de toda a grade.
+
+O artefato estrutural contém `mi1_object_structure.txt`; o novo artefato do inventário corrigido deve incluir `dra_index_crosscheck.csv`, resumo, mapeamento por neurônio e inventário de objetos.
