@@ -123,3 +123,10 @@ O dataset FAFB v783 usado pelo Cortex possui restrições de uso já registradas
 - **NÃO AUTORIZADO POR EVIDÊNCIA:** atribuir p/q aos neurônios não mapeados por extrapolação do ajuste afim atual.
 
 **Decisão:** não substituir o algoritmo atual por outro modelo preditivo ainda. Primeiro recuperar e validar a tabela de identidade e os centros M10. O audit atual permanece como diagnóstico negativo e deve continuar impedindo extrapolações não validadas.
+
+
+## 10. Validação de integração documental
+
+- **CI Cortex #189:** sucesso no commit `e4873cd702a411ed771b8b4ee25494cd9448d85f`, com jobs aprovados em Python 3.11, 3.12 e 3.13: https://github.com/heldergaraujo2/Cortex/actions/runs/42040581437
+- A execução não publicou artefatos e não executou a inspeção dos objetos RData externos. Portanto, este resultado valida apenas os testes e a integridade da branch, não os gates anatômicos 8A–8E.
+- A leitura do blob público `data/neu_Mi1.RData` foi confirmada pelo GitHub (SHA `ee941396f53e813b0e12d5a1fcc64abdfec321db`), mas a API textual não retornou bytes para o objeto binário. A inspeção de conteúdo continua pendente.
