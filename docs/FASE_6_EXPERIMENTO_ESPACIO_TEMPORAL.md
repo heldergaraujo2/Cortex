@@ -89,3 +89,16 @@ O índice de assimetria é `abs(A+ - A-) / (A+ + A-)`, em que A é a atividade T
 ## 6. Gate seguinte
 
 A Fase 6 só termina depois da CI e da inspeção dos dois relatórios reais. Se o diagnóstico espacial for estável, a fase seguinte deve ampliar o circuito com entradas de T4 que faltam (Mi4, Mi9, C3, CT1 e outras conforme fonte e cobertura), introduzir sinais e filtros temporais explicitamente documentados e validar o mecanismo antes de qualquer alegação de direção preferida. Os primeiros testes locais no PC só devem começar depois de esta preparação e os gates automatizados estarem concluídos.
+
+
+## Revisão da primeira execução — população de leitura corrigida
+
+A primeira execução CI que incluiu as frentes espaciais (run #56, commit `1ac921ee5e6a0cc021eecf2e24df1c54146455a8`) terminou tecnicamente com sucesso, mas a inspeção dos JSON encontrou um erro de escopo na métrica: a entrada L1 era limitada ao hemisfério estimulado, enquanto o readout T4 incluía os dois hemisférios. Além disso, o denominador de L1 usado como cobertura era o total bilateral, não uma contagem específica do hemisfério. Portanto, os valores de resposta/asimetria daquele artefato ficam **supersedidos** e não serão interpretados.
+
+Correção aplicada:
+- selecionar o readout apenas entre neurónios T4a–T4d com atribuição explícita ao mesmo hemisfério do neuropilo;
+- validar que o tipo atribuído coincide com o tipo primário do grafo e rejeitar duplicatas;
+- reportar a cobertura L1 global (ambos os hemisférios) separadamente do número de L1 atribuídos ao hemisfério;
+- não publicar uma cobertura L1 específica por hemisfério, pois os L1 sem atribuição não têm hemisfério conhecido por esta tabela.
+
+A nova execução CI deve validar esta correção antes de aceitar os resultados. Os relatórios do run #56 continuam úteis apenas para provar que os scripts executaram e que os controles/pares de entrada foram produzidos; seus valores de resposta não são resultados finais.
