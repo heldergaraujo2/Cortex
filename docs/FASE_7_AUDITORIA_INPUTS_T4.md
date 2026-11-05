@@ -98,7 +98,7 @@ O resultado é misto por classe. Exemplos:
 ## 6. Fontes científicas
 
 - Shinomiya et al. (2017), *The comprehensive connectome of a neural substrate for ‘ON’ motion detection in Drosophila*, eLife: https://elifesciences.org/articles/24394 — anatomia das entradas T4, fenótipos de neurotransmissores propostos e organização dendrítica; a polaridade de Mi9 é dependente do receptor.
-- Gruntman et al. (2018), *Simple integration of fast excitation and offset, delayed inhibition computes directional selectivity in Drosophila*, eLife: https://elifesciences.org/articles/38167 — evidência fisiológica de integração de excitação rápida com inibição espacialmente deslocada e atrasada.
+- Gruntman et al. (2018), *Simple integration of fast excitation and offset, delayed inhibition computes directional selectivity in Drosophila*, eLife: https://www.nature.com/articles/s41593-017-0046-4 — evidência fisiológica de integração de excitação rápida com inibição espacialmente deslocada e atrasada.
 - Behnia & Desplan (2015), *Visual motion detection in Drosophila*, Annual Review of Neuroscience: https://doi.org/10.1146/annurev-neuro-080422-111929 — revisão da arquitetura e dos papéis dos canais pré-sinápticos.
 - FlyWire Codex FAQ: https://codex.flywire.ai/faq — distinção entre `nt_type` previsto e `nt_type_verified` curado, estrutura dirigida das conexões e múltiplas linhas por neuropilo.
 
