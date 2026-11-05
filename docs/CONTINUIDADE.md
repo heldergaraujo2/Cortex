@@ -538,3 +538,16 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **NÃO DEMONSTRADO:** estímulo espacial, movimento, seletividade direcional, aprendizagem ou comportamento.
 - **Conclusão:** Fase 5 concluída como baseline computacional estrutural v0, não como modelo biológico validado.
 - **Próxima fase:** Fase 6 — verificar a semântica/orientação de p/q e column_id em fontes oficiais; só depois construir estímulos espaço-temporais em direções opostas, flash estático e controlo sem estímulo, mantendo as alegações de direção bloqueadas até validação.
+
+
+## 7.17 Início da Fase 6 — coordenadas e frentes espaço-temporais (2026-11-04)
+
+- **Branch:** `data/fafb-v783-inputs`; PR #1 aberto, `main` não integrada.
+- **Fontes primárias consultadas:** Seung (Nature 2024, DOI 10.1038/s41586-024-07953-5), Zhao et al. (Nature 2025, DOI 10.1038/s41586-025-09276-5), Borst et al. (2020, DOI 10.1007/s00359-019-01375-9), Salazar-Gatzimas et al. (Neuron 2018, DOI 10.1016/j.neuron.2017.03.010), FAQ oficial Codex.
+- **CONFIRMADO pela literatura FAFB:** p/q são coordenadas discretas da malha hexagonal da medula; +p anterodorsal, +q posterodorsal e +v dorsal. Projeções de ordenação: p = 2p-q; q = 2q-p; v = p+q.
+- **CONFIRMADO pela literatura:** a malha da retina é esquerda-direita invertida em relação à medula pelo quiasma óptico. A conversão de medula para espaço visual requer eye map e geometria local; não será inventada.
+- **DESCONHECIDO:** semântica/unidades específicas de x/y na tabela column_assignment; não são usadas no experimento.
+- **Implementação adicionada:** `cortex/visual_stimuli.py` gera frentes L1 ordenadas por p/q/v e as direções opostas como reversões exatas. `cortex/dynamics.py` recebeu simulador de agenda de entradas. `scripts/run_fafb_spatiotemporal.py` produz relatórios ME_L/ME_R com frentes opostas, flash ON e controlo sem estímulo. `tests/test_visual_stimuli.py` cobre projeções, reversibilidade, energia igual, separação de hemisfério, duplicatas e propagação agendada.
+- **Desenho experimental:** cada L1 atribuído é ativado exatamente uma vez por direção; a direção oposta tem os mesmos frames em ordem inversa. As métricas de assimetria são apenas diagnósticas, não DSI biológico.
+- **Limite crítico:** a rede atual contém L1/Mi1/Tm3/T4, sem entradas inibitórias Mi4/Mi9/C3/CT1, sem atrasos fisiológicos e sem dinâmica de membrana. Não permite alegar seletividade direcional. T4a–T4d serão reportados, mas não mapeados a direções cardinais globais.
+- **Próximo gate:** CI real após implementação, inspeção dos relatórios espaciais dos dois hemisférios e correção de qualquer falha. Só então preparar os primeiros testes locais no PC.
