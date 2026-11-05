@@ -670,3 +670,12 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - Script corrigido: `scripts/inspect_mi1_reference.R` agora inverte a relação e escreve `dra_index_crosscheck.csv`. Workflow [#4](https://github.com/heldergaraujo2/Cortex/actions/runs/42050752606) terminou com sucesso em R 4.4.1. O cross-check é TRUE: 42 índices derivados, 42 de referência, correspondência exata em ordem. Resumo: 779/780 anotações mapeadas; DRA 42/42; uma ausência explícita na linha 752 (`skid=15578998`).
 - **Estado:** semântica dos índices fortemente indicada; cobertura local esperada 779/780 com uma exclusão explícita. Gate 8A aguarda a execução bem-sucedida do script corrigido. Nenhum crosswalk CATMAID→FAFB v783 foi produzido. Não extrapolar a regressão XYZ→p/q rejeitada.
 
+
+
+## 7.23 Preparação do crosswalk CATMAID → FlyWire v783
+
+- Export `mi1_catmaid_skids_for_crosswalk.csv` adicionado ao inventário R: somente 779 skeleton IDs que possuem linha M10 validada entram na etapa seguinte; a linha ausente 752 (`skid=15578998`) continua excluída.
+- Implementado `scripts/crosswalk_mi1_catmaid_flywire.py`, usando `fafbseg.flywire.skid_to_id` com amostragem de todos os nós (`sample=None`) e segmentação estática `flat_783`.
+- Workflow manual `.github/workflows/mi1-catmaid-flywire-crosswalk.yml` criado. Requer segredo `FLYWIRE_TOKEN`; `CATMAID_API_TOKEN` é opcional para CATMAID público. Não foi iniciado sem a credencial. Nenhum token foi inserido no repositório.
+- `fafbseg` documenta que `skid_to_id` transforma skeleton nodes FAFB14→FlyWire, consulta root IDs e seleciona o root mais frequente; a confiança é a diferença top-1/top-2 dividida pelos roots válidos. O alias `flat_783` está mapeado no código-fonte atual para `gs://flywire_v141_m783`.
+- Nenhum root ID foi gerado ainda. O próximo bloqueio operacional é adicionar `FLYWIRE_TOKEN` em GitHub Actions Secrets e iniciar o workflow manual. Mesmo depois, confiança não será tratada como probabilidade nem usada para aceitar automaticamente correspondências.
