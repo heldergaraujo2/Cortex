@@ -54,13 +54,25 @@ lines <- c(
   paste("Mi1_ind_PR elements 7-8:", paste(capture.output(str(pr[7:8])), collapse=" | ")),
   paste("Mi1_ind_noPR length/range:", length(no_pr), "/", paste(range(no_pr), collapse="..")),
   paste("Mi1_ind_DRA length/range:", length(dra_ind), "/", paste(range(dra_ind), collapse="..")),
+  paste("Mi1_ind_DRA values:", paste(dra_ind, collapse=", ")),
+  paste("Mi1 names exactly equal anno_Mi1$skid:", identical(as.character(names(Mi1)), as.character(anno$skid))),
+  paste("Mi1_neu_ind missing original indices:", paste(setdiff(seq_len(nrow(anno)), idx), collapse=", ")),
   paste("anno_Mi1_DRA rows:", nrow(dra)),
   "",
   "Last 5 anno_Mi1 rows:",
   paste(capture.output(print(utils::tail(anno, 5))), collapse="\n"),
   "",
   "All Mi1_neu_ind values:",
-  paste(idx, collapse=", ")
+  paste(idx, collapse=", "),
+  "",
+  "DRA mapping cross-checks:",
+  paste("Direct author expression:", paste(idx[match(dra$skid, anno$skid)], collapse=", ")),
+  paste("Inverse lookup positions:", paste(match(match(dra$skid, anno$skid), idx), collapse=", ")),
+  paste("Mi1_ind_DRA values:", paste(dra_ind, collapse=", ")),
+  paste("Direct expression identical to Mi1_ind_DRA:", identical(as.integer(idx[match(dra$skid, anno$skid)]), as.integer(dra_ind))),
+  paste("Direct expression setequal Mi1_ind_DRA:", setequal(as.integer(idx[match(dra$skid, anno$skid)]), as.integer(dra_ind))),
+  paste("Inverse lookup identical to Mi1_ind_DRA:", identical(as.integer(match(match(dra$skid, anno$skid), idx)), as.integer(dra_ind))),
+  paste("Inverse lookup setequal Mi1_ind_DRA:", setequal(as.integer(match(match(dra$skid, anno$skid), idx)), as.integer(dra_ind)))
 )
 writeLines(lines, file.path(out_dir, "mi1_object_structure.txt"))
 cat(paste(lines, collapse="\n"), "\n")
