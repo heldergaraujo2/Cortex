@@ -86,11 +86,22 @@ Esta concordância é apenas consistência interna dos produtos Codex, não vali
 
 O workflow FAFB #110 terminou com sucesso e publicou `fafb_v783_t4_neuron_annotations.json`. A suíte Cortex CI #155 aprovou 88 testes em Python 3.11, 3.12 e 3.13 e executou o demo CLI em todas as versões. A execução FAFB #110 validou também a auditoria real de previsões por neurónio.
 
+### Perfis estruturais por alvo T4 concluídos
+
+O módulo `cortex/t4_profiles.py` e o script `scripts/summarize_t4_target_profiles.py` juntam arestas a atribuições T4 por root ID exato. FAFB workflow #128 terminou com sucesso:
+- 6.236 alvos T4 com inputs candidatos;
+- 5.981 alvos atribuídos a coluna/hemisfério;
+- 255 alvos sem atribuição;
+- 51.387 linhas de aresta com alvo atribuído e 1.897 sem;
+- zero divergências entre sufixo hemisférico do neuropilo e hemisfério atribuído;
+- 221 grupos agregados e 6.236 perfis individuais.
+
+A cobertura dos alvos candidatos é T4a 98,901%, T4b 99,070%, T4c 90,968%, T4d 95,475%. A CI #165 aprovou 95 testes em Python 3.11, 3.12 e 3.13.
+
 ### Próximos passos
-1. Confirmar na próxima CI a cobertura do teste de rótulo vazio e manter a suíte verde.
-2. Construir perfis estruturais por T4-alvo/subtipo, separando neuropilo, tipo pré-sináptico, `nt_type`, score e `syn_count`.
-3. Juntar os alvos T4 à `column_assignment` existente; investigar coordenadas e uma fonte de coluna validada para os 7.028 IDs pré-sinápticos adicionais. Não inferir p/q diretamente de coordenadas brutas.
-4. Investigar uma fonte independente/curada para neurotransmissores verificados e receptores pós-sinápticos. O dump Codex v783 disponível não contém `nt_type_verified`.
-5. Só então construir canais assinados derivados dos dados, mantendo desconhecidos os casos de baixa confiança ou sem evidência.
-6. Executar ablações e sensibilidade ME_L/ME_R sem alterar a baseline v0; DSI biológico continua bloqueado até validar orientação e PD/ND.
+1. Investigar como mapear espacialmente os 7.028 IDs pré-sinápticos candidatos. A tabela de coluna atual só cobre L1, Mi1, Tm3 e T4; coordenadas brutas não devem ser convertidas em p/q sem transformação validada.
+2. Construir perfis por coluna e subtipo com a distribuição estrutural já importada, sem converter `syn_count` em eficácia.
+3. Procurar evidência independente/curada de neurotransmissores e receptores; o dump Codex v783 contém `nt_type`/`nt_type_score`, mas não `nt_type_verified`.
+4. Integrar ao modelo experimental apenas sinais sustentados por evidência; manter os casos de baixa confiança/desconhecidos sem sinal.
+5. Executar ablações e sensibilidade ME_L/ME_R sem alterar a baseline v0. DSI biológico continua bloqueado até validar orientação e PD/ND.
 
