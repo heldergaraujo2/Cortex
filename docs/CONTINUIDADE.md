@@ -2,9 +2,9 @@
 
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
-**Última atualização:** 2026-11-04  
-**Versão:** 1.8 — Fase 4 espacial e Fase 5 baseline estrutural v0 concluídas  
-**Estado geral:** Fases 1–3 concluídas no escopo documentado. Fase 4 do piloto FAFB v783 (ingestão/cobertura espacial) concluída. Fase 5 (baseline dinâmica estrutural rate-based v0) concluída: execução real ME_L/ME_R aprovada e examinada; Cortex CI passou com 45 testes em Python 3.11–3.13. Não foi demonstrada seletividade direcional nem dinâmica biologicamente calibrada.  
+**Última atualização:** 2026-11-05  
+**Versão:** 1.9 — Fase 4/5 concluídas; Fase 6 validada no GitHub e pronta para primeiro teste local  
+**Estado geral:** Fases 1–3 concluídas no escopo documentado. Fase 4 do piloto FAFB v783 concluída. Fase 5 baseline estrutural rate-based v0 concluída. Fase 6 (malha medular p/q e diagnóstico de frentes espaço-temporais) passou na validação real ME_L/ME_R; Cortex CI passou com 61 testes em Python 3.11–3.13. A preparação no repositório está concluída; primeiro teste local no PC Windows pendente. Não foi demonstrada seletividade direcional nem dinâmica biologicamente calibrada.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; o PC só será necessário para profiling ou validação de desempenho local.  
@@ -564,3 +564,16 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 
 
 - **Progressão da frente:** bins inteiros vazios entre colunas são mantidos como frames sem estímulo; não se comprimem lacunas. Um passo é uma unidade de projeção da malha, não tempo biológico ou distância física.
+
+
+## 7.19 Fase 6 — preparação no repositório concluída; primeiro teste no PC (2026-11-05)
+
+- Commit validado: `784f30d43811da795fbda5ddadcbb5599ef91a8c` na branch `data/fafb-v783-inputs`.
+- FAFB Data Validation #71: sucesso; importação, validação espacial, testes, baseline ME_L/ME_R e frentes espaço-temporais ME_L/ME_R concluídos. https://github.com/heldergaraujo2/Cortex/actions/runs/41945748140
+- Cortex CI #109: 61 testes aprovados em Python 3.11, 3.12 e 3.13. https://github.com/heldergaraujo2/Cortex/actions/runs/41945747960
+- Readout corrigido: somente T4 atribuídos ao mesmo hemisfério do neuropilo; 2.986 T4 left e 2.999 T4 right. O artefato antigo com readout bilateral fica supersedido.
+- Resultado: assimetria integrada +/− de 0,044% a 0,978%; flash ON integrado próximo de 0,99; ausência de estímulo zero. É um diagnóstico de engenharia, não DSI nem seletividade biológica.
+- Limites mantidos: sem conversão para direções do campo visual, sem mapeamento preferencial global de T4a–T4d, sem inibição ou dinâmica fisiológica calibrada.
+- Script local criado: `scripts/run_first_pc_validation.ps1`. Confere branch, alterações staged/não staged, sincronização com origin e arquivos de dados; usa ambiente virtual local e grava relatórios em `artifacts/pc-validation` (ignorado pelo Git). Não executa reset, clean, stash nem altera arquivos brutos.
+- Estado da Fase 6: gates do repositório/GitHub concluídos. Primeiro teste no PC ainda não executado.
+- Próxima ação: sincronizar a branch com segurança no clone Windows e executar o script local. Não avançar para a expansão do modelo até examinar a saída local.
