@@ -285,9 +285,7 @@ def audit_coordinate_to_column_mapping(
         "dataset": "FlyWire FAFB v783",
         "coordinate_source": coordinates_file.name,
         "coordinate_file_sha256": hashlib.sha256(coordinates_file.read_bytes()).hexdigest(),
-        "coordinate_rows": sum(
-            record.sample_count + record.duplicate_rows_ignored for record in coordinates.values()
-        ),
+        "coordinate_rows": sum(record.sample_count for record in coordinates.values()),
         "unique_supervoxel_ids_by_root_id_sum": sum(
             record.unique_supervoxel_ids for record in coordinates.values()
         ),
