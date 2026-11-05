@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** no fluxo experimental FAFB, as fases estruturais e o diagnóstico espaço-temporal foram validados no GitHub, incluindo ME_L/ME_R e 61 testes em Python 3.11–3.13. A Fase 7 foi iniciada com auditoria dos tipos candidatos a inputs T4 e dos rótulos `nt_type`; CI e relatório real dessa auditoria ainda pendentes de inspeção. Estratégia atual GitHub-first; testes locais Windows adiados até necessidade de profiling, compatibilidade ou escala. Não foi demonstrada inibição fisiológica, atraso biológico ou seletividade direcional. Ver aditivo e docs/CONTINUIDADE.md.  
+**Status global:** o fluxo estrutural/espacial FAFB e o diagnóstico espaço-temporal foram validados no GitHub. A auditoria real da Fase 7 leu 5.342.446 linhas de conectividade e encontrou 53.284 linhas candidatas de entradas para T4; o workflow #82 terminou com sucesso. Cortex CI #122 passou com 65 testes em Python 3.11–3.13. Próxima subetapa: modelo T4 assinado experimental, mantendo sinais e atrasos por aresta sob controle de evidência. Estratégia GitHub-first; testes locais Windows adiados até necessidade técnica. Não foi demonstrada seletividade direcional biológica. Ver aditivo e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -559,9 +559,9 @@ Foi adicionado um gerador de frentes L1 para +p/−p, +q/−q e +v/−v. Em cada
 A primeira execução real das frentes mostrou um erro de escopo: a entrada L1 era de um hemisfério, mas a média T4 incluía os dois. Os valores de resposta e assimetria do artefato #56 ficam supersedidos. O código agora restringe o readout T4 aos IDs explicitamente atribuídos ao mesmo hemisfério e reporta cobertura L1 global separadamente, sem inferir o lado dos neurónios sem atribuição. A nova CI e os relatórios corrigidos são obrigatórios antes de avançar para testes locais.
 
 
-## Gate de handoff — primeiro teste local no PC (2026-11-05)
+## Gate de handoff — primeiro teste local adiado (GitHub-first, 2026-11-05)
 
-A preparação de código, dados, controles, testes e relatórios da Fase 6 foi concluída no GitHub. A execução real #71 validou ME_L e ME_R, e CI #109 aprovou 61 testes em cada versão Python 3.11–3.13. O próximo passo não é outra fase de modelagem: é validar no ambiente Windows do projeto com `scripts/run_first_pc_validation.ps1`, comparar os relatórios locais com a CI e conferir desempenho/compatibilidade. A Fase 6 permanece aguardando esse gate local.
+A Fase 6 foi validada no GitHub com execução real ME_L/ME_R e a CI de referência passou. O responsável decidiu adiar a validação local Windows e continuar o desenvolvimento remoto. O script `scripts/run_first_pc_validation.ps1` permanece disponível para quando houver necessidade de profiling, compatibilidade Windows, escala ou medição no hardware local. A ausência de teste local não bloqueia as próximas subetapas remotas, mas impede alegações de compatibilidade/desempenho no PC.
 
 
 ## Aditivo — Fase 7: auditoria de evidências dos inputs T4 (2026-11-05)
@@ -583,4 +583,6 @@ O relatório separa cada combinação de tipo pré/pós, neuropilo e `nt_type`. 
 4. Semântica de `nt_type` confirmada na documentação do produto/fontes primárias antes de qualquer mapeamento para sinal.
 5. Para cada tipo sem evidência suficiente, manter sinal/dinâmica como desconhecidos e não simular uma inibição inventada.
 
-A execução CI desta subetapa ainda precisa ser inspecionada. Até essa inspeção, a Fase 7 está **em andamento**, não concluída.
+A execução real foi concluída no FAFB Data Validation #82 (run `41948702974`), com artefato `fafb-v783-validation-report` ID `13380560010`. Foram observadas 53.284 linhas candidatas de entradas para T4 em todos os neuropilos, das quais 52.560 em ME_L/ME_R. Os rótulos `nt_type` totalizaram ACH 31.333, GABA 17.098 e GLUT 4.853 linhas; o relatório completo e as contagens por classe/região estão em `docs/FASE_7_AUDITORIA_INPUTS_T4.md`.
+
+A Cortex CI #122 passou com 65 testes em Python 3.11, 3.12 e 3.13. Esta subetapa de auditoria está concluída; a Fase 7 permanece **em andamento** até o modelo assinado, seus controlos e as análises de sensibilidade serem implementados e validados.
