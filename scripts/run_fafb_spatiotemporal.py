@@ -8,7 +8,10 @@ from pathlib import Path
 
 from cortex.connectome import load_pilot_connectome
 from cortex.dynamics import build_rate_network, run_rate_simulation_schedule
-from cortex.spatial import load_column_assignments
+from cortex.spatial import (
+    assigned_t4_readout_by_hemisphere,
+    load_column_assignments,
+)
 from cortex.visual_stimuli import build_lattice_schedule
 
 
@@ -30,15 +33,9 @@ def run_experiment(data_dir: Path, neuropil: str, minimum_synapses: int = 5) -> 
 
     # Restrict the measured T4 population to cells assigned to this hemisphere.
     # The graph contains both hemispheres even when only one neuropil is selected.
-    t4_ids_by_subtype = {
-        subtype: tuple(sorted({
-            row.root_id for row in assignments.rows
-            if row.hemisphere == hemisphere
-            and row.cell_type == subtype
-            and row.root_id in network.neuron_types
-        }))
-        for subtype in ("T4a", "T4b", "T4c", "T4d")
-    }
+    t4_ids_by_subtype = assigned_t4_readout_by_hemisphere(
+        assignments.rows, network.neuron_types, hemisphere
+    )
     side_t4_ids = tuple(sorted(
         root_id for ids in t4_ids_by_subtype.values() for root_id in ids
     ))
