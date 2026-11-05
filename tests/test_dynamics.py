@@ -38,7 +38,7 @@ def test_pulse_propagates_through_two_stages_deterministically():
     config = RateConfig(steps=6, stimulus_duration=1, leak=1.0)
     first = run_rate_simulation(_network(), config)
     assert first == run_rate_simulation(_network(), config)
-    assert first["metrics"]["t4_rate_trace"] == [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+    assert first["metrics"]["t4_rate_trace"] == [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
 
 
 def test_no_stimulus_control_stays_at_zero():
@@ -74,7 +74,7 @@ def test_network_uses_one_neuropil_and_only_declared_edges():
     )
     network = build_rate_network(mixed, "ME_L", minimum_synapses=5)
     assert {(e.pre_root_id, e.post_root_id) for e in network.edges} == {
-        ("l1", "m1"), ("m1", "t4"), ("tm", "t4")
+        ("l1", "m1"), ("l1", "tm"), ("m1", "t4"), ("tm", "t4")
     }
     assert sum(e.weight for e in network.edges if e.post_root_id == "t4") == pytest.approx(1.0)
 
