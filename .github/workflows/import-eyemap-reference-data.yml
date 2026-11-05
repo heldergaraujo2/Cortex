@@ -1,0 +1,56 @@
+name: Import eyemap_T4 reference data
+
+on:
+  push:
+    branches:
+      - research/phase-8-anatomical-column-reference
+    paths:
+      - .github/workflows/import-eyemap-reference-data.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-reference-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout research branch
+        uses: actions/checkout@v4
+        with:
+          ref: research/phase-8-anatomical-column-reference
+          fetch-depth: 0
+
+      - name: Download and verify upstream RData
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data/external/eyemap_T4
+          curl --fail --location --retry 3 --retry-delay 2 \
+            https://raw.githubusercontent.com/reiserlab/eyemap_T4/main/data/neu_Mi1.RData \
+            --output data/external/eyemap_T4/neu_Mi1.RData
+          curl --fail --location --retry 3 --retry-delay 2 \
+            https://raw.githubusercontent.com/reiserlab/eyemap_T4/main/data/Mi1_ind.RData \
+            --output data/external/eyemap_T4/Mi1_ind.RData
+
+          actual_neu="$(git hash-object data/external/eyemap_T4/neu_Mi1.RData)"
+          actual_ind="$(git hash-object data/external/eyemap_T4/Mi1_ind.RData)"
+          test "$actual_neu" = "ee941396f53e813b0e12d5a1fcc64abdfec321db"
+          test "$actual_ind" = "bc4933282664a84361c8318d8b4a1d54a728529a"
+
+          printf 'Verified neu_Mi1.RData Git blob: %s\n' "$actual_neu"
+          printf 'Verified Mi1_ind.RData Git blob: %s\n' "$actual_ind"
+
+      - name: Commit imported files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/external/eyemap_T4/neu_Mi1.RData data/external/eyemap_T4/Mi1_ind.RData
+          if git diff --cached --quiet; then
+            echo "Reference data already present; nothing to commit."
+            exit 0
+          fi
+          git commit -m "data: import verified eyemap_T4 Mi1 reference files [skip ci]"
+          git push origin HEAD:research/phase-8-anatomical-column-reference
