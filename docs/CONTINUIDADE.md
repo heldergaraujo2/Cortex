@@ -629,3 +629,55 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - Script local criado: `scripts/run_first_pc_validation.ps1`. Confere branch, alterações staged/não staged, sincronização com origin e arquivos de dados; usa ambiente virtual local e grava relatórios em `artifacts/pc-validation` (ignorado pelo Git). Não executa reset, clean, stash nem altera arquivos brutos.
 - Estado da Fase 6: gates do repositório/GitHub concluídos. Primeiro teste no PC ainda não executado.
 - Próxima ação: sincronizar a branch com segurança no clone Windows e executar o script local. Não avançar para a expansão do modelo até examinar a saída local.
+
+
+## 7.20 Fase 8 — referência anatômica M1 e CI concluída (2026-11-05)
+
+- Branch isolada: `research/phase-8-anatomical-column-reference`, baseada em `data/fafb-v783-inputs` no commit `66cb821590090561c69679cd5c2c005413bde50a`.
+- Documento: `docs/FASE_8_REFERENCIA_ESPACIAL_M1.md`; commit atual `e4873cd702a411ed771b8b4ee25494cd9448d85f`.
+- PR #2 Draft: https://github.com/heldergaraujo2/Cortex/pull/2. PR #1 e `main` permanecem sem alterações.
+- Cortex CI #189: sucesso no commit atual, Python 3.11, 3.12 e 3.13; os três jobs concluíram os testes e a demonstração sintética. https://github.com/heldergaraujo2/Cortex/actions/runs/42040581437
+- A execução #189 não publicou artefatos. O CI confirma a integridade da alteração documental, não valida o crosswalk CATMAID→FlyWire nem a geometria da grade.
+- Inspeção adicional do repositório público `reiserlab/eyemap_T4`: `data/neu_Mi1.RData` existe na branch `main` (blob SHA `ee941396f53e813b0e12d5a1fcc64abdfec321db`), mas a interface de leitura textual não expôs o conteúdo binário. Os objetos RData continuam por inspecionar em ambiente R/pyreadr; não declarar IDs ou cobertura dos 780 Mi1 como confirmados.
+- **CONFIRMADO:** CI #189 aprovado em três versões de Python; scripts públicos referenciam os objetos RData e usam centros M10 de Mi1 para construir a referência anatômica.
+- **DESCONHECIDO:** dimensões, alinhamento dos índices, IDs CATMAID por Mi1, cobertura dos 780 neurônios e crosswalk para FAFB v783.
+- **Próximo gate:** obter os RData sem perda, inspecionar estrutura/rownames/listas e produzir inventário de identidade reproduzível. Só depois executar crosswalk CATMAID→FlyWire e validar correspondência de snapshot.
+
+- **Refinamento de evidência no código dos autores:** `Fig_2_EM.R` indexa `Mi1_M10_xyz` por `Mi1_neu_ind[match(anno_Mi1_DRA$skid, anno_Mi1$skid)]`; `proc_eyemap.R` carrega `Mi1_M10_xyz` de `neu_Mi1.RData`. Isso confirma que o código usa uma cadeia explícita CATMAID `skid` → índice local → linha de coordenada M10 para as anotações mostradas. Cobertura total, unicidade e crosswalk para FAFB v783 continuam desconhecidos. Detalhamento atualizado em `docs/FASE_8_REFERENCIA_ESPACIAL_M1.md`.
+
+
+## 7.21 Ferramenta Gate 8A adicionada (2026-11-05)
+
+- Adicionado `scripts/inspect_mi1_reference.R` na branch isolada da Fase 8. A ferramenta lê `neu_Mi1.RData` e `Mi1_ind.RData` em ambiente R separado, inventaria objetos e gera tabelas da cadeia `anno_Mi1$skid` → `Mi1_neu_ind` → `Mi1_M10_xyz`, incluindo resumo de duplicatas, índices válidos e coordenadas finitas.
+- Atualizado `docs/FASE_8_REFERENCIA_ESPACIAL_M1.md` com instruções PowerShell e limites do script.
+- **Dados obtidos:** `data/external/eyemap_T4/neu_Mi1.RData` e `data/external/eyemap_T4/Mi1_ind.RData` foram importados do repositório público dos autores por GitHub Actions. O workflow #1 passou e verificou os Git blob SHA originais (`ee941396f53e813b0e12d5a1fcc64abdfec321db` e `bc4933282664a84361c8318d8b4a1d54a728529a`), confirmando identidade byte a byte.
+- Proveniência/licença documentada em `data/external/eyemap_T4/README.md`; os arquivos são dados de terceiros, não código original do Cortex. A licença específica dos dados não está explicitamente declarada por arquivo; manter a restrição não comercial conservadoramente até confirmação dos autores.
+- **Ainda não executado:** a presença dos binários não produz resultados empíricos por si só. Executar o script Gate 8A em R 4.4.1, revisar `mapping_summary.csv` e os casos não mapeados, depois decidir se o Gate 8A passa. Não iniciar crosswalk 8B antes disso.
+- Workflow: `.github/workflows/import-eyemap-reference-data.yml`; run #1: https://github.com/heldergaraujo2/Cortex/actions/runs/42048560799 (sucesso). PR #2 permanece Draft; `main` e PR #1 preservados.
+
+- Revisão estática do script: a correspondência agora rejeita explicitamente `skid` duplicado em `anno_Mi1` como ambíguo, sem aceitar o primeiro resultado de `match()`; a saída registra a contagem de correspondências por ID. Ainda não há execução real do script nem teste R local neste ambiente.
+
+
+## 7.22 Gate 8A — semântica dos índices Mi1/M10 corrigida (2026-11-05)
+
+- Workflow estrutural [#2](https://github.com/heldergaraujo2/Cortex/actions/runs/42049602085) executou com sucesso em R 4.4.1. Artefato estrutural inspecionado.
+- Objetos: `Mi1` = 780 elementos; `anno_Mi1` = 780 linhas; `Mi1_M10_xyz` = 779 x 3; `Mi1_neu_ind` = 779 inteiros únicos; `anno_Mi1_DRA` = 42 linhas.
+- `Mi1_neu_ind` contém todos os índices de `anno_Mi1` exceto 752. Logo, o vetor lista a linha de anotação representada por cada linha da matriz M10. Para converter anotação → linha M10, usar `match(anno_row, Mi1_neu_ind)`, não `Mi1_neu_ind[anno_row]`.
+- A linha de anotação ausente é 752, `skid=15578998`. Não inventar coordenada para esse neurônio.
+- O mapeamento inverso dos 42 IDs DRA reproduz `Mi1_ind_DRA` em ordem exata (42/42), conforme inspeção do artefato estrutural. Este é o cross-check independente que faltava.
+- Consequência: os dois casos antes apontados nas linhas 779/780 não estão sem coordenadas; o mapeamento inverso os associa às linhas M10 778/779. A conclusão anterior de 778/780 era resultado de tratar incorretamente o vetor como lookup direto e fica substituída por esta análise.
+- `Fig_2_EM.R` linha 123 usa a expressão direta `Mi1_neu_ind[match(...)]`, divergente de `Mi1_ind_DRA` para os dois últimos DRA. Registrar como possível bug/erro de indexação na figura dos autores; não usar essa linha como regra de mapeamento quando conflita com a lista DRA e a relação estrutural.
+- Script corrigido: `scripts/inspect_mi1_reference.R` agora inverte a relação e escreve `dra_index_crosscheck.csv`. Workflow [#4](https://github.com/heldergaraujo2/Cortex/actions/runs/42050752606) terminou com sucesso em R 4.4.1. O cross-check é TRUE: 42 índices derivados, 42 de referência, correspondência exata em ordem. Resumo: 779/780 anotações mapeadas; DRA 42/42; uma ausência explícita na linha 752 (`skid=15578998`).
+- **Estado:** semântica dos índices fortemente indicada; cobertura local esperada 779/780 com uma exclusão explícita. Gate 8A aguarda a execução bem-sucedida do script corrigido. Nenhum crosswalk CATMAID→FAFB v783 foi produzido. Não extrapolar a regressão XYZ→p/q rejeitada.
+
+
+
+## 7.23 Preparação do crosswalk CATMAID → FlyWire v783
+
+- Export `mi1_catmaid_skids_for_crosswalk.csv` adicionado ao inventário R: somente 779 skeleton IDs que possuem linha M10 validada entram na etapa seguinte; a linha ausente 752 (`skid=15578998`) continua excluída.
+- Implementado `scripts/crosswalk_mi1_catmaid_flywire.py`, usando `fafbseg.flywire.skid_to_id` com amostragem de todos os nós (`sample=None`) e segmentação estática `flat_783`.
+- Workflow manual `.github/workflows/mi1-catmaid-flywire-crosswalk.yml` criado. Requer segredo `FLYWIRE_TOKEN`; `CATMAID_API_TOKEN` é opcional para CATMAID público. Não foi iniciado sem a credencial. Nenhum token foi inserido no repositório.
+- `fafbseg` documenta que `skid_to_id` transforma skeleton nodes FAFB14→FlyWire, consulta root IDs e seleciona o root mais frequente; a confiança é a diferença top-1/top-2 dividida pelos roots válidos. O alias `flat_783` está mapeado no código-fonte atual para `gs://flywire_v141_m783`.
+- Nenhum root ID foi gerado ainda. O próximo bloqueio operacional é adicionar `FLYWIRE_TOKEN` em GitHub Actions Secrets e iniciar o workflow manual. Mesmo depois, confiança não será tratada como probabilidade nem usada para aceitar automaticamente correspondências.
+
+- Inventário R final com export executado com sucesso: [workflow #5](https://github.com/heldergaraujo2/Cortex/actions/runs/42051240825). Artefato contém `mi1_catmaid_skids_for_crosswalk.csv` com exatamente 779 linhas únicas; IDs finais 17318705, 17325656 e 17328033 associados a M10 rows 777, 778 e 779. DRA cross-check automatizado continua TRUE (42/42).
