@@ -13,6 +13,8 @@ on:
       - "scripts/inspect_fafb_columns.py"
       - "scripts/run_fafb_baseline.py"
       - "scripts/run_fafb_spatiotemporal.py"
+      - "scripts/audit_t4_inputs.py"
+      - "tests/test_t4_input_audit.py"
       - "tests/test_connectome.py"
       - "tests/test_spatial.py"
       - "tests/test_dynamics.py"
@@ -51,6 +53,11 @@ jobs:
           else
             echo "::warning::column_assignment.csv.gz is not in this branch; real-data spatial coverage remains pending."
           fi
+      - name: Audit annotated candidate inputs to T4
+        run: >-
+          python scripts/audit_t4_inputs.py
+          --data-dir data/raw/fafb_v783
+          --output fafb_v783_t4_input_audit.json
       - name: Run structural and spatial unit tests
         run: python -m pytest -q
       - name: Run deterministic baseline for ME_L
@@ -90,4 +97,5 @@ jobs:
             fafb_v783_baseline_ME_R.json
             fafb_v783_spatiotemporal_ME_L.json
             fafb_v783_spatiotemporal_ME_R.json
+            fafb_v783_t4_input_audit.json
           if-no-files-found: warn
