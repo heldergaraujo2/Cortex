@@ -14,8 +14,8 @@ Implementar uma primeira dinâmica determinística e reproduzível sobre o subgr
 - Parâmetros iniciais de engenharia: λ=0,5; 20 passos; amplitude 1,0; duração 2 passos; limiar estrutural 5.
 - Plasticidade desligada.
 - Controlo: execução sem estímulo.
-- Ablações: remover Mi1 e remover Tm3 separadamente.
-- Métricas: média de taxa abstrata em T4 por passo, pico, passo do pico e curvas por subtipo T4a–T4d.
+- Ablações: remover Mi1 e remover Tm3 separadamente. Os pesos são normalizados uma única vez no grafo intacto; a ablação remove os nós/arestas da via sem renormalizar as entradas restantes. A população de leitura T4 permanece fixa entre cenários, contando como zero as células que perdem todas as entradas modeladas.
+- Métricas: média de taxa abstrata em toda a população T4 do piloto por passo, pico, passo do pico e curvas por subtipo T4a–T4d. O número de T4 com arestas de entrada no neuropilo é reportado separadamente.
 
 Cada execução seleciona exatamente um neuropilo (ME_L ou ME_R). Linhas de neuropilos diferentes nunca são agregadas. syn_count é proxy estrutural normalizado, não eficácia fisiológica calibrada. Todos os sinais são não negativos; o código não infere sinal a partir de neurotransmissores.
 
@@ -45,3 +45,12 @@ O workflow de validação publica ambos os relatórios como artefatos. As métri
 - **HIPÓTESE DE ENGENHARIA:** normalizar syn_count por alvo e aplicar atualização rate-based é uma escolha útil para testar propagação.
 - **DESCONHECIDO:** se estes parâmetros ou a dinâmica representam atividade neuronal biológica.
 - **DESCONHECIDO:** se o subcircuito reduzido discrimina direções visuais; este experimento não responde a isso.
+
+
+## Nota metodológica da primeira execução e correção de ablações
+
+A primeira execução real do workflow (run #41, commit anterior à correção) confirmou que o pulso propagava e o controlo sem estímulo permanecia em zero. A inspeção do artefato revelou, porém, que as ablações estavam renormalizando os pesos restantes e alterando a população T4 medida. Esses resultados de ablação não são comparáveis e ficam **supersedidos**, não devem ser usados para inferência.
+
+Correção aplicada em `cortex/dynamics.py`: os pesos são calculados uma única vez no grafo intacto; depois a ablação remove nós/arestas sem redistribuir os pesos removidos. O conjunto T4 de leitura permanece fixo nos quatro cenários, incluindo T4 sem entradas restantes, que contribuem com taxa zero. Teste dedicado verifica que o peso de uma via restante não aumenta após a ablação e que o readout não muda.
+
+A aceitação da Fase 5 depende da nova execução real da CI com esta correção.
