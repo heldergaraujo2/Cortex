@@ -57,8 +57,17 @@ def test_coordinate_loader_rejects_invalid_position(tmp_path):
         load_coordinate_records(path)
 
 
-def test_coordinate_loader_rejects_duplicate_root_id(tmp_path):
+def test_coordinate_loader_aggregates_multiple_supervoxel_positions(tmp_path):
     path = tmp_path / "coordinates.csv.gz"
-    _write(path, [["1", "[10 20 30]", "99"], ["1", "[11 21 31]", "98"]])
-    with pytest.raises(ValueError, match="duplicate root_id"):
+    _write(path, [["1", "[10 20 30]", "99"], ["1", "[12 24 34]", "98"]])
+    result = load_coordinate_records(path)
+    assert (result["1"].x, result["1"].y, result["1"].z) == (11, 22, 32)
+    assert result["1"].sample_count == 2
+    assert result["1"].bbox_diagonal == pytest.approx(6)
+
+
+def test_coordinate_loader_rejects_duplicate_root_supervoxel_pair(tmp_path):
+    path = tmp_path / "coordinates.csv.gz"
+    _write(path, [["1", "[10 20 30]", "99"], ["1", "[11 21 31]", "99"]])
+    with pytest.raises(ValueError, match="duplicate root_id/supervoxel_id"):
         load_coordinate_records(path)
