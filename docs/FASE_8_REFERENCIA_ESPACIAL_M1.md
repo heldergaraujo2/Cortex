@@ -130,3 +130,22 @@ O dataset FAFB v783 usado pelo Cortex possui restrições de uso já registradas
 - **CI Cortex #189:** sucesso no commit `e4873cd702a411ed771b8b4ee25494cd9448d85f`, com jobs aprovados em Python 3.11, 3.12 e 3.13: https://github.com/heldergaraujo2/Cortex/actions/runs/42040581437
 - A execução não publicou artefatos e não executou a inspeção dos objetos RData externos. Portanto, este resultado valida apenas os testes e a integridade da branch, não os gates anatômicos 8A–8E.
 - A leitura do blob público `data/neu_Mi1.RData` foi confirmada pelo GitHub (SHA `ee941396f53e813b0e12d5a1fcc64abdfec321db`), mas a API textual não retornou bytes para o objeto binário. A inspeção de conteúdo continua pendente.
+
+
+## 11. Ferramenta de inventário reproduzível (Gate 8A)
+
+Foi adicionado `scripts/inspect_mi1_reference.R`. É um utilitário de leitura que recebe os dois arquivos de origem identificados no bootstrap dos autores (`data/neu_Mi1.RData` e `data/Mi1_ind.RData`), carrega os objetos em um ambiente R isolado e exporta:
+- `object_inventory.csv`: classes, tipos, comprimentos, dimensões e presença de rownames de cada objeto carregado;
+- `mi1_skid_to_m10_mapping.csv`: relação por linha entre `anno_Mi1$skid`, índice local `Mi1_neu_ind` e linha/coordenadas de `Mi1_M10_xyz`, tanto para o conjunto de anotações quanto para `anno_Mi1_DRA`;
+- `mapping_summary.csv` e `mapping_status.txt`: contagens de correspondências, duplicatas, índices válidos e coordenadas finitas.
+
+Execução em clone local do repositório dos autores, usando uma cópia do script do Cortex:
+
+```powershell
+Rscript D:\Cortex\scripts\inspect_mi1_reference.R `
+  D:\eyemap_T4\data\neu_Mi1.RData `
+  D:\eyemap_T4\data\Mi1_ind.RData `
+  D:\Cortex\phase8_mi1_inventory
+```
+
+Ajustar os caminhos locais conforme necessário. O script não chama `source()`, não executa os scripts de figura, não grava nos arquivos de origem e não faz chamadas à CATMAID/FlyWire. A saída descreve apenas a cadeia de índices local do artigo; não constitui crosswalk para FAFB v783. A ferramenta foi adicionada ao branch, mas **ainda não foi executada contra os RData originais**, pois os bytes binários não puderam ser obtidos neste ambiente. Nenhum resultado quantitativo deve ser presumido antes dessa execução.
