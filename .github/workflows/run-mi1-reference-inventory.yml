@@ -36,6 +36,10 @@ jobs:
             data/external/eyemap_T4/neu_Mi1.RData \
             data/external/eyemap_T4/Mi1_ind.RData \
             phase8_mi1_inventory
+          Rscript scripts/inspect_mi1_reference_structure.R \
+            data/external/eyemap_T4/neu_Mi1.RData \
+            data/external/eyemap_T4/Mi1_ind.RData \
+            phase8_mi1_inventory
 
       - name: Upload inventory results
         if: always()
