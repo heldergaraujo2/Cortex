@@ -78,5 +78,8 @@ def test_missing_projection_bins_remain_empty_frames():
         ColumnAssignment("b", "left", "L1", "2", 0, 0, 2, 0),
     )
     schedule = build_lattice_schedule(sparse, {"a", "b"}, "left", "p", 1)
-    assert schedule.progress_values == (0, 2, 4)
-    assert schedule.frames == (frozenset({"a"}), frozenset(), frozenset({"b"}))
+    assert schedule.progress_values == (0, 1, 2, 3, 4)
+    assert schedule.frames == (
+        frozenset({"a"}), frozenset(), frozenset(),
+        frozenset(), frozenset({"b"}),
+    )
