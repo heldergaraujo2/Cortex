@@ -54,3 +54,36 @@ A primeira execução real do workflow (run #41, commit anterior à correção) 
 Correção aplicada em `cortex/dynamics.py`: os pesos são calculados uma única vez no grafo intacto; depois a ablação remove nós/arestas sem redistribuir os pesos removidos. O conjunto T4 de leitura permanece fixo nos quatro cenários, incluindo T4 sem entradas restantes, que contribuem com taxa zero. Teste dedicado verifica que o peso de uma via restante não aumenta após a ablação e que o readout não muda.
 
 A aceitação da Fase 5 depende da nova execução real da CI com esta correção.
+
+
+## Resultado da execução real — gate v0 aprovado (2026-11-04)
+
+Workflow FAFB v783 Data Validation #48, commit `2868cd7046fd474bcb1cf7bc33dc818454fd9aa9`: **sucesso**. Artefato: https://github.com/heldergaraujo2/Cortex/actions/runs/41943528584. O artefato contém os relatórios de validação, manifesto e os dois relatórios de baseline.
+
+Cortex CI #86, no mesmo commit, passou em Python 3.11, 3.12 e 3.13 com **45 testes aprovados em cada versão**: https://github.com/heldergaraujo2/Cortex/actions/runs/41943528569.
+
+| Métrica | ME_L | ME_R |
+|---|---:|---:|
+| Neurónios no modelo | 11.355 | 11.355 |
+| Arestas elegíveis | 19.841 | 19.970 |
+| População T4 de leitura fixa | 6.243 | 6.243 |
+| T4 com entrada modelada no grafo intacto | 3.131 | 3.102 |
+| Pico médio T4 com pulso | 0,188023 | 0,185258 |
+| Passo do pico (índice começando em zero) | 4 | 4 |
+| Pico sem estímulo | 0 | 0 |
+| Pico após ablação Mi1 | 0,036454 | 0,035259 |
+| Redução após ablação Mi1 | 80,61% | 80,97% |
+| Pico após ablação Tm3 | 0,151570 | 0,149999 |
+| Redução após ablação Tm3 | 19,39% | 19,03% |
+
+A população T4 de leitura permanece fixa em todos os cenários; células sem entrada após ablação contribuem com taxa zero. Pesos são normalizados no grafo intacto e não são redistribuídos após ablação.
+
+### Interpretação estrita
+
+- **CONFIRMADO:** o pulso sintético global aplicado aos 1.775 neurónios L1 gera propagação determinística até a população T4 nos dois neuropilos; o controlo sem estímulo permanece em zero.
+- **CONFIRMADO:** nesta configuração computacional, a remoção de Mi1 reduz o pico médio de T4 em cerca de 81%; remover Tm3 reduz cerca de 19%.
+- **HIPÓTESE DE ENGENHARIA:** a assimetria observada reflete a topologia e a regra de pesos escolhidas nesta baseline.
+- **DESCONHECIDO:** se a assimetria representa a contribuição biológica real de Mi1/Tm3. Não há pesos fisiológicos calibrados, sinais inibitórios, atrasos biológicos, entradas visuais espaciais nem comparação experimental.
+- **NÃO DEMONSTRADO:** movimento, seletividade direcional, aprendizagem ou comportamento. O pulso é uniforme/global e não usa posições de colunas.
+
+**Conclusão:** Fase 5 concluída apenas como baseline estrutural rate-based v0, reproduzível e testada. Não equivale a um modelo biológico validado.
