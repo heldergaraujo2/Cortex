@@ -77,9 +77,14 @@ if (length(idx) != nrow(anno)) {
 
 build_mapping <- function(source, label) {
   skids <- as.character(source$skid)
-  anno_rows <- match(skids, as.character(anno$skid))
+  anno_skids <- as.character(anno$skid)
+  anno_counts <- table(anno_skids, useNA = "no")
+  match_count <- as.integer(anno_counts[skids])
+  match_count[is.na(match_count)] <- 0L
+  anno_rows <- match(skids, anno_skids)
   m10_rows <- rep(NA_integer_, length(anno_rows))
-  can_index <- !is.na(anno_rows) & anno_rows >= 1L & anno_rows <= length(idx)
+  can_index <- match_count == 1L & !is.na(anno_rows) &
+    anno_rows >= 1L & anno_rows <= length(idx)
   m10_rows[can_index] <- idx[anno_rows[can_index]]
   in_range <- !is.na(m10_rows) & m10_rows >= 1L & m10_rows <= nrow(xyz)
   x <- y <- z <- rep(NA_real_, length(m10_rows))
@@ -90,16 +95,18 @@ build_mapping <- function(source, label) {
   }
   finite_xyz <- in_range & is.finite(x) & is.finite(y) & is.finite(z)
   status <- ifelse(
-    is.na(anno_rows), "skid_not_found_in_anno_Mi1",
-    ifelse(!can_index, "annotation_index_out_of_range",
+    match_count == 0L, "skid_not_found_in_anno_Mi1",
+    ifelse(match_count > 1L, "duplicate_skid_in_anno_Mi1",
+      ifelse(!can_index, "annotation_index_out_of_range",
       ifelse(is.na(m10_rows), "missing_Mi1_neu_ind",
         ifelse(!in_range, "M10_row_out_of_range",
-          ifelse(!finite_xyz, "non_finite_M10_coordinate", "mapped")))))
+          ifelse(!finite_xyz, "non_finite_M10_coordinate", "mapped"))))))
   data.frame(
     subset = label,
     source_row = seq_along(skids),
     skid = skids,
     anno_Mi1_row = anno_rows,
+    anno_Mi1_skid_match_count = match_count,
     Mi1_neu_ind_value = m10_rows,
     m10_x = x, m10_y = y, m10_z = z,
     mapping_status = status,
@@ -118,7 +125,8 @@ summarize_map <- function(x) {
     records = nrow(x),
     unique_skids = length(unique(x$skid[!is.na(x$skid)])),
     duplicate_skid_records = sum(duplicated(x$skid) & !is.na(x$skid)),
-    matched_annotation_rows = sum(!is.na(x$anno_Mi1_row)),
+    ambiguous_annotation_skids = sum(x$anno_Mi1_skid_match_count > 1L),
+    matched_annotation_rows = sum(x$anno_Mi1_skid_match_count == 1L),
     valid_m10_rows = sum(!is.na(x$Mi1_neu_ind_value) &
                          x$Mi1_neu_ind_value >= 1L &
                          x$Mi1_neu_ind_value <= nrow(xyz)),
