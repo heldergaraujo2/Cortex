@@ -72,14 +72,18 @@ A suíte cobre:
 
 A execução do CLI foi adicionada ao workflow CI #130; seu resultado ainda deve ser inspecionado antes de encerrar este gate.
 
-## 6. Próximo desenvolvimento
+## 6. Integração estrutural real concluída e próximo desenvolvimento
 
-1. Inspecionar o CI #130 e confirmar a execução do CLI.
-2. Ampliar o importador de forma isolada para preservar as arestas reais dos sete candidatos, `nt_type`, neuropilo, IDs e `syn_count`, sem alterar o baseline v0.
-3. Verificar separadamente as anotações previstas e verificadas do Codex; não assumir que o rótulo de cada linha é uma verdade fisiológica.
-4. Investigar caminhos pré-sinápticos e correspondência espacial das classes que não possuem `column_assignment` no conjunto atual.
-5. Implementar uma camada de construção de canais a partir de arestas reais, deixando sem sinal/atraso as conexões cuja evidência não seja suficiente.
-6. Só depois fazer varreduras paramétricas, ablações e comparações ME_L/ME_R com dados reais.
+O importador separado já existe em `cortex/t4_inputs.py`; `scripts/import_t4_input_edges.py` preserva as 53.284 linhas candidatas, 7.028 IDs pré-sinápticos, 6.236 IDs T4 pós-sinápticos e 143 grupos por tipo/neuropilo/rótulo. O workflow FAFB #99 executou a importação sobre os dados reais e terminou com sucesso. O relatório `fafb_v783_t4_input_edges.json` está no artefato do workflow.
+
+A suíte CI #137 passou com 81 testes em Python 3.11, 3.12 e 3.13; o demo sintético também foi executado nas três versões.
+
+Próximos passos:
+1. Obter um produto de anotações que inclua `nt_type_verified` ou outra fonte curada equivalente; os três CSVs atuais não incluem esse campo.
+2. Mapear os 7.028 IDs pré-sinápticos à geometria/colunas, sem inferir coluna a partir de coordenadas brutas sem transformação validada.
+3. Construir perfis estruturais por T4-alvo e por subtipo, mantendo as arestas sem sinal quando a evidência não for suficiente.
+4. Integrar apenas as conexões com evidência de sinal suficiente ao modelo experimental, sem alterar a baseline v0.
+5. Depois fazer ablações, sensibilidade e comparações ME_L/ME_R com dados reais; só calcular DSI após mapear PD/ND.
 
 ## 7. Fontes
 
