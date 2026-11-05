@@ -119,6 +119,14 @@ Distribuição de previsões por classe (contagens em linhas de aresta, portanto
 | Tm3 | ACH 10.390 | — | 68 | 0,700 / 0,70 |
 | TmY15 | GABA 4.764 | — | 19 | 0,800 / 0,81 |
 
+### Testes automatizados
+
+Cortex CI #155, run `41951567048`, terminou com sucesso:
+- Python 3.11: 88 testes aprovados.
+- Python 3.12: 88 testes aprovados.
+- Python 3.13: 88 testes aprovados.
+- O demo sintético T4 foi executado na matriz e reportou assimetria 0,236258, com `biological_dsi_claimed=false`.
+
 ### Interpretação
 
 - **CONFIRMADO:** todos os IDs pré-sinápticos do subgrafo candidato têm uma linha no produto `neurons.csv.gz`; 2.654 linhas de aresta correspondem a neurónios sem rótulo `nt_type`.
