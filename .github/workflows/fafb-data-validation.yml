@@ -9,6 +9,7 @@ on:
       - "cortex/dynamics.py"
       - "cortex/visual_stimuli.py"
       - "cortex/t4_inputs.py"
+      - "cortex/t4_annotations.py"
       - "scripts/inspect_fafb_data.py"
       - "scripts/import_fafb_pilot.py"
       - "scripts/inspect_fafb_columns.py"
@@ -16,8 +17,10 @@ on:
       - "scripts/run_fafb_spatiotemporal.py"
       - "scripts/audit_t4_inputs.py"
       - "scripts/import_t4_input_edges.py"
+      - "scripts/audit_t4_neuron_annotations.py"
       - "tests/test_t4_input_audit.py"
       - "tests/test_t4_inputs.py"
+      - "tests/test_t4_annotations.py"
       - "tests/test_connectome.py"
       - "tests/test_spatial.py"
       - "tests/test_dynamics.py"
@@ -66,6 +69,16 @@ jobs:
           python scripts/import_t4_input_edges.py
           --data-dir data/raw/fafb_v783
           --output fafb_v783_t4_input_edges.json
+      - name: Download FAFB v783 per-neuron transmitter predictions
+        run: >-
+          curl --fail --location --retry 3
+          --output data/raw/fafb_v783/neurons.csv.gz
+          https://storage.googleapis.com/flywire-data/codex/data/fafb/783/neurons.csv.gz
+      - name: Audit neuron-level neurotransmitter predictions for T4 inputs
+        run: >-
+          python scripts/audit_t4_neuron_annotations.py
+          --data-dir data/raw/fafb_v783
+          --output fafb_v783_t4_neuron_annotations.json
       - name: Run structural and spatial unit tests
         run: python -m pytest -q
       - name: Run deterministic baseline for ME_L
@@ -107,4 +120,5 @@ jobs:
             fafb_v783_spatiotemporal_ME_R.json
             fafb_v783_t4_input_audit.json
             fafb_v783_t4_input_edges.json
+            fafb_v783_t4_neuron_annotations.json
           if-no-files-found: warn
