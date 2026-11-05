@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 inicial  
 **Data de criação:** 2026-10-28  
-**Status global:** Fases 1–3 concluídas no escopo documentado. Marco experimental FAFB: Fase 4 espacial/colunar concluída com dados reais em 2026-11-04; Fase 5 baseline dinâmica estrutural v0 implementada na branch de trabalho, aguardando CI e leitura dos resultados reais ME_L/ME_R. Ver aditivo no final e docs/CONTINUIDADE.md.  
+**Status global:** Fases 1–3 concluídas no escopo documentado. No fluxo experimental FAFB, Fase 4 espacial/colunar concluída com dados reais e Fase 5 baseline estrutural rate-based v0 concluída com CI e execuções reais ME_L/ME_R aprovadas em 2026-11-04. Não foi demonstrada seletividade direcional nem fidelidade biológica. Próximo gate: Fase 6 — validar semântica espacial e desenhar estímulos espaço-temporais controlados. Ver aditivo no final e docs/CONTINUIDADE.md.  
 **Princípio:** uma fase só é considerada concluída quando seus critérios de saída foram verificados e registrados em CONTINUIDADE.md.
 
 ## Intenção do projeto
@@ -520,3 +520,24 @@ Foi implementada uma atualização abstrata determinística, síncrona e limitad
 Experimentos definidos: pulso ON sintético, controlo sem estímulo e ablações separadas de Mi1/Tm3. Métricas: série temporal média T4, pico e curvas por subtipo. O modelo não usa geometria espacial nem testa movimento ou seletividade direcional.
 
 Critérios para fechar este gate: testes sintéticos passam; CI executa em Python 3.11–3.13; workflows reais ME_L e ME_R terminam; artefatos mostram relatórios completos, configuração e proveniência; o controlo sem estímulo permanece nulo e o pulso produz resposta quando existem caminhos elegíveis. Resultados negativos devem ser mantidos e explicados, nunca corrigidos por ajuste retroativo.
+
+
+## Aditivo — encerramento da baseline dinâmica FAFB v0 e próximo gate (2026-11-04)
+
+A Fase 5 do fluxo experimental do piloto foi concluída como baseline computacional estrutural mínima. O workflow FAFB Data Validation #48 executou os relatórios reais ME_L e ME_R com sucesso no commit `2868cd7046fd474bcb1cf7bc33dc818454fd9aa9`. A Cortex CI #86 aprovou 45 testes em cada versão Python 3.11, 3.12 e 3.13.
+
+Resultados, parâmetros, ablações e limitações estão em `docs/FASE_5_BASELINE_DINAMICA.md` e `docs/CONTINUIDADE.md` seção 7.16. O modelo usa pulso global em L1, propagação rate-based positiva e pesos estruturais normalizados por alvo dentro de um único neuropilo. A comparação de ablações mantém pesos e população T4 fixos.
+
+**Conclusão limitada:** a baseline demonstra que a implementação propaga uma entrada sintética por arestas do subgrafo e produz respostas determinísticas. A maior redução na ablação Mi1 é uma observação do modelo de engenharia, não prova de dominância biológica. Não há estímulo visual espacial, direção, plasticidade, sinal inibitório ou calibração fisiológica.
+
+### Fase 6 — preparação de experimento espaço-temporal direcional
+
+Antes de codificar direção:
+1. Verificar em fonte oficial a semântica, unidades, orientação e relação entre `p/q`, `column_id`, hemisfério e `x/y`; não assumir que os campos são intercambiáveis.
+2. Verificar se existe correspondência rastreável entre posições/colunas e tipos neuronais relevantes; manter explicitamente os 718 IDs piloto sem atribuição.
+3. Definir estímulos sintéticos espaço-temporais em duas direções opostas, flash estático e controlo sem estímulo, com energia total comparável.
+4. Confirmar em fontes científicas a interpretação direcional dos subtipos T4a–T4d antes de rotular qualquer saída como direção preferida.
+5. Comparar baseline sem espaço, baseline temporal simples e subgrafo conectômico; pré-definir métricas e ablações.
+6. Considerar entradas adicionais conhecidas de T4 que ficaram fora do piloto e quantificar a incompletude antes de alegações funcionais.
+
+**Critério de avanço:** só executar uma métrica de seletividade direcional quando orientação espacial e associação dos subtipos estiverem apoiadas por fonte verificável. Caso contrário, limitar a Fase 6 a validação espacial e resposta temporal não direcional.
