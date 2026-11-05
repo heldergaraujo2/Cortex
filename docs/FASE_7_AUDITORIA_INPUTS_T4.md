@@ -95,7 +95,40 @@ O resultado é misto por classe. Exemplos:
 5. Comparar estímulos preferenciais e nulos, flash estático e ausência de estímulo, com ablações por classe.
 6. Só usar o termo DSI após definir corretamente a orientação local do T4 e validar a correspondência espacial relevante.
 
-## 7. Fontes científicas
+## 7. Auditoria das previsões de neurotransmissor por neurónio
+
+O workflow passou a obter, sem versionar o ficheiro bruto no repositório, `neurons.csv.gz` do snapshot FAFB v783 no bucket público usado pelo Codex. Este produto contém `nt_type` e `nt_type_score` por neurónio, além de médias de neurotransmissores; não contém `nt_type_verified`.
+
+- Workflow FAFB #110, run `41951036288`, sucesso.
+- Artefato ID `13381600336`; relatório `fafb_v783_t4_neuron_annotations.json`.
+- 139.255 registos no ficheiro de neurónios.
+- SHA-256 do ficheiro: `6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719`.
+- 7.028/7.028 IDs pré-sinápticos candidatos encontrados no produto.
+- 53.284/53.284 linhas de aresta têm o neurónio pré-sináptico mapeado.
+- 50.630 linhas correspondem a uma previsão `nt_type` não vazia; 2.654 linhas correspondem a neurónios sem rótulo previsto; 0 divergências entre `nt_type` não vazio do neurónio e o `nt_type` da linha de conexão.
+
+Distribuição de previsões por classe (contagens em linhas de aresta, portanto o mesmo neurónio pode aparecer várias vezes):
+
+| Tipo | Previsão principal | Outras previsões | Sem rótulo | Score médio/mediano entre previsões não vazias |
+|---|---|---|---:|---:|
+| C3 | GABA 1.235 | ACH 3 | 7 | 0,767 / 0,78 |
+| CT1 | GABA 5.580 | — | 0 | 0,650 / 0,66 |
+| Mi1 | ACH 20.003 | GLUT 36 | 1.120 | 0,633 / 0,63 |
+| Mi4 | GABA 4.371 | ACH 2 | 6 | 0,856 / 0,87 |
+| Mi9 | GLUT 3.700 | GABA 544; ACH 2 | 1.434 | 0,590 / 0,58 |
+| Tm3 | ACH 10.390 | — | 68 | 0,700 / 0,70 |
+| TmY15 | GABA 4.764 | — | 19 | 0,800 / 0,81 |
+
+### Interpretação
+
+- **CONFIRMADO:** todos os IDs pré-sinápticos do subgrafo candidato têm uma linha no produto `neurons.csv.gz`; 2.654 linhas de aresta correspondem a neurónios sem rótulo `nt_type`.
+- **CONFIRMADO:** para as 50.630 linhas em que o neurónio tem rótulo previsto não vazio, o rótulo da linha de conexão coincide com o rótulo do neurónio; divergências observadas: zero.
+- **FORTEMENTE INDICADO:** as previsões dominantes por classe são coerentes com vários papéis descritos na literatura: Mi1/Tm3 ACH, Mi4/C3/CT1/TmY15 GABA e Mi9 predominantemente GLUT.
+- **HIPÓTESE / PONTO DE INVESTIGAÇÃO:** Mi9 apresenta mistura de previsões GLUT/GABA e 1.434 linhas sem rótulo, com score mediano 0,58 entre previsões não vazias. Deve ser tratado com mais cautela e investigado por neurónio, não simplificado.
+- A concordância entre a tabela de neurónios e a tabela de conexões é uma verificação interna de consistência dos produtos Codex; **não é validação independente**, porque os campos podem derivar da mesma pipeline de previsão.
+- `nt_type_score` é confiança de previsão, não probabilidade calibrada de efeito pós-sináptico. O produto não traz `nt_type_verified`; não atribuir sinal fisiológico confirmado por aresta.
+
+## 8. Fontes científicas
 
 - Shinomiya et al. (2017), *The comprehensive connectome of a neural substrate for ‘ON’ motion detection in Drosophila*, eLife: https://elifesciences.org/articles/24394 — anatomia das entradas T4, fenótipos de neurotransmissores propostos e organização dendrítica; a polaridade de Mi9 é dependente do receptor.
 - Gruntman et al. (2018), *Simple integration of fast excitation and offset, delayed inhibition computes directional selectivity in Drosophila*, eLife: https://www.nature.com/articles/s41593-017-0046-4 — evidência fisiológica de integração de excitação rápida com inibição espacialmente deslocada e atrasada.
@@ -138,6 +171,6 @@ O manifesto de validação informa que `consolidated_cell_types.csv.gz` contém 
 - Cortex CI #137: 81 testes aprovados em Python 3.11, 3.12 e 3.13; o demo T4 também foi executado em todas as versões.
 - O workflow FAFB #99 executou com sucesso o novo importador sobre os dados reais.
 
-## 8. Limites
+## 9. Limites
 
 Este relatório não demonstra seletividade direcional, não calibra o modelo neuronal e não identifica o sinal funcional de cada sinapse. O próximo passo é um modelo experimental de integração assinada, comparado a controles e claramente separado dos resultados biológicos confirmados.
