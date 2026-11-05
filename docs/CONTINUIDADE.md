@@ -3,8 +3,8 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-11-05  
-**Versão:** 2.3 — importador estrutural de 53.284 arestas T4 validado com dados reais  
-**Estado geral:** a auditoria e o importador T4 foram executados com sucesso no FAFB v783 (#82 e #99). O importador preserva 53.284 linhas, 7.028 IDs pré-sinápticos, 6.236 IDs T4 e 143 grupos tipo/neuropilo/nt_type sem atribuir sinal. O protótipo sintético T4 continua separado da baseline v0. Cortex CI #137 aprovou 81 testes em Python 3.11–3.13 e executou o demo em todas as versões. A assimetria 0,236258 é sintética, não DSI biológico. Próximo gate: obter anotações verificadas e mapear a geometria das classes adicionais. Relatórios: `docs/FASE_7_AUDITORIA_INPUTS_T4.md` e `docs/FASE_7_MODELO_T4_ASSINADO.md`.  
+**Versão:** 2.4 — auditoria T4 enriquecida com previsões por neurónio e confiança  
+**Estado geral:** auditoria e importação FAFB T4 concluídas (#82, #99). Foram preservadas 53.284 arestas, 7.028 IDs pré-sinápticos e 6.236 IDs T4. O produto `neurons.csv.gz` cobre os 7.028 IDs: 50.630 linhas têm previsão não vazia, 2.654 sem rótulo e zero divergências internas com o `nt_type` das arestas. O dump não contém `nt_type_verified`; a consistência interna não é validação biológica independente. Protótipo T4 sintético permanece separado do baseline. Próximo gate: perfis por T4-alvo e mapeamento espacial das classes pré-sinápticas. Relatórios: `docs/FASE_7_AUDITORIA_INPUTS_T4.md` e `docs/FASE_7_MODELO_T4_ASSINADO.md`.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; testes e experimentos remotos primeiro. PC reservado para profiling, validação Windows ou quando houver necessidade concreta.  
@@ -244,6 +244,18 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 - **Conclusão:** importação estrutural real confirmada; sinal por aresta, eficácia, atrasos e geometria funcional continuam não resolvidos.
 - **Próxima subetapa:** obter uma fonte de neurotransmissores verificados e mapear espacialmente os candidatos pré-sinápticos; depois criar perfis estruturais por alvo T4 e integrar ao modelo sem alterar baseline v0.
 
+## 7.23 Fase 7 — previsões de neurotransmissor por neurónio (2026-11-05)
+
+- **Fonte:** produto público Codex FAFB v783 `neurons.csv.gz`, descarregado durante o workflow, não versionado no repositório. SHA-256: `6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719`.
+- **Implementação:** `cortex/t4_annotations.py`, `tests/test_t4_annotations.py`, `scripts/audit_t4_neuron_annotations.py`.
+- **Execução:** FAFB Data Validation #110, run `41951036288`, sucesso; artefato ID `13381600336`.
+- **Cobertura:** 7.028/7.028 IDs pré-sinápticos mapeados; 53.284/53.284 linhas de aresta associadas a um registo de neurónio.
+- **Rótulos:** 50.630 linhas com previsão não vazia; 2.654 linhas com previsão vazia; 0 divergências entre previsão não vazia do neurónio e `nt_type` da linha de conexão.
+- **Confiança:** score mediano por classe: C3 0,78; CT1 0,66; Mi1 0,63; Mi4 0,87; Mi9 0,58; Tm3 0,70; TmY15 0,81.
+- **Mi9:** 3.700 linhas GLUT, 544 GABA, 2 ACH e 1.434 sem rótulo; baixa confiança relativa e mistura exigem análise por neurónio.
+- **Limite:** concordância entre os dois campos Codex é consistência interna, não validação independente. O produto tem `nt_type` previsto e `nt_type_score`, mas não `nt_type_verified`. Nenhum sinal fisiológico por aresta foi atribuído.
+- **Próxima subetapa:** construir perfis por T4-alvo e subtipo; juntar os alvos T4 à coluna existente e investigar uma fonte espacial validada para os candidatos pré-sinápticos adicionais.
+
 ## 8. Estratégia de execução atual — GitHub-first
 
 O responsável decidiu adiar o primeiro teste local no Windows e continuar o desenvolvimento no GitHub. Esta decisão é compatível com as tarefas atuais: a CI executa testes automatizados e os workflows podem processar os arquivos FAFB já presentes na branch.
@@ -256,10 +268,10 @@ O responsável decidiu adiar o primeiro teste local no Windows e continuar o des
 5. Fazer o primeiro teste local quando houver profiling, necessidade de bibliotecas específicas, limite de runner, validação Windows ou uma comparação de desempenho que não possa ser feita remotamente.
 
 ### Próximo gate remoto
-- Procurar/obter produto FAFB v783 com `nt_type_verified` ou fonte curada equivalente; os CSVs atualmente versionados não contêm esse campo.
-- Investigar a geometria dos 7.028 IDs pré-sinápticos candidatos usando coordenadas e fontes de coluna validadas; não inferir p/q de coordenadas brutas sem transformação documentada.
-- Construir perfis estruturais por T4-alvo/subtipo, mantendo separação por neuropilo e rótulo.
-- Integrar ao modelo apenas sinais sustentados por evidência; manter demais arestas como sinal desconhecido.
+- Construir perfis estruturais por T4-alvo/subtipo com arestas, score de neurotransmissor, neuropilo e syn_count.
+- Associar T4-alvos à `column_assignment` existente e investigar como mapear espacialmente os 7.028 IDs pré-sinápticos candidatos; não inferir p/q de coordenadas brutas sem transformação documentada.
+- O snapshot Codex v783 tem previsões `nt_type`/`nt_type_score`, mas não `nt_type_verified`; procurar fonte curada independente antes de atribuir sinal fisiológico confirmado.
+- Integrar ao modelo apenas sinais sustentados por evidência; manter casos vazios/ambíguos como desconhecidos.
 - Executar ablações/sensibilidade e comparar ME_L/ME_R; não calcular DSI biológico sem mapear PD/ND.
 
 ## 9. Formato obrigatório para atualizações futuras
