@@ -3,7 +3,11 @@ import gzip
 
 import pytest
 
-from cortex.spatial import load_column_assignments
+from cortex.spatial import (
+    ColumnAssignment,
+    assigned_t4_readout_by_hemisphere,
+    load_column_assignments,
+)
 
 
 def _write_gzip_csv(path, headers, rows):
@@ -85,3 +89,29 @@ def test_corrupted_gzip_is_rejected(tmp_path):
     path.write_bytes(b"not a gzip stream")
     with pytest.raises(OSError):
         load_column_assignments(path, {})
+
+
+
+def test_t4_readout_is_scoped_to_requested_hemisphere():
+    assignments = (
+        ColumnAssignment("ta", "left", "T4a", "1", 0, 0, 0, 0),
+        ColumnAssignment("tb", "right", "T4b", "1", 0, 0, 0, 0),
+        ColumnAssignment("tc", "left", "T4c", "2", 0, 0, 1, 0),
+    )
+    types = {"ta": "T4a", "tb": "T4b", "tc": "T4c", "unassigned": "T4d"}
+    left = assigned_t4_readout_by_hemisphere(assignments, types, "left")
+    right = assigned_t4_readout_by_hemisphere(assignments, types, "right")
+    assert left == {"T4a": ("ta",), "T4b": (), "T4c": ("tc",), "T4d": ()}
+    assert right == {"T4a": (), "T4b": ("tb",), "T4c": (), "T4d": ()}
+
+
+def test_t4_readout_rejects_primary_type_mismatch():
+    assignments = (ColumnAssignment("ta", "left", "T4a", "1", 0, 0, 0, 0),)
+    with pytest.raises(ValueError, match="type mismatch"):
+        assigned_t4_readout_by_hemisphere(assignments, {"ta": "T4b"}, "left")
+
+
+def test_t4_readout_rejects_duplicate_assignment():
+    row = ColumnAssignment("ta", "left", "T4a", "1", 0, 0, 0, 0)
+    with pytest.raises(ValueError, match="duplicate T4"):
+        assigned_t4_readout_by_hemisphere((row, row), {"ta": "T4a"}, "left")
