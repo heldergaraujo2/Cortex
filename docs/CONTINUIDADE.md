@@ -644,3 +644,12 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Próximo gate:** obter os RData sem perda, inspecionar estrutura/rownames/listas e produzir inventário de identidade reproduzível. Só depois executar crosswalk CATMAID→FlyWire e validar correspondência de snapshot.
 
 - **Refinamento de evidência no código dos autores:** `Fig_2_EM.R` indexa `Mi1_M10_xyz` por `Mi1_neu_ind[match(anno_Mi1_DRA$skid, anno_Mi1$skid)]`; `proc_eyemap.R` carrega `Mi1_M10_xyz` de `neu_Mi1.RData`. Isso confirma que o código usa uma cadeia explícita CATMAID `skid` → índice local → linha de coordenada M10 para as anotações mostradas. Cobertura total, unicidade e crosswalk para FAFB v783 continuam desconhecidos. Detalhamento atualizado em `docs/FASE_8_REFERENCIA_ESPACIAL_M1.md`.
+
+
+## 7.21 Ferramenta Gate 8A adicionada (2026-11-05)
+
+- Adicionado `scripts/inspect_mi1_reference.R` na branch isolada da Fase 8. A ferramenta lê `neu_Mi1.RData` e `Mi1_ind.RData` em ambiente R separado, inventaria objetos e gera tabelas da cadeia `anno_Mi1$skid` → `Mi1_neu_ind` → `Mi1_M10_xyz`, incluindo resumo de duplicatas, índices válidos e coordenadas finitas.
+- Atualizado `docs/FASE_8_REFERENCIA_ESPACIAL_M1.md` com instruções PowerShell e limites do script.
+- **Não executado:** os binários RData não foram disponibilizados pelo conector GitHub (o blob gzip falhou na decodificação UTF-8; download direto indisponível). Portanto, não há contagens ou resultados empíricos novos. O script não altera os arquivos de origem e não chama CATMAID/FlyWire.
+- Último commit: `a81cd152733e5eb0e7ac495852e932ac3d3d51c6`. PR #2 incorpora automaticamente os commits desta branch; permanece Draft. `main` e PR #1 preservados.
+- Próxima ação: executar o script contra os dois RData originais em ambiente R 4.4.1, revisar `mapping_summary.csv` e os casos não mapeados, depois decidir se o Gate 8A passa. Não iniciar crosswalk 8B antes disso.
