@@ -653,3 +653,5 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Não executado:** os binários RData não foram disponibilizados pelo conector GitHub (o blob gzip falhou na decodificação UTF-8; download direto indisponível). Portanto, não há contagens ou resultados empíricos novos. O script não altera os arquivos de origem e não chama CATMAID/FlyWire.
 - Último commit: `a81cd152733e5eb0e7ac495852e932ac3d3d51c6`. PR #2 incorpora automaticamente os commits desta branch; permanece Draft. `main` e PR #1 preservados.
 - Próxima ação: executar o script contra os dois RData originais em ambiente R 4.4.1, revisar `mapping_summary.csv` e os casos não mapeados, depois decidir se o Gate 8A passa. Não iniciar crosswalk 8B antes disso.
+
+- Revisão estática do script: a correspondência agora rejeita explicitamente `skid` duplicado em `anno_Mi1` como ambíguo, sem aceitar o primeiro resultado de `match()`; a saída registra a contagem de correspondências por ID. Ainda não há execução real do script nem teste R local neste ambiente.
