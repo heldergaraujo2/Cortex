@@ -59,6 +59,14 @@ def main() -> int:
 
     results: dict[str, dict] = {}
 
+    def safe_error(exc: Exception) -> str:
+        message = f"{type(exc).__name__}: {exc}"
+        if token:
+            message = message.replace(token, "[REDACTED]")
+        if catmaid_token:
+            message = message.replace(catmaid_token, "[REDACTED]")
+        return message[:1000]
+
     def map_batch(skids: list[str]) -> None:
         try:
             frame = flywire.skid_to_id(
@@ -81,7 +89,7 @@ def main() -> int:
         except Exception as exc:
             # A batch failure must not discard the entire cohort. Retry each
             # skeleton independently so failures remain attributable.
-            batch_error = f"{type(exc).__name__}: {exc}"
+            batch_error = safe_error(exc)
             for skid in skids:
                 try:
                     frame = flywire.skid_to_id(
@@ -106,7 +114,7 @@ def main() -> int:
                         "flywire_id": "",
                         "confidence": "",
                         "crosswalk_status": "lookup_failed",
-                        "error": f"batch={batch_error}; single={type(single_exc).__name__}: {single_exc}"[:1000],
+                        "error": f"batch={batch_error}; single={safe_error(single_exc)}"[:1000],
                     }
 
     skids = source["skid"].astype(str).tolist()
