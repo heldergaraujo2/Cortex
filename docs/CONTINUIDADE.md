@@ -3,8 +3,8 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-11-05  
-**Versão:** 2.4 — auditoria T4 enriquecida com previsões por neurónio e confiança  
-**Estado geral:** auditoria e importação FAFB T4 concluídas (#82, #99). Foram preservadas 53.284 arestas, 7.028 IDs pré-sinápticos e 6.236 IDs T4. O produto `neurons.csv.gz` cobre os 7.028 IDs: 50.630 linhas têm previsão não vazia, 2.654 sem rótulo e zero divergências internas com o `nt_type` das arestas. O dump não contém `nt_type_verified`; a consistência interna não é validação biológica independente. Protótipo T4 sintético permanece separado do baseline. Próximo gate: perfis por T4-alvo e mapeamento espacial das classes pré-sinápticas. Relatórios: `docs/FASE_7_AUDITORIA_INPUTS_T4.md` e `docs/FASE_7_MODELO_T4_ASSINADO.md`.  
+**Versão:** 2.5 — previsões T4 auditadas e 88 testes aprovados em três versões Python  
+**Estado geral:** auditoria/importação FAFB T4 concluídas (#82, #99, #110). Foram preservadas 53.284 arestas, 7.028 IDs pré-sinápticos e 6.236 IDs T4. O produto `neurons.csv.gz` cobre todos os IDs: 50.630 linhas têm previsão não vazia, 2.654 vazias e zero divergências internas. Cortex CI #155 passou com 88 testes em Python 3.11, 3.12 e 3.13 e executou o demo T4. O dump não contém `nt_type_verified`; consistência interna não é validação biológica independente. Próximo gate: perfis por T4-alvo e mapeamento espacial dos candidatos pré-sinápticos.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; testes e experimentos remotos primeiro. PC reservado para profiling, validação Windows ou quando houver necessidade concreta.  
@@ -249,6 +249,7 @@ Consultar docs/ROADMAP.md para os detalhes de cada fase e seus entregáveis.
 - **Fonte:** produto público Codex FAFB v783 `neurons.csv.gz`, descarregado durante o workflow, não versionado no repositório. SHA-256: `6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719`.
 - **Implementação:** `cortex/t4_annotations.py`, `tests/test_t4_annotations.py`, `scripts/audit_t4_neuron_annotations.py`.
 - **Execução:** FAFB Data Validation #110, run `41951036288`, sucesso; artefato ID `13381600336`.
+- **CI:** Cortex CI #155, run `41951567048`, 88 testes aprovados em Python 3.11–3.13; demo sintético executado em todas as versões.
 - **Cobertura:** 7.028/7.028 IDs pré-sinápticos mapeados; 53.284/53.284 linhas de aresta associadas a um registo de neurónio.
 - **Rótulos:** 50.630 linhas com previsão não vazia; 2.654 linhas com previsão vazia; 0 divergências entre previsão não vazia do neurónio e `nt_type` da linha de conexão.
 - **Confiança:** score mediano por classe: C3 0,78; CT1 0,66; Mi1 0,63; Mi4 0,87; Mi9 0,58; Tm3 0,70; TmY15 0,81.
