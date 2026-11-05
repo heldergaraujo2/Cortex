@@ -3,12 +3,12 @@
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
 
 **Última atualização:** 2026-11-04  
-**Versão:** 1.7 — Fase 4 espacial validada; baseline dinâmica v0 implementada, aguardando execução real  
-**Estado geral:** Fases 1–3 concluídas no escopo documentado. Fase 4 (validação espacial/colunar do piloto FAFB v783) concluída no gate de ingestão e cobertura. Fase 5 (baseline dinâmica estrutural mínima) iniciada: motor rate-based determinístico, testes, CLI e workflow para ME_L/ME_R adicionados à branch de trabalho; ainda não declarar resultados reais nem conclusão antes da CI executar e os artefatos serem examinados.  
+**Versão:** 1.8 — Fase 4 espacial e Fase 5 baseline estrutural v0 concluídas  
+**Estado geral:** Fases 1–3 concluídas no escopo documentado. Fase 4 do piloto FAFB v783 (ingestão/cobertura espacial) concluída. Fase 5 (baseline dinâmica estrutural rate-based v0) concluída: execução real ME_L/ME_R aprovada e examinada; Cortex CI passou com 45 testes em Python 3.11–3.13. Não foi demonstrada seletividade direcional nem dinâmica biologicamente calibrada.  
 **Repositório:** https://github.com/heldergaraujo2/Cortex  
 **Branch de trabalho:** `data/fafb-v783-inputs` — PR #1 permanece aberto e não integrado em `main`.  
 **Política de execução:** GitHub-first; o PC só será necessário para profiling ou validação de desempenho local.  
-**Próximo passo único:** verificar as execuções CI acionadas pelos commits da baseline, inspecionar os relatórios reais ME_L/ME_R e decidir se a Fase 5 atende aos critérios de saída.
+**Próximo passo único:** Fase 6 — validar a semântica/orientação das coordenadas de coluna e desenhar estímulos visuais espaço-temporais opostos com controles, antes de atribuir direções a T4a–T4d.
 
 ---
 
@@ -520,4 +520,21 @@ O diagnóstico apenas lê informação do host e não escreve ficheiros. A insta
 - **Revisão crítica do artefato:** o pulso propagou até T4 e o controlo sem estímulo ficou em zero, mas a comparação das ablações não era válida: ao remover Mi1/Tm3, a versão inicial renormalizava os pesos restantes e alterava o conjunto de T4 medido.
 - **Decisão:** os resultados de ablação do run #41 ficam supersedidos e não devem sustentar inferências.
 - **Correção:** pesos normalizados uma única vez no grafo intacto; ablações removem a via sem renormalizar as restantes. A população T4 de leitura permanece idêntica em todos os cenários; T4 sem entradas após ablação conta como zero. Adicionado teste que verifica explicitamente estas duas propriedades.
-- **Estado:** nova CI e nova execução real ainda pendentes após a correção. A Fase 5 permanece em andamento; não usar números da primeira execução como resultado final.
+- **Estado naquele momento:** nova CI e execução real ainda pendentes. **Resolvido posteriormente:** Fase 5 corrigida e validada no registro 7.16; usar os resultados finais dessa seção, não os do run #41.
+
+
+## 7.16 Fecho da Fase 5 — baseline estrutural rate-based v0 (2026-11-04)
+
+- **Commit validado:** `2868cd7046fd474bcb1cf7bc33dc818454fd9aa9` na branch `data/fafb-v783-inputs`.
+- **Cortex CI #86:** sucesso em Python 3.11, 3.12 e 3.13; 45 testes aprovados em cada versão. https://github.com/heldergaraujo2/Cortex/actions/runs/41943528569
+- **FAFB Data Validation #48:** sucesso; inspeção dos dados, testes, baseline ME_L e baseline ME_R concluídos; artefato publicado. https://github.com/heldergaraujo2/Cortex/actions/runs/41943528584
+- **Artefato:** contém `fafb_v783_validation_report.json`, `fafb_v783_pilot_manifest.json`, `fafb_v783_column_assignment_report.json`, `fafb_v783_baseline_ME_L.json` e `fafb_v783_baseline_ME_R.json`.
+- **ME_L:** 19.841 arestas elegíveis; população T4 fixa de 6.243, com 3.131 recebendo entrada modelada no grafo intacto; pico médio T4 0,188023 no passo 4; controlo sem estímulo 0; ablação Mi1 0,036454 (queda 80,61%); ablação Tm3 0,151570 (queda 19,39%).
+- **ME_R:** 19.970 arestas elegíveis; população T4 fixa de 6.243, com 3.102 recebendo entrada modelada no grafo intacto; pico médio T4 0,185258 no passo 4; controlo sem estímulo 0; ablação Mi1 0,035259 (queda 80,97%); ablação Tm3 0,149999 (queda 19,03%).
+- **Correção metodológica aplicada:** os pesos são normalizados uma vez no grafo intacto; ablações removem vias sem renormalizar as restantes; a população T4 de leitura é invariável entre cenários e inclui taxa zero quando uma célula perde todas as entradas modeladas.
+- **CONFIRMADO:** propagação abstrata determinística até T4 para pulso global em L1; controlo zero; comportamento reprodutível e testes aprovados.
+- **HIPÓTESE DE ENGENHARIA:** a assimetria entre ablações é uma propriedade desta representação estrutural e da regra de pesos.
+- **DESCONHECIDO:** se essa assimetria reflete contribuições biológicas reais; parâmetros e pesos não são fisiologicamente calibrados.
+- **NÃO DEMONSTRADO:** estímulo espacial, movimento, seletividade direcional, aprendizagem ou comportamento.
+- **Conclusão:** Fase 5 concluída como baseline computacional estrutural v0, não como modelo biológico validado.
+- **Próxima fase:** Fase 6 — verificar a semântica/orientação de p/q e column_id em fontes oficiais; só depois construir estímulos espaço-temporais em direções opostas, flash estático e controlo sem estímulo, mantendo as alegações de direção bloqueadas até validação.
