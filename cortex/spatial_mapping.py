@@ -28,7 +28,10 @@ class CoordinateRecord:
     z: float
     sample_count: int
     bbox_diagonal: float
-    duplicate_rows_ignored: int
+    unique_supervoxel_ids: int
+    repeated_root_supervoxel_pairs: int
+    conflicting_root_supervoxel_pairs: int
+    exact_duplicate_position_rows: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,11 +45,9 @@ class MappingSample:
 
 
 def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
-    """Aggregate repeated supervoxel positions per root ID using per-axis medians."""
+    """Aggregate all supplied positions per root ID; repeated supervoxel pairs are retained."""
     source = Path(path)
-    samples_by_root: dict[str, list[tuple[float, float, float]]] = defaultdict(list)
-    seen_root_supervoxels: dict[tuple[str, str], tuple[float, float, float]] = {}
-    duplicate_rows_by_root: Counter[str] = Counter()
+    samples_by_root: dict[str, list[tuple[str, tuple[float, float, float]]]] = defaultdict(list)
     with gzip.open(source, "rt", encoding="utf-8-sig", newline="") as stream:
         reader = csv.DictReader(stream)
         required = {"root_id", "position", "supervoxel_id"}
@@ -57,7 +58,6 @@ def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
             supervoxel_id = (row.get("supervoxel_id") or "").strip()
             if not root_id or not supervoxel_id:
                 raise ValueError(f"{source.name}:{line_number}: empty root_id/supervoxel_id")
-            pair = (root_id, supervoxel_id)
             values = re.findall(
                 r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?",
                 row.get("position") or "",
@@ -69,30 +69,39 @@ def load_coordinate_records(path: str | Path) -> dict[str, CoordinateRecord]:
             xyz = tuple(float(value) for value in values)
             if not all(math.isfinite(value) for value in xyz):
                 raise ValueError(f"{source.name}:{line_number}: non-finite position")
-            point = (xyz[0], xyz[1], xyz[2])
-            previous = seen_root_supervoxels.get(pair)
-            if previous is not None:
-                if all(math.isclose(a, b, rel_tol=0.0, abs_tol=1e-9)
-                       for a, b in zip(previous, point)):
-                    duplicate_rows_by_root[root_id] += 1
-                    continue
-                raise ValueError(
-                    f"{source.name}:{line_number}: conflicting duplicate root_id/supervoxel_id {pair}"
-                )
-            seen_root_supervoxels[pair] = point
-            samples_by_root[root_id].append(point)
+            samples_by_root[root_id].append(
+                (supervoxel_id, (xyz[0], xyz[1], xyz[2]))
+            )
 
     result: dict[str, CoordinateRecord] = {}
-    for root_id, points in samples_by_root.items():
+    for root_id, samples in samples_by_root.items():
+        points = [point for _, point in samples]
         medians = tuple(median(point[axis] for point in points) for axis in range(3))
         ranges = tuple(
             max(point[axis] for point in points) - min(point[axis] for point in points)
             for axis in range(3)
         )
-        bbox_diagonal = math.sqrt(sum(value * value for value in ranges))
+        by_supervoxel: dict[str, list[tuple[float, float, float]]] = defaultdict(list)
+        for supervoxel_id, point in samples:
+            by_supervoxel[supervoxel_id].append(point)
+        repeated_pairs = sum(len(values) > 1 for values in by_supervoxel.values())
+        conflicting_pairs = sum(
+            len(set(values)) > 1 for values in by_supervoxel.values()
+        )
+        exact_duplicate_rows = sum(
+            len(values) - len(set(values)) for values in by_supervoxel.values()
+        )
         result[root_id] = CoordinateRecord(
-            root_id, medians[0], medians[1], medians[2], len(points), bbox_diagonal,
-            duplicate_rows_by_root[root_id],
+            root_id,
+            medians[0],
+            medians[1],
+            medians[2],
+            len(points),
+            math.sqrt(sum(value * value for value in ranges)),
+            len(by_supervoxel),
+            repeated_pairs,
+            conflicting_pairs,
+            exact_duplicate_rows,
         )
     return result
 
@@ -279,11 +288,17 @@ def audit_coordinate_to_column_mapping(
         "coordinate_rows": sum(
             record.sample_count + record.duplicate_rows_ignored for record in coordinates.values()
         ),
-        "unique_supervoxel_position_rows": sum(
-            record.sample_count for record in coordinates.values()
+        "unique_supervoxel_ids_by_root_id_sum": sum(
+            record.unique_supervoxel_ids for record in coordinates.values()
         ),
-        "exact_duplicate_supervoxel_rows_ignored": sum(
-            record.duplicate_rows_ignored for record in coordinates.values()
+        "repeated_root_supervoxel_pairs": sum(
+            record.repeated_root_supervoxel_pairs for record in coordinates.values()
+        ),
+        "root_supervoxel_pairs_with_multiple_positions": sum(
+            record.conflicting_root_supervoxel_pairs for record in coordinates.values()
+        ),
+        "exact_duplicate_position_rows": sum(
+            record.exact_duplicate_position_rows for record in coordinates.values()
         ),
         "unique_coordinate_root_ids": len(coordinates),
         "coordinate_root_ids_with_multiple_samples": sum(
@@ -302,8 +317,8 @@ def audit_coordinate_to_column_mapping(
             (record.bbox_diagonal for record in coordinates.values()), default=0.0
         ),
         "coordinate_aggregation_method": (
-            "per-axis median of supplied supervoxel positions sharing the same root_id; "
-            "not interpreted as soma or arborization centroid"
+            "per-axis median of all supplied position rows sharing the same root_id; "
+            "repeated root_id/supervoxel_id rows are retained; not interpreted as soma or arborization centroid"
         ),
         "column_assignment_rows": len(assignment_rows),
         "assignment_rows_with_coordinates": len(samples),
