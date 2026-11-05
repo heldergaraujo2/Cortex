@@ -11,6 +11,7 @@ on:
       - "cortex/t4_inputs.py"
       - "cortex/t4_annotations.py"
       - "cortex/t4_profiles.py"
+      - "cortex/spatial_mapping.py"
       - "scripts/inspect_fafb_data.py"
       - "scripts/import_fafb_pilot.py"
       - "scripts/inspect_fafb_columns.py"
@@ -20,10 +21,12 @@ on:
       - "scripts/import_t4_input_edges.py"
       - "scripts/audit_t4_neuron_annotations.py"
       - "scripts/summarize_t4_target_profiles.py"
+      - "scripts/audit_spatial_coordinate_mapping.py"
       - "tests/test_t4_input_audit.py"
       - "tests/test_t4_inputs.py"
       - "tests/test_t4_annotations.py"
       - "tests/test_t4_profiles.py"
+      - "tests/test_spatial_mapping.py"
       - "tests/test_connectome.py"
       - "tests/test_spatial.py"
       - "tests/test_dynamics.py"
@@ -88,6 +91,13 @@ jobs:
           --data-dir data/raw/fafb_v783
           --column-file data/raw/fafb_v783/column_assignment.csv.gz
           --output fafb_v783_t4_target_profiles.json
+      - name: Audit coordinate-to-column mapping feasibility
+        run: >-
+          python scripts/audit_spatial_coordinate_mapping.py
+          --data-dir data/raw/fafb_v783
+          --column-file data/raw/fafb_v783/column_assignment.csv.gz
+          --coordinates-file data/raw/fafb_v783/coordinates.csv.gz
+          --output fafb_v783_coordinate_mapping_audit.json
       - name: Run structural and spatial unit tests
         run: python -m pytest -q
       - name: Run deterministic baseline for ME_L
@@ -131,4 +141,5 @@ jobs:
             fafb_v783_t4_input_edges.json
             fafb_v783_t4_neuron_annotations.json
             fafb_v783_t4_target_profiles.json
+            fafb_v783_coordinate_mapping_audit.json
           if-no-files-found: warn
