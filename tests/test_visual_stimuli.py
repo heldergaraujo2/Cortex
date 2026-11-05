@@ -1,4 +1,5 @@
 import pytest
+from cortex.dynamics import RateEdge, RateNetwork, run_rate_simulation_schedule
 from cortex.spatial import ColumnAssignment
 from cortex.visual_stimuli import build_lattice_schedule, lattice_progress
 
@@ -40,3 +41,31 @@ def test_invalid_axis_and_direction_are_rejected(axis,direction):
 def test_empty_hemisphere_is_rejected():
     with pytest.raises(ValueError,match="no assigned L1"):
         build_lattice_schedule(rows(),{"a","b","c","d"},"right","p")
+
+
+def test_scheduled_input_propagates_through_rate_network():
+    network = RateNetwork(
+        "ME_L",
+        {"l1": "L1", "mi": "Mi1", "t4": "T4a"},
+        (
+            RateEdge("l1", "mi", 1.0, 5, "L1", "Mi1"),
+            RateEdge("mi", "t4", 1.0, 5, "Mi1", "T4a"),
+        ),
+        ("l1",), ("t4",),
+        {"T4a": ("t4",), "T4b": (), "T4c": (), "T4d": ()},
+    )
+    result = run_rate_simulation_schedule(
+        network, (frozenset({"l1"}), frozenset(), frozenset()), leak=1.0
+    )
+    assert result["metrics"]["t4_rate_trace"] == [0.0, 0.0, 1.0]
+
+
+def test_scheduled_input_control_stays_zero():
+    network = RateNetwork(
+        "ME_L", {"l1": "L1", "t4": "T4a"}, (), ("l1",), ("t4",),
+        {"T4a": ("t4",), "T4b": (), "T4c": (), "T4d": ()},
+    )
+    result = run_rate_simulation_schedule(
+        network, (frozenset(), frozenset(), frozenset())
+    )
+    assert result["metrics"]["peak_mean_t4_rate"] == 0.0
