@@ -16,12 +16,17 @@ def run_pilot(cell_types: str | Path, connections: str | Path, *,
               steps: int = 12, input_current: float = 1.2,
               min_synapses: int = 5,
               cell_type_column: str = "cell_type",
-              synapse_column: str = "syn_count") -> dict[str, object]:
+              synapse_column: str = "syn_count",
+              cell_id_column: str = "root_id",
+              pre_column: str = "pre_root_id",
+              post_column: str = "post_root_id") -> dict[str, object]:
     if steps < 2 or not 0 < input_current < 100:
         raise ValueError("invalid stimulation")
     selected = select_t4_pilot(
         cell_types, connections, min_synapses=min_synapses,
-        cell_type_column=cell_type_column, synapse_column=synapse_column
+        cell_type_column=cell_type_column, synapse_column=synapse_column,
+        cell_id_column=cell_id_column, pre_column=pre_column,
+        post_column=post_column
     )
     circuit = selected.circuit.simulator()
     l1 = [i for i, root in enumerate(selected.circuit.root_ids)
@@ -65,11 +70,16 @@ def main() -> None:
     parser.add_argument("--connections", required=True)
     parser.add_argument("--cell-type-column", default="cell_type")
     parser.add_argument("--synapse-column", default="syn_count")
+    parser.add_argument("--cell-id-column", default="root_id")
+    parser.add_argument("--pre-column", default="pre_root_id")
+    parser.add_argument("--post-column", default="post_root_id")
     parser.add_argument("--steps", type=int, default=12)
     args = parser.parse_args()
     result = run_pilot(
         args.cell_types, args.connections, steps=args.steps,
-        cell_type_column=args.cell_type_column, synapse_column=args.synapse_column
+        cell_type_column=args.cell_type_column, synapse_column=args.synapse_column,
+        cell_id_column=args.cell_id_column, pre_column=args.pre_column,
+        post_column=args.post_column
     )
     print(json.dumps(result, indent=2, sort_keys=True))
 
