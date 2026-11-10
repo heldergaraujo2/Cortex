@@ -1,0 +1,48 @@
+name: FAFB real pilot
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Cortex
+        run: python -m pip install -e .
+      - name: Locate and inspect actual FAFB data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from cortex.experiments.fafb_inspect import inspect_csv
+          files = sorted(Path("para-validacao").rglob("*.csv.gz"))
+          print("Found", len(files), "compressed CSVs")
+          for path in files:
+              print(json.dumps({"file": str(path), "columns": inspect_csv(path, sample_rows=0)["columns"]}))
+          connections = [p for p in files if "connections_princeton" in p.name.lower()]
+          annotations = [p for p in files if "consolidated_cell_types" in p.name.lower()]
+          if not connections or not annotations:
+              raise SystemExit("REAL_DATA_BLOCKED: required connections_princeton and consolidated_cell_types CSV.GZ not found in checkout")
+          PY
+      - name: Run real-data T4 pilot when schemas match
+        shell: bash
+        run: |
+          set -euo pipefail
+          TYPES=$(find para-validacao -type f -name '*consolidated_cell_types*.csv.gz' -print -quit)
+          EDGES=$(find para-validacao -type f -name '*connections_princeton*.csv.gz' -print -quit)
+          python -m cortex.experiments.t4_pilot_runner --cell-types "$TYPES" --connections "$EDGES" | tee fafb-t4-result.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fafb-t4-result
+          path: fafb-t4-result.json
+          if-no-files-found: ignore
