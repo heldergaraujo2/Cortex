@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
 from pathlib import Path
 
 from cortex.experiments.t4_selector import select_t4_pilot
@@ -48,7 +49,17 @@ def run_pilot(cell_types: str | Path, connections: str | Path, *,
         return total
     baseline = simulate(False)
     driven = simulate(True)
+    def fingerprint(path):
+        path = Path(path)
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        return {"path": str(path), "bytes": path.stat().st_size, "sha256": digest.hexdigest()}
     return {
+        "selected_root_ids": list(selected.circuit.root_ids),
+        "selected_connections": [list(edge) for edge in selected.circuit.edges],
+        "input_files": {"annotations": fingerprint(cell_types), "connections": fingerprint(connections)},
         "dataset": "user_supplied_fafb_format",
         "connectome_derived": True,
         "biologically_validated": False,
