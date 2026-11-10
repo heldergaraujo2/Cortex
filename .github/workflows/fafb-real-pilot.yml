@@ -10,6 +10,7 @@ on:
       - 'cortex/experiments/fafb_inspect.py'
       - 'cortex/experiments/t4_pilot_runner.py'
       - 'cortex/experiments/t4_selector.py'
+      - 'tests/test_fafb_real_data_pilot.py'
 
 jobs:
   pilot:
