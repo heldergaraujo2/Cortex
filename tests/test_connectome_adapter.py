@@ -28,14 +28,14 @@ def test_import_real_format_from_gzip(tmp_path):
 
 def test_missing_columns_rejected(tmp_path):
     path = tmp_path / "bad.csv"
-    path.write_text("from,to,count\\n1,2,3\\n")
+    path.write_text("from,to,count\n1,2,3\n")
     with pytest.raises(ValueError, match="missing columns"):
         import_connections(path, {1, 2})
 
 
 def test_no_matching_edges_rejected(tmp_path):
     path = tmp_path / "empty.csv"
-    path.write_text("pre_root_id,post_root_id,syn_count\\n1,2,3\\n")
+    path.write_text("pre_root_id,post_root_id,syn_count\n1,2,3\n")
     with pytest.raises(ValueError, match="no matching"):
         import_connections(path, {3, 4})
 
