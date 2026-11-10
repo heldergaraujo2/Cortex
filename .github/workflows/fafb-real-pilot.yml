@@ -47,7 +47,32 @@ jobs:
           set -euo pipefail
           TYPES=$(find para-validacao -type f -name '*consolidated_cell_types*.csv.gz' -print -quit)
           EDGES=$(find para-validacao -type f -name '*connections_princeton*.csv.gz' -print -quit)
-          python -m cortex.experiments.t4_pilot_runner --cell-types "$TYPES" --connections "$EDGES" | tee fafb-t4-result.json
+          python - "$TYPES" "$EDGES" <<'PY' | tee fafb-t4-result.json
+          import json
+          import sys
+          from cortex.experiments.fafb_inspect import inspect_csv
+          from cortex.experiments.t4_pilot_runner import run_pilot
+
+          types, edges = sys.argv[1:]
+          a = set(inspect_csv(types, sample_rows=0)["columns"])
+          b = set(inspect_csv(edges, sample_rows=0)["columns"])
+
+          def choose(columns, options, label):
+              for name in options:
+                  if name in columns:
+                      return name
+              raise SystemExit(f"REAL_DATA_SCHEMA_BLOCKED: {label}: observed {sorted(columns)}")
+
+          result = run_pilot(
+              types, edges,
+              cell_id_column=choose(a, ("root_id", "pt_root_id"), "annotation root ID"),
+              cell_type_column=choose(a, ("cell_type", "type", "primary_type"), "cell type"),
+              pre_column=choose(b, ("pre_root_id", "pre_pt_root_id"), "presynaptic ID"),
+              post_column=choose(b, ("post_root_id", "post_pt_root_id"), "postsynaptic ID"),
+              synapse_column=choose(b, ("syn_count", "synapse_count", "size"), "synapse count"),
+          )
+          print(json.dumps(result, indent=2, sort_keys=True))
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
