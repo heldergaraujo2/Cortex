@@ -9,6 +9,7 @@ import argparse
 import csv
 import gzip
 import json
+import hashlib
 from pathlib import Path
 
 
@@ -22,7 +23,13 @@ def inspect_csv(path: str | Path, *, sample_rows: int = 3) -> dict[str, object]:
         if not reader.fieldnames:
             raise ValueError("CSV has no header")
         examples = [row for _, row in zip(range(sample_rows), reader)]
-    return {"file": str(path), "columns": reader.fieldnames, "examples": examples}
+    digest = hashlib.sha256()
+    with path.open("rb") as binary:
+        for chunk in iter(lambda: binary.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return {"file": str(path), "bytes": path.stat().st_size,
+            "sha256": digest.hexdigest(),
+            "columns": reader.fieldnames, "examples": examples}
 
 
 def main() -> None:
