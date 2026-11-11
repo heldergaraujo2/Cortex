@@ -1,0 +1,42 @@
+name: FAFB T4 normalized graph experiment
+on:
+  workflow_dispatch:
+jobs:
+  normalized-graph:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/synthetic-neural-learning-smoke
+      - uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+      - name: Run targeted recurrence and propagation tests
+        run: python -m unittest discover -s tests -p 'test_t4_directional_response.py' -v
+      - name: Run normalized real FAFB experiment
+        run: |
+          python -m cortex.experiments.t4_real_graph_experiment \
+            --annotations fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz \
+            --columns fafb-source/data/raw/fafb_v783/column_assignment.csv.gz \
+            --connections fafb-source/data/raw/fafb_v783/connections_princeton.csv.gz \
+            --output t4-normalized-response.json
+      - name: Check finite results and report subtype winners
+        run: |
+          python - <<'PY'
+          import json, math
+          d=json.load(open('t4-normalized-response.json'))
+          assert d['responses']['normalize_outgoing']
+          assert d['retained_edges'] > 0
+          assert not d['biological_direction_selectivity_validated']
+          for t, metrics in d['metrics'].items():
+              assert all(math.isfinite(v) for v in metrics['responses'].values())
+              print(t, metrics['preferred_condition'], metrics['responses'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fafb-t4-normalized-response
+          path: t4-normalized-response.json
