@@ -36,6 +36,17 @@ class DirectionalResponseTest(unittest.TestCase):
             self.assertLess(result["conditions"]["x"]["integrated"][subtype], 100)
         self.assertEqual(result["baseline"]["integrated"]["T4a"], 0)
 
+    def test_recurrent_activity_never_grows_without_new_input(self):
+        schedules = {"x": [{"active_l1_root_ids": ["l1"]}] +
+                     [{"active_l1_root_ids": []} for _ in range(60)]}
+        edges = [("l1", "a", 1000), ("a", "a", 1000),
+                 ("a", "b", 1000), ("b", "a", 1000)]
+        result = simulate(schedules, edges, self.types,
+                          decay=0.25, normalize_outgoing=True)
+        trace = result["conditions"]["x"]["traces"]["T4a"]
+        self.assertTrue(all(0 <= value <= 1.0 + 1e-10 for value in trace))
+        self.assertTrue(all(trace[i] <= 1.0 + 1e-10 for i in range(len(trace))))
+
     def test_overflow_is_not_silently_discarded(self):
         schedules = {"x": [{"active_l1_root_ids": ["l1"]}] +
                      [{"active_l1_root_ids": []} for _ in range(5)]}
