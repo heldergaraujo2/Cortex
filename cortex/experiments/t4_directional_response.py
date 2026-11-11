@@ -60,10 +60,15 @@ def simulate(schedules, edges, cell_types, *, decay=0.25, threshold=0.0, normali
             state = {root: value for root, value in next_state.items()
                      if value > threshold}
             for subtype in T4_TYPES:
-                traces[subtype].append(sum(value for root, value in state.items()
-                                           if cells.get(root) == subtype))
-        return {"traces": traces,
-                "integrated": {subtype: sum(trace) for subtype, trace in traces.items()}}
+                subtype_total = sum(value for root, value in state.items()
+                                    if cells.get(root) == subtype)
+                if not isfinite(subtype_total):
+                    raise FloatingPointError("Nonfinite aggregated T4 activity")
+                traces[subtype].append(subtype_total)
+        integrated = {subtype: sum(trace) for subtype, trace in traces.items()}
+        if any(not isfinite(value) for value in integrated.values()):
+            raise FloatingPointError("Nonfinite integrated T4 response")
+        return {"traces": traces, "integrated": integrated}
     results = {direction: run([frame["active_l1_root_ids"] for frame in frames])
                for direction, frames in schedules.items()}
     steps = max(map(len, schedules.values()))
