@@ -1,0 +1,59 @@
+name: FAFB T4 automatic validation
+on:
+  push:
+    branches:
+      - experiment/synthetic-neural-learning-smoke
+    paths:
+      - 'cortex/experiments/t4_directional_response.py'
+      - 'cortex/experiments/t4_real_graph_experiment.py'
+      - 'cortex/experiments/t4_response_diagnostics.py'
+      - 'tests/test_t4_directional_response.py'
+      - 'tests/test_t4_response_diagnostics.py'
+      - '.github/workflows/fafb-t4-auto-validation.yml'
+  workflow_dispatch:
+jobs:
+  t4-auto:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+      - name: Targeted new tests
+        run: |
+          python -m unittest discover -s tests -p 'test_t4_directional_response.py' -v
+          python -m unittest discover -s tests -p 'test_t4_response_diagnostics.py' -v
+      - name: Normalized real graph experiment
+        run: |
+          python -m cortex.experiments.t4_real_graph_experiment \
+            --annotations fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz \
+            --columns fafb-source/data/raw/fafb_v783/column_assignment.csv.gz \
+            --connections fafb-source/data/raw/fafb_v783/connections_princeton.csv.gz \
+            --output t4-normalized-response.json
+      - name: Validate and diagnose
+        run: |
+          python - <<'PY'
+          import json, math
+          from cortex.experiments.t4_response_diagnostics import diagnose
+          d=json.load(open('t4-normalized-response.json'))
+          assert d['responses']['normalize_outgoing']
+          assert d['retained_edges'] > 0
+          assert not d['biological_direction_selectivity_validated']
+          assert all(math.isfinite(v) for m in d['metrics'].values() for v in m['responses'].values())
+          result=diagnose(d)
+          open('t4-normalized-diagnostics.json','w').write(json.dumps(result,indent=2))
+          print('subtype winners:', result['subtype_winners'])
+          print('all share winner:',result['all_subtypes_share_winner'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fafb-t4-auto-validation
+          path: |
+            t4-normalized-response.json
+            t4-normalized-diagnostics.json
+          if-no-files-found: warn
