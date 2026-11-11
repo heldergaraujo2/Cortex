@@ -35,7 +35,9 @@ def run_pilot(cell_types: str | Path, connections: str | Path, *,
     t4 = [i for i, root in enumerate(selected.circuit.root_ids)
           if selected.neuron_types[root] == "T4"]
     if not l1 or not t4:
-        raise ValueError("pilot must contain L1 and T4 neurons")
+        from collections import Counter
+        counts = dict(Counter(selected.neuron_types.values()))
+        raise ValueError(f"pilot must contain L1 and T4 neurons; selected_type_counts={counts}; selected_edge_counts={selected.edge_counts}")
     def simulate(stimulated: bool) -> int:
         circuit.reset_activity()
         total = 0
