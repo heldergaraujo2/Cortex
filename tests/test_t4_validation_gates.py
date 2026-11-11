@@ -7,7 +7,7 @@ class T4ValidationGatesTest(unittest.TestCase):
         conditions = {"p_positive": 1.0, "p_negative": 2.0,
                       "q_positive": 1.0, "q_negative": 4.0}
         data = {"metrics": {t: {"responses": conditions} for t in ("T4a","T4b","T4c","T4d")},
-                "responses": {"normalize_outgoing": True,
+                "responses": {"conditions": {"x": {"traces": {t: [0.0] for t in ("T4a","T4b","T4c","T4d")}}}, "normalize_outgoing": True,
                               "baseline": {"integrated": {t: 0 for t in ("T4a","T4b","T4c","T4d")}}}}
         result = assess(data)
         self.assertTrue(result["numerical_finite_integrated"])
@@ -20,5 +20,5 @@ class T4ValidationGatesTest(unittest.TestCase):
         conditions = {"p_positive": float("inf"), "p_negative": 2,
                       "q_positive": 1, "q_negative": 4}
         data = {"metrics": {t: {"responses": conditions} for t in ("T4a","T4b","T4c","T4d")},
-                "responses": {"baseline": {"integrated": {t: 0 for t in ("T4a","T4b","T4c","T4d")}}}}
+                "responses": {"conditions": {"x": {"traces": {t: [0.0] for t in ("T4a","T4b","T4c","T4d")}}}, "baseline": {"integrated": {t: 0 for t in ("T4a","T4b","T4c","T4d")}}}}
         self.assertFalse(assess(data)["numerical_finite_integrated"])
