@@ -14,6 +14,7 @@ def assess(result):
     metrics = result["metrics"]
     baseline = result["responses"]["baseline"]["integrated"]
     finite = True
+    traces_finite = all(math.isfinite(float(v)) and float(v) >= 0 for condition in result['responses']['conditions'].values() for t in TYPES for v in condition['traces'][t])
     dsi = {}
     winners = {}
     for subtype in TYPES:
@@ -31,6 +32,7 @@ def assess(result):
     baseline_ok = all(math.isfinite(float(baseline[t])) and abs(float(baseline[t])) <= 1e-9 for t in TYPES)
     return {
         "numerical_finite_integrated": finite,
+        "numerical_finite_traces": traces_finite,
         "baseline_near_zero": baseline_ok,
         "normalized_graph": bool(result["responses"].get("normalize_outgoing")),
         "preferred_conditions": winners,
@@ -51,7 +53,7 @@ def main():
     assessment = assess(json.loads(args.input.read_text()))
     args.output.write_text(json.dumps(assessment, indent=2, sort_keys=True) + "\n")
     print(json.dumps(assessment, sort_keys=True))
-    if not assessment["numerical_finite_integrated"] or not assessment["baseline_near_zero"]:
+    if not (assessment["numerical_finite_integrated"] and assessment["numerical_finite_traces"] and assessment["baseline_near_zero"]):
         raise SystemExit(1)
 
 
