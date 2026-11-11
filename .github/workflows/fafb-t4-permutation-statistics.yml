@@ -1,0 +1,37 @@
+name: FAFB T4 spatial permutation statistics
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/synthetic-neural-learning-smoke
+    paths:
+      - 'cortex/experiments/t4_permutation_statistics.py'
+      - '.github/workflows/fafb-t4-permutation-statistics.yml'
+jobs:
+  permutations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+      - name: Run 19 seeded spatial permutations
+        run: |
+          python -m cortex.experiments.t4_permutation_statistics \
+            --annotations fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz \
+            --connections fafb-source/data/raw/fafb_v783/connections_princeton.csv.gz \
+            --columns fafb-source/data/raw/fafb_v783/column_assignment.csv.gz \
+            --permutations 19 | tee t4-permutation-statistics.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: t4-permutation-statistics
+          path: t4-permutation-statistics.json
+          if-no-files-found: ignore
