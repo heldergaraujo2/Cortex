@@ -22,3 +22,17 @@ class T4ValidationGatesTest(unittest.TestCase):
         data = {"metrics": {t: {"responses": conditions} for t in ("T4a","T4b","T4c","T4d")},
                 "responses": {"conditions": {"x": {"traces": {t: [0.0] for t in ("T4a","T4b","T4c","T4d")}}}, "baseline": {"integrated": {t: 0 for t in ("T4a","T4b","T4c","T4d")}}}}
         self.assertFalse(assess(data)["numerical_finite_integrated"])
+
+    def test_nonfinite_trace_fails_even_when_integrated_values_are_finite(self):
+        directions = {"p_positive": 1.0, "p_negative": 2.0,
+                      "q_positive": 1.0, "q_negative": 4.0}
+        types = ("T4a", "T4b", "T4c", "T4d")
+        data = {"metrics": {t: {"responses": directions} for t in types},
+                "responses": {"conditions": {"p_positive": {"traces": {
+                    t: ([float("inf")] if t == "T4a" else [0.0]) for t in types}}},
+                    "normalize_outgoing": True,
+                    "baseline": {"integrated": {t: 0.0 for t in types}}}}
+        result = assess(data)
+        self.assertFalse(result["numerical_finite_traces"])
+        self.assertTrue(result["numerical_finite_integrated"])
+        self.assertFalse(result["biological_direction_selectivity_validated"])
