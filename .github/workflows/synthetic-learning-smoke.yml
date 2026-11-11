@@ -31,6 +31,23 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -e .
+      - name: Checkout actual FAFB dataset from its dedicated branch
+        uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+          lfs: true
+      - name: Stage actual FAFB files for validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s fafb-source/data/raw/fafb_v783/connections_princeton.csv.gz
+          test -s fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz
+          mkdir -p para-validacao
+          cp fafb-source/data/raw/fafb_v783/connections_princeton.csv.gz para-validacao/
+          cp fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz para-validacao/
       - name: Verify actual FAFB inputs, never substitute synthetic fixtures
         shell: bash
         run: |
