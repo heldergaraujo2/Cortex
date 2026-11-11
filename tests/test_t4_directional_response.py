@@ -56,6 +56,24 @@ class DirectionalResponseTest(unittest.TestCase):
         with self.assertRaises(FloatingPointError):
             simulate(schedules, edges, self.types, decay=0)
 
+    def test_direction_selectivity_uses_predeclared_opposite_pair(self):
+        conditions = {}
+        for name, amplitude in (("p_positive", 3.0), ("p_negative", 1.0),
+                                ("q_positive", 2.0), ("q_negative", 0.0)):
+            conditions[name] = {"integrated": {subtype: amplitude
+                                for subtype in ("T4a", "T4b", "T4c", "T4d")}}
+        metrics = direction_metrics({"conditions": conditions})
+        for subtype in ("T4a", "T4b", "T4c", "T4d"):
+            self.assertEqual(metrics[subtype]["preferred_condition"], "p_positive")
+            self.assertEqual(metrics[subtype]["opposite_condition"], "p_negative")
+            self.assertAlmostEqual(metrics[subtype]["direction_selectivity_index"], 0.5)
+
+    def test_direction_selectivity_missing_opposite_is_undefined(self):
+        conditions = {"forward": {"integrated": {
+            subtype: 1.0 for subtype in ("T4a", "T4b", "T4c", "T4d")}}}
+        metrics = direction_metrics({"conditions": conditions})
+        self.assertIsNone(metrics["T4a"]["direction_selectivity_index"])
+
     def test_rejects_invalid_weights(self):
         with self.assertRaises(ValueError):
             simulate({"x": [{"active_l1_root_ids": []}]},
