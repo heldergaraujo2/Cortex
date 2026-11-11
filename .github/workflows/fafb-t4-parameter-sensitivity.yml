@@ -1,0 +1,37 @@
+name: FAFB T4 parameter sensitivity
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/synthetic-neural-learning-smoke
+    paths:
+      - 'cortex/experiments/t4_parameter_sensitivity.py'
+      - '.github/workflows/fafb-t4-parameter-sensitivity.yml'
+jobs:
+  sensitivity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+      - name: Run parameter sensitivity on real connectome
+        run: |
+          python -m cortex.experiments.t4_parameter_sensitivity \
+            --annotations fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz \
+            --connections fafb-source/data/raw/fafb_v783/connections_princeton.csv.gz \
+            --columns fafb-source/data/raw/fafb_v783/column_assignment.csv.gz \
+            | tee t4-parameter-sensitivity.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: t4-parameter-sensitivity
+          path: t4-parameter-sensitivity.json
+          if-no-files-found: ignore
