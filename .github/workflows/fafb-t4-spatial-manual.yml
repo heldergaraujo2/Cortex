@@ -1,0 +1,41 @@
+name: FAFB T4 spatial inputs manual launcher
+on:
+  workflow_dispatch:
+jobs:
+  run-spatial-inputs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/synthetic-neural-learning-smoke
+      - uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+      - name: Targeted tests
+        run: python -m unittest discover -s tests -p 'test_t4_spatial_stimuli.py' -v
+      - name: Generate real FAFB inputs
+        run: |
+          python -m cortex.experiments.t4_spatial_stimuli \
+            --annotations fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz \
+            --columns fafb-source/data/raw/fafb_v783/column_assignment.csv.gz \
+            --steps 12 --stripe-width 1 \
+            --output t4-spatial-inputs.json
+      - name: Check real input schedules
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('t4-spatial-inputs.json'))
+          assert set(d['directions']) == {'p_positive','p_negative','q_positive','q_negative'}
+          assert d['mapped_l1_neurons'] > 0
+          assert all(len(v)==12 and any(f['active_l1_root_ids'] for f in v) for v in d['directions'].values())
+          assert not d['direction_selectivity_validated']
+          print('Four real-data schedules generated; neural direction selectivity NOT tested')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fafb-t4-spatial-inputs
+          path: t4-spatial-inputs.json
