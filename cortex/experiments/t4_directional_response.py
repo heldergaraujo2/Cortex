@@ -28,15 +28,16 @@ def simulate(schedules, edges, cell_types, *, decay=0.25, threshold=0.0, normali
             raise ValueError("Weights must be finite and nonnegative")
         graph[str(pre)].append((str(post), weight))
     if normalize_outgoing:
-        # Each presynaptic neuron distributes at most unit total signal.
-        # Together with decay < 1 this prevents exponential growth from
-        # large raw synapse counts in recurrent pathways.
+        # Bound outgoing propagation by the remaining budget after decay.
+        # Each source then contributes at most its previous total activity,
+        # preventing recurrent amplification from the propagation operator.
         for root, outgoing in graph.items():
             total = sum(weight for _, weight in outgoing)
             if not isfinite(total):
                 raise ValueError('Outgoing synapse weight sum overflow')
-            if total > 1.0:
-                graph[root] = [(post, weight / total) for post, weight in outgoing]
+            budget = 1.0 - decay
+            if total > budget:
+                graph[root] = [(post, weight * (budget / total)) for post, weight in outgoing]
     cells = {str(k): v for k, v in cell_types.items()}
     if not all(any(t == subtype for t in cells.values()) for subtype in T4_TYPES):
         raise ValueError("All four T4 subtypes must be annotated")
