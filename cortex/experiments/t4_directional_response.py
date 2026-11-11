@@ -81,10 +81,29 @@ def simulate(schedules, edges, cell_types, *, decay=0.25, threshold=0.0, normali
 
 
 def direction_metrics(result):
-    """Descriptive contrast only; not a biological validation claim."""
+    """Descriptive directional contrasts; not biological validation.
+
+    DSI is only defined when both members of a preregistered opposite pair
+    are present. A zero response in both directions has undefined DSI.
+    """
     conditions = result["conditions"]
-    return {subtype: {"preferred_condition": max(conditions, key=lambda name:
-                    conditions[name]["integrated"][subtype]),
-                      "responses": {name: values["integrated"][subtype]
-                                    for name, values in conditions.items()}}
-            for subtype in T4_TYPES}
+    opposite = {"p_positive": "p_negative", "p_negative": "p_positive",
+                "q_positive": "q_negative", "q_negative": "q_positive"}
+    metrics = {}
+    for subtype in T4_TYPES:
+        responses = {name: values["integrated"][subtype]
+                     for name, values in conditions.items()}
+        if not responses or any(not isfinite(v) for v in responses.values()):
+            raise ValueError("Directional responses must be finite and nonempty")
+        preferred = max(responses, key=responses.get)
+        rival = opposite.get(preferred)
+        dsi = None
+        if rival in responses:
+            pref_value, opp_value = responses[preferred], responses[rival]
+            denominator = pref_value + opp_value + 1e-12
+            dsi = (pref_value - opp_value) / denominator
+        metrics[subtype] = {"preferred_condition": preferred,
+                            "responses": responses,
+                            "opposite_condition": rival if rival in responses else None,
+                            "direction_selectivity_index": dsi}
+    return metrics
