@@ -54,8 +54,10 @@ def simulate(schedules, edges, cell_types, *, decay=0.25, threshold=0.0, normali
                     next_state[post] += value * weight
             for root in frame:
                 next_state[str(root)] += 1.0
+            if any(not isfinite(value) for value in next_state.values()):
+                raise FloatingPointError('Nonfinite neural activity during propagation')
             state = {root: value for root, value in next_state.items()
-                     if value > threshold and isfinite(value)}
+                     if value > threshold}
             for subtype in T4_TYPES:
                 traces[subtype].append(sum(value for root, value in state.items()
                                            if cells.get(root) == subtype))
