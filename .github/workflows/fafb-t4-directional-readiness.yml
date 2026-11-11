@@ -1,0 +1,31 @@
+name: FAFB T4 directional readiness
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/synthetic-neural-learning-smoke
+    paths:
+      - 'cortex/experiments/t4_directional_readiness.py'
+      - '.github/workflows/fafb-t4-directional-readiness.yml'
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+      - name: Inspect actual subtype and column assignments
+        run: |
+          python -m cortex.experiments.t4_directional_readiness \
+            --annotations fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz \
+            --columns fafb-source/data/raw/fafb_v783/column_assignment.csv.gz \
+            | tee t4-directional-readiness.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: t4-directional-readiness
+          path: t4-directional-readiness.json
