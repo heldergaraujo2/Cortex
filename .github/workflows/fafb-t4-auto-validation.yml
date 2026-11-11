@@ -72,7 +72,7 @@ jobs:
               'subtypes':summary,
               'biological_direction_selectivity_validated':False,
               'interpretation':'Descriptive DSI only; no independent physiology or anatomical axis calibration'
-          },indent=2,sort_keys=True)+'\\n')
+          },indent=2,sort_keys=True))
           PY
       - uses: actions/upload-artifact@v4
         if: always()
