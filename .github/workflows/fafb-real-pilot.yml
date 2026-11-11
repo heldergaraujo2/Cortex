@@ -25,6 +25,23 @@ jobs:
           python-version: '3.11'
       - name: Install Cortex
         run: python -m pip install -e .
+      - name: Checkout real FAFB dataset branch
+        uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+          lfs: true
+      - name: Stage actual FAFB connections and annotations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p para-validacao
+          cp fafb-source/data/raw/fafb_v783/connections_princeton.csv.gz para-validacao/
+          cp fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz para-validacao/
+          test -s para-validacao/connections_princeton.csv.gz
+          test -s para-validacao/consolidated_cell_types.csv.gz
       - name: Locate and inspect actual FAFB data
         shell: bash
         run: |
