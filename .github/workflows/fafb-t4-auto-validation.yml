@@ -49,7 +49,7 @@ jobs:
           assert all(math.isfinite(v) for m in d['metrics'].values() for v in m['responses'].values())
           from cortex.experiments.t4_validation_gates import assess
           gates=assess(d)
-          assert gates['numerical_finite_integrated'] and gates['baseline_near_zero']
+          assert gates['numerical_finite_integrated'] and gates['numerical_finite_traces'] and gates['baseline_near_zero']
           open('t4-validation-gates.json','w').write(json.dumps(gates,indent=2))
           result=diagnose(d)
           open('t4-normalized-diagnostics.json','w').write(json.dumps(result,indent=2))
