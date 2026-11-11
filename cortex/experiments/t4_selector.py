@@ -13,6 +13,14 @@ from pathlib import Path
 from cortex.experiments.connectome_adapter import ImportedCircuit
 
 CELL_TYPES = frozenset({"L1", "Mi1", "Tm3", "T4"})
+T4_SUBTYPES = frozenset({"T4a", "T4b", "T4c", "T4d"})
+
+
+def _pilot_type(annotation: str) -> str:
+    """Normalize established T4 directional subtypes without inventing neuron IDs."""
+    value = annotation.strip()
+    return "T4" if value in T4_SUBTYPES else value
+
 ALLOWED_PAIRS = frozenset({
     ("L1", "Mi1"), ("L1", "Tm3"), ("Mi1", "T4"), ("Tm3", "T4")
 })
@@ -54,7 +62,7 @@ def select_t4_pilot(
             if not {cell_id_column, cell_type_column}.issubset(row):
                 raise ValueError("cell type CSV missing required columns")
             saw_cells = True
-        cell_type = (row[cell_type_column] or "").strip()
+        cell_type = _pilot_type(row[cell_type_column] or "")
         if cell_type in CELL_TYPES:
             root = int(row[cell_id_column])
             if root <= 0:
