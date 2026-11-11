@@ -51,6 +51,10 @@ def run_pilot(cell_types: str | Path, connections: str | Path, *,
         return total
     baseline = simulate(False)
     driven = simulate(True)
+    from collections import Counter
+    selected_type_counts = dict(sorted(Counter(selected.neuron_types.values()).items()))
+    if driven <= baseline:
+        raise ValueError("L1 stimulation did not increase aggregate T4 activity")
     def fingerprint(path):
         path = Path(path)
         digest = hashlib.sha256()
@@ -70,6 +74,9 @@ def run_pilot(cell_types: str | Path, connections: str | Path, *,
         "selected_neurons": len(selected.circuit.root_ids),
         "selected_edges": len(selected.circuit.edges),
         "edge_counts": selected.edge_counts,
+        "selected_type_counts": selected_type_counts,
+        "t4_spike_delta": driven - baseline,
+        "direction_selectivity_tested": False,
         "t4_spikes_no_stimulus": baseline,
         "t4_spikes_l1_current": driven,
         "source_connections": str(connections),
