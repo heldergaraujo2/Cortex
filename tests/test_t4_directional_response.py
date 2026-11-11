@@ -36,6 +36,15 @@ class DirectionalResponseTest(unittest.TestCase):
             self.assertLess(result["conditions"]["x"]["integrated"][subtype], 100)
         self.assertEqual(result["baseline"]["integrated"]["T4a"], 0)
 
+    def test_overflow_is_not_silently_discarded(self):
+        schedules = {"x": [{"active_l1_root_ids": ["l1"]}] +
+                     [{"active_l1_root_ids": []} for _ in range(5)]}
+        edges = [("l1", "relay", 1e308), ("relay", "relay", 1e308),
+                 ("relay", "a", 1), ("relay", "b", 1),
+                 ("relay", "c", 1), ("relay", "d", 1)]
+        with self.assertRaises(FloatingPointError):
+            simulate(schedules, edges, self.types, decay=0)
+
     def test_rejects_invalid_weights(self):
         with self.assertRaises(ValueError):
             simulate({"x": [{"active_l1_root_ids": []}]},
