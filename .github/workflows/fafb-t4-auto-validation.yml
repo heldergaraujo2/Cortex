@@ -13,6 +13,8 @@ on:
       - 'tests/test_t4_validation_gates.py'
       - '.github/workflows/fafb-t4-auto-validation.yml'
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   t4-auto:
     runs-on: ubuntu-latest
@@ -53,6 +55,7 @@ jobs:
           open('t4-validation-gates.json','w').write(json.dumps(gates,indent=2))
           result=diagnose(d)
           open('t4-normalized-diagnostics.json','w').write(json.dumps(result,indent=2))
+          assert set(d['metrics']) == {'T4a','T4b','T4c','T4d'}, sorted(d['metrics'])
           print('subtype winners:', result['subtype_winners'])
           print('all share winner:',result['all_subtypes_share_winner'])
           summary={}
