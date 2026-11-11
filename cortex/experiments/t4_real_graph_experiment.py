@@ -51,6 +51,16 @@ def graph_inputs(annotations, connections, allowed_roots):
 def experiment(annotations, columns, connections, steps=12):
     inputs = generate(annotations, columns, steps=steps)
     schedules = inputs["directions"]
+    stimulus_drive = {name: {"frames": len(frames),
+                             "total_active_l1_events": sum(len(frame["active_l1_root_ids"]) for frame in frames),
+                             "unique_l1_roots": len({str(root) for frame in frames for root in frame["active_l1_root_ids"]})}
+                      for name, frames in schedules.items()}
+    totals = {v["total_active_l1_events"] for v in stimulus_drive.values()}
+    lengths = {v["frames"] for v in stimulus_drive.values()}
+    stimulus_audit = {"by_direction": stimulus_drive,
+                      "equal_total_input_events": len(totals) == 1,
+                      "equal_frame_counts": len(lengths) == 1,
+                      "interpretation": "Input balance diagnostic only; not biological validation"}
     roots = {str(root) for frames in schedules.values() for frame in frames
              for root in frame["active_l1_root_ids"]}
     types, edges = graph_inputs(annotations, connections, roots)
@@ -61,6 +71,7 @@ def experiment(annotations, columns, connections, steps=12):
             "stimulated_l1_neurons": len(roots),
             "retained_edges": len(edges),
             "t4_annotation_counts": dict(Counter(types.values())),
+            "stimulus_drive_audit": stimulus_audit,
             "metrics": direction_metrics(response),
             "responses": response,
             "real_fafb_experiment_executed": True,
