@@ -1,0 +1,13 @@
+name: T4 response diagnostics manual
+on:
+  workflow_dispatch:
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/synthetic-neural-learning-smoke
+      - name: Run targeted T4 diagnostics tests only
+        run: python -m unittest discover -s tests -p 'test_t4_response_diagnostics.py' -v
