@@ -1,0 +1,48 @@
+name: FAFB T4 four-direction spatial inputs
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/synthetic-neural-learning-smoke
+    paths:
+      - 'cortex/experiments/t4_spatial_stimuli.py'
+      - 'tests/test_t4_spatial_stimuli.py'
+      - '.github/workflows/fafb-t4-spatial-inputs.yml'
+jobs:
+  spatial-inputs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout existing FAFB v783 data
+        uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+      - name: Run targeted spatial-input tests
+        run: python -m unittest discover -s tests -p 'test_t4_spatial_stimuli.py' -v
+      - name: Generate four real-data directional schedules
+        run: |
+          python -m cortex.experiments.t4_spatial_stimuli \
+            --annotations fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz \
+            --columns fafb-source/data/raw/fafb_v783/column_assignment.csv.gz \
+            --steps 12 --stripe-width 1 \
+            --output t4-spatial-inputs.json
+      - name: Validate generated inputs
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('t4-spatial-inputs.json'))
+          assert set(d['directions']) == {'p_positive','p_negative','q_positive','q_negative'}
+          assert d['mapped_l1_neurons'] > 0
+          assert all(len(frames)==12 for frames in d['directions'].values())
+          assert not d['neural_simulation_executed']
+          assert not d['direction_selectivity_validated']
+          print('Real FAFB spatial input generation validated; neural response not yet tested')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fafb-t4-spatial-inputs
+          path: t4-spatial-inputs.json
