@@ -55,6 +55,24 @@ jobs:
           open('t4-normalized-diagnostics.json','w').write(json.dumps(result,indent=2))
           print('subtype winners:', result['subtype_winners'])
           print('all share winner:',result['all_subtypes_share_winner'])
+          summary={}
+          for subtype, metrics in sorted(d['metrics'].items()):
+              dsi=metrics.get('direction_selectivity_index')
+              assert dsi is None or (math.isfinite(dsi) and -1 <= dsi <= 1), (subtype,dsi)
+              summary[subtype]={
+                  'preferred_condition':metrics['preferred_condition'],
+                  'opposite_condition':metrics.get('opposite_condition'),
+                  'direction_selectivity_index':dsi,
+                  'responses':metrics['responses'],
+              }
+              print(subtype,'preferred:',summary[subtype]['preferred_condition'],
+                    'opposite:',summary[subtype]['opposite_condition'],'DSI:',dsi)
+          open('t4-direction-selectivity-summary.json','w').write(json.dumps({
+              'schema':'cortex.t4_direction_selectivity_summary.v1',
+              'subtypes':summary,
+              'biological_direction_selectivity_validated':False,
+              'interpretation':'Descriptive DSI only; no independent physiology or anatomical axis calibration'
+          },indent=2,sort_keys=True)+'\\n')
           PY
       - uses: actions/upload-artifact@v4
         if: always()
@@ -64,4 +82,5 @@ jobs:
             t4-normalized-response.json
             t4-normalized-diagnostics.json
             t4-validation-gates.json
+            t4-direction-selectivity-summary.json
           if-no-files-found: warn
