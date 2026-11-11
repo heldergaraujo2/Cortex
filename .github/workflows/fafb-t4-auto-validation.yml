@@ -57,11 +57,16 @@ jobs:
           d=json.load(open('t4-normalized-response.json'))
           assert d['responses']['normalize_outgoing']
           assert d['retained_edges'] > 0
+          audit=d['stimulus_drive_audit']
+          print('Directional stimulus drive audit:',json.dumps(audit,sort_keys=True))
+          assert audit['equal_frame_counts'], 'Unequal stimulus frame counts'
           assert not d['biological_direction_selectivity_validated']
           assert all(math.isfinite(v) for m in d['metrics'].values() for v in m['responses'].values())
           from cortex.experiments.t4_validation_gates import assess
           gates=assess(d)
           assert gates['numerical_finite_integrated'] and gates['numerical_finite_traces'] and gates['baseline_near_zero']
+          gates['stimulus_equal_total_input_events']=audit['equal_total_input_events']
+          gates['stimulus_equal_frame_counts']=audit['equal_frame_counts']
           open('t4-validation-gates.json','w').write(json.dumps(gates,indent=2))
           result=diagnose(d)
           open('t4-normalized-diagnostics.json','w').write(json.dumps(result,indent=2))
