@@ -8,6 +8,7 @@ import argparse
 import csv
 import gzip
 import json
+import random
 from collections import Counter
 from pathlib import Path
 from cortex.experiments.t4_selector import select_t4_pilot
@@ -19,7 +20,7 @@ def rows(path):
     with gzip.open(path, "rt", encoding="utf-8-sig", newline="") as stream:
         yield from csv.DictReader(stream)
 
-def run(annotations, connections, columns, *, steps=16, current=1.2):
+def run(annotations, connections, columns, *, steps=16, current=1.2, shuffle_seed=None):
     if steps < 4 or not 0 < current < 100:
         raise ValueError("invalid stimulus parameters")
     labels = {}
@@ -40,6 +41,10 @@ def run(annotations, connections, columns, *, steps=16, current=1.2):
     roots = selected.circuit.root_ids
     l1 = [(i, positions[root]) for i, root in enumerate(roots)
           if selected.neuron_types[root] == "L1" and root in positions]
+    if shuffle_seed is not None:
+        shuffled = [position for _, position in l1]
+        random.Random(shuffle_seed).shuffle(shuffled)
+        l1 = [(index, position) for (index, _), position in zip(l1, shuffled)]
     t4 = {name: [i for i, root in enumerate(roots) if labels.get(root) == name]
           for name in SUBTYPES}
     if not l1 or not all(t4.values()):
@@ -76,6 +81,7 @@ def run(annotations, connections, columns, *, steps=16, current=1.2):
         "synthetic_stimulus": "moving coordinate stripe with injected L1 current",
         "synthetic_synaptic_signs": True,
         "steps": steps, "input_current": current,
+        "l1_coordinate_shuffle_seed": shuffle_seed,
         "selected_neurons": len(roots), "selected_edges": len(selected.circuit.edges),
         "spatial_l1_neurons": len(l1),
         "t4_subtype_counts": {s: len(t4[s]) for s in SUBTYPES},
