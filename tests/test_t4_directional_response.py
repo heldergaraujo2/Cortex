@@ -23,6 +23,19 @@ class DirectionalResponseTest(unittest.TestCase):
         self.assertFalse(output["biological_direction_selectivity_validated"])
         self.assertFalse(output["real_fafb_experiment_executed"])
 
+    def test_normalization_bounds_recurrent_amplification(self):
+        schedules = {"x": [{"active_l1_root_ids": ["l1"]}] +
+                     [{"active_l1_root_ids": []} for _ in range(15)]}
+        edges = [("l1", "relay", 1000), ("relay", "relay", 1000),
+                 ("relay", "a", 1000), ("relay", "b", 1000),
+                 ("relay", "c", 1000), ("relay", "d", 1000)]
+        result = simulate(schedules, edges, self.types,
+                          decay=0.25, normalize_outgoing=True)
+        self.assertTrue(result["normalize_outgoing"])
+        for subtype in ("T4a", "T4b", "T4c", "T4d"):
+            self.assertLess(result["conditions"]["x"]["integrated"][subtype], 100)
+        self.assertEqual(result["baseline"]["integrated"]["T4a"], 0)
+
     def test_rejects_invalid_weights(self):
         with self.assertRaises(ValueError):
             simulate({"x": [{"active_l1_root_ids": []}]},
