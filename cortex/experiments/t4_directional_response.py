@@ -12,7 +12,7 @@ from math import isfinite
 T4_TYPES = ("T4a", "T4b", "T4c", "T4d")
 
 
-def simulate(schedules, edges, cell_types, *, decay=0.25, threshold=0.0):
+def simulate(schedules, edges, cell_types, *, decay=0.25, threshold=0.0, normalize_outgoing=False):
     """Run four stimulus conditions through the same graph.
 
     edges: iterable of (presynaptic_root_id, postsynaptic_root_id, weight).
@@ -27,6 +27,16 @@ def simulate(schedules, edges, cell_types, *, decay=0.25, threshold=0.0):
         if not isfinite(weight) or weight < 0:
             raise ValueError("Weights must be finite and nonnegative")
         graph[str(pre)].append((str(post), weight))
+    if normalize_outgoing:
+        # Each presynaptic neuron distributes at most unit total signal.
+        # Together with decay < 1 this prevents exponential growth from
+        # large raw synapse counts in recurrent pathways.
+        for root, outgoing in graph.items():
+            total = sum(weight for _, weight in outgoing)
+            if not isfinite(total):
+                raise ValueError('Outgoing synapse weight sum overflow')
+            if total > 1.0:
+                graph[root] = [(post, weight / total) for post, weight in outgoing]
     cells = {str(k): v for k, v in cell_types.items()}
     if not all(any(t == subtype for t in cells.values()) for subtype in T4_TYPES):
         raise ValueError("All four T4 subtypes must be annotated")
@@ -55,7 +65,8 @@ def simulate(schedules, edges, cell_types, *, decay=0.25, threshold=0.0):
                for direction, frames in schedules.items()}
     steps = max(map(len, schedules.values()))
     baseline = run([[] for _ in range(steps)])
-    return {"model": "simplified_delayed_weighted_graph_v1",
+    return {"model": "simplified_delayed_weighted_graph_v2" if normalize_outgoing else "simplified_delayed_weighted_graph_v1",
+            "normalize_outgoing": normalize_outgoing,
             "conditions": results, "baseline": baseline,
             "real_fafb_experiment_executed": False,
             "biological_direction_selectivity_validated": False}
