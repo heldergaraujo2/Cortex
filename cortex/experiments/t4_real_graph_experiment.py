@@ -54,7 +54,7 @@ def experiment(annotations, columns, connections, steps=12):
     roots = {str(root) for frames in schedules.values() for frame in frames
              for root in frame["active_l1_root_ids"]}
     types, edges = graph_inputs(annotations, connections, roots)
-    response = simulate(schedules, edges, types)
+    response = simulate(schedules, edges, types, normalize_outgoing=True)
     return {"schema": "cortex.t4_real_graph_experiment.v1",
             "input_schema": inputs["schema"],
             "mapped_l1_neurons": inputs["mapped_l1_neurons"],
@@ -65,7 +65,7 @@ def experiment(annotations, columns, connections, steps=12):
             "responses": response,
             "real_fafb_experiment_executed": True,
             "biological_direction_selectivity_validated": False,
-            "limitations": ["Simplified nonnegative weighted propagation",
+            "limitations": ["Simplified nonnegative weighted propagation with outgoing normalization",
                             "No inhibitory sign or cell physiology calibration",
                             "Column axes are not calibrated visual angles",
                             "Direction contrasts require matched controls and replication"]}
