@@ -38,6 +38,7 @@ jobs:
           assert set(d['directions']) == {'p_positive','p_negative','q_positive','q_negative'}
           assert d['mapped_l1_neurons'] > 0
           assert all(len(frames)==12 for frames in d['directions'].values())
+          assert all(any(frame['active_l1_root_ids'] for frame in frames) for frames in d['directions'].values()), 'Empty direction schedule'
           assert not d['neural_simulation_executed']
           assert not d['direction_selectivity_validated']
           print('Real FAFB spatial input generation validated; neural response not yet tested')
