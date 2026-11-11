@@ -18,7 +18,7 @@ permissions:
 jobs:
   t4-auto:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -27,6 +27,16 @@ jobs:
           path: fafb-source
           sparse-checkout: |
             data/raw/fafb_v783
+      - name: Verify FAFB input files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          base=Path('fafb-source/data/raw/fafb_v783')
+          for name in ('consolidated_cell_types.csv.gz', 'column_assignment.csv.gz', 'connections_princeton.csv.gz'):
+              path=base/name
+              assert path.is_file() and path.stat().st_size > 0, f'Missing or empty FAFB input: {path}'
+              print(f'{name}: {path.stat().st_size:,} bytes')
+          PY
       - name: Targeted new tests
         run: |
           python -m unittest discover -s tests -p 'test_t4_directional_response.py' -v
