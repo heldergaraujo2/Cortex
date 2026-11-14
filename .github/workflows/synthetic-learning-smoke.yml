@@ -72,3 +72,24 @@ jobs:
           name: fafb-real-data-gate
           path: fafb-input-gate.json
           if-no-files-found: warn
+
+  acquire-t4-physiology:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download and verify Gruntman T4 physiology data
+        run: python scripts/acquire_t4_gruntman.py --manifest data/t4/gruntman_manifest.json --download
+      - name: Upload acquisition evidence and files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gruntman-t4-physiology
+          path: data/t4/
+          if-no-files-found: warn
+          retention-days: 7
