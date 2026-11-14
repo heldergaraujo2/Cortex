@@ -52,10 +52,10 @@ Registrar sempre data, branch, commit, execução, artefatos, resultado dos gate
 <!-- T4-AUTO-START -->
 ## Atualização automática — validação FAFB T4
 
-- **Execução:** [#43644517274](https://github.com/heldergaraujo2/Cortex/actions/runs/43644517274)
+- **Execução:** [#43645024398](https://github.com/heldergaraujo2/Cortex/actions/runs/43645024398)
 - **Resultado técnico do workflow:** `failure`
-- **Branch / commit:** `experiment/synthetic-neural-learning-smoke` / `0bd3dd64232a`
-- **Atualizado pelo GitHub em:** `2026-11-14T214559Z` (UTC)
+- **Branch / commit:** `experiment/synthetic-neural-learning-smoke` / `e4225e1dd191`
+- **Atualizado pelo GitHub em:** `2026-11-14T215202Z` (UTC)
 
 **Limite científico:** sucesso da CI não prova seletividade direcional biológica. Calibração anatômica e comparação fisiológica independente continuam pendentes.
 O histórico anterior permanece no link de cada execução e em seus artifacts.
