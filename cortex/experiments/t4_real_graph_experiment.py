@@ -6,7 +6,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from cortex.experiments.t4_spatial_stimuli import generate, read_rows
+from cortex.experiments.t4_spatial_stimuli import generate, read_rows, balance_schedules
 from cortex.experiments.t4_directional_response import simulate, direction_metrics, T4_TYPES
 
 
@@ -50,14 +50,17 @@ def graph_inputs(annotations, connections, allowed_roots):
 
 def experiment(annotations, columns, connections, steps=12):
     inputs = generate(annotations, columns, steps=steps)
-    schedules = inputs["directions"]
+    original_schedules = inputs["directions"]
+    schedules = balance_schedules(original_schedules)
+    original_totals = {name: sum(len(f["active_l1_root_ids"]) for f in frames)
+                       for name, frames in original_schedules.items()}
     stimulus_drive = {name: {"frames": len(frames),
                              "total_active_l1_events": sum(len(frame["active_l1_root_ids"]) for frame in frames),
                              "unique_l1_roots": len({str(root) for frame in frames for root in frame["active_l1_root_ids"]})}
                       for name, frames in schedules.items()}
     totals = {v["total_active_l1_events"] for v in stimulus_drive.values()}
     lengths = {v["frames"] for v in stimulus_drive.values()}
-    stimulus_audit = {"by_direction": stimulus_drive,
+    stimulus_audit = {"by_direction": stimulus_drive,\n                      "original_total_input_events": original_totals,\n                      "balancing_method": "deterministic_fullest_frame_trimming_v1",
                       "equal_total_input_events": len(totals) == 1,
                       "equal_frame_counts": len(lengths) == 1,
                       "interpretation": "Input balance diagnostic only; not biological validation"}
