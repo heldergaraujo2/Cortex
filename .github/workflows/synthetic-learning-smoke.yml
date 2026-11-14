@@ -85,6 +85,8 @@ jobs:
           python-version: '3.11'
       - name: Download and verify Gruntman T4 physiology data
         run: python scripts/acquire_t4_gruntman.py --manifest data/t4/gruntman_manifest.json --download
+      - name: Inventory experimental files and archive contents
+        run: python scripts/inventory_t4_gruntman.py --manifest data/t4/gruntman_manifest.json --output data/t4/gruntman_inventory.json
       - name: Upload acquisition evidence and files
         if: always()
         uses: actions/upload-artifact@v4
