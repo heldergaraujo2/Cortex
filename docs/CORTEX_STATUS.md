@@ -41,9 +41,9 @@
 4. Integrar as quatro instâncias previstas, coordenação e memória compartilhada, com testes funcionais e de aprendizagem.
 5. Medir custo, desempenho, robustez e documentar limites científicos.
 
-## Atualização automática — especificação, não implementação
+## Atualização automática — instalada, aguardando primeira execução verificada
 
-O ideal é publicar um resumo legível a cada workflow e vincular a execução e os artifacts, **sem sobrescrever evidências anteriores**. Esta primeira versão do painel é **manual e estática**. A automação de atualização ainda não foi instalada.
+O workflow [Update Cortex T4 dashboard](../.github/workflows/update-cortex-t4-dashboard.yml) foi adicionado à `main`. Quando o workflow **FAFB T4 automatic validation** terminar, o atualizador tentará ler o resultado e os JSONs publicados, registrando uma seção automática abaixo. Também pode ser iniciado manualmente pelo GitHub Actions com o número de uma execução concluída. A automação ainda precisa ser validada em uma execução real; caso o token do repositório não permita escrita, o job mostrará o erro sem modificar o painel. A seção histórica acima permanece preservada.
 
 ## Política de manutenção
 
