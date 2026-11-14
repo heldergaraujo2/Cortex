@@ -60,7 +60,9 @@ def experiment(annotations, columns, connections, steps=12):
                       for name, frames in schedules.items()}
     totals = {v["total_active_l1_events"] for v in stimulus_drive.values()}
     lengths = {v["frames"] for v in stimulus_drive.values()}
-    stimulus_audit = {"by_direction": stimulus_drive,\n                      "original_total_input_events": original_totals,\n                      "balancing_method": "deterministic_fullest_frame_trimming_v1",
+    stimulus_audit = {"by_direction": stimulus_drive,
+                      "original_total_input_events": original_totals,
+                      "balancing_method": "deterministic_fullest_frame_trimming_v1",
                       "equal_total_input_events": len(totals) == 1,
                       "equal_frame_counts": len(lengths) == 1,
                       "interpretation": "Input balance diagnostic only; not biological validation"}
