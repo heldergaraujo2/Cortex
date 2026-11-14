@@ -9,6 +9,7 @@ import os
 import re
 import urllib.error
 import urllib.request
+import urllib.parse
 import zipfile
 from datetime import datetime, timezone
 
@@ -18,6 +19,18 @@ RUN_ID = int(os.environ["SOURCE_RUN_ID"])
 PATH = "docs/CORTEX_STATUS.md"
 START = "<!-- T4-AUTO-START -->"
 END = "<!-- T4-AUTO-END -->"
+
+
+class ArtifactRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Do not forward the GitHub API bearer token to artifact storage hosts."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected and urllib.parse.urlsplit(newurl).hostname != urllib.parse.urlsplit(req.full_url).hostname:
+            for key in list(redirected.headers):
+                if key.lower() in ("authorization", "x-github-api-version", "accept"):
+                    del redirected.headers[key]
+        return redirected
 
 
 def request(method, path, payload=None, accept="application/vnd.github+json", binary=False):
@@ -31,7 +44,7 @@ def request(method, path, payload=None, accept="application/vnd.github+json", bi
     }
     if data is not None:
         headers["Content-Type"] = "application/json"
-    with urllib.request.urlopen(urllib.request.Request(url, data=data, headers=headers, method=method), timeout=40) as res:
+    with urllib.request.build_opener(ArtifactRedirectHandler()).open(urllib.request.Request(url, data=data, headers=headers, method=method), timeout=40) as res:
         return res.read() if binary else json.load(res)
 
 
