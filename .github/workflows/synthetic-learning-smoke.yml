@@ -95,6 +95,8 @@ jobs:
         run: python scripts/probe_t4_mat_variables.py --manifest data/t4/gruntman_manifest.json --output data/t4/gruntman_mat_variables.json --max-files 8 --max-member-mb 150
       - name: Inspect nested protocolStruct field names
         run: python scripts/inspect_t4_struct_fields.py --manifest data/t4/gruntman_manifest.json --output data/t4/gruntman_struct_fields.json --max-files 3
+      - name: Inspect nested stimulus schema and bounded values
+        run: python scripts/inspect_t4_stimulus_schema.py --manifest data/t4/gruntman_manifest.json --output data/t4/gruntman_stimulus_schema.json --max-files 3
       - name: Upload acquisition evidence and files
         if: always()
         uses: actions/upload-artifact@v4
