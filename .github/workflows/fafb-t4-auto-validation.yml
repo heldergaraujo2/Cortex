@@ -62,7 +62,8 @@ jobs:
           assert d['retained_edges'] > 0
           audit=d['stimulus_drive_audit']
           print('Directional stimulus drive audit:',json.dumps(audit,sort_keys=True))
-          assert audit['equal_frame_counts'], 'Unequal stimulus frame counts'\n          assert audit['equal_total_input_events'], 'Unequal stimulus input events'
+          assert audit['equal_frame_counts'], 'Unequal stimulus frame counts'
+          assert audit['equal_total_input_events'], 'Unequal stimulus input events'
           assert not d['biological_direction_selectivity_validated']
           assert all(math.isfinite(v) for m in d['metrics'].values() for v in m['responses'].values())
           from cortex.experiments.t4_validation_gates import assess
