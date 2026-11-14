@@ -6,6 +6,7 @@ O projeto não pretende copiar um cérebro humano nem afirmar que um mapa de con
 
 ## Documentação central
 
+- **[Painel de acompanhamento do Cortex](docs/CORTEX_STATUS.md)** — validações, evidências, limitações e próximos marcos.
 - [Roadmap](docs/ROADMAP.md) — fases, marcos e critérios de conclusão.
 - [Continuidade](docs/CONTINUIDADE.md) — estado atual, decisões, evidências, testes e instruções para retomar em outro chat.
 - [Planejamento do projeto](docs/PLANEJAMENTO_DO_PROJETO.md) — visão, requisitos, arquitetura, método científico, riscos e estratégia de validação.
