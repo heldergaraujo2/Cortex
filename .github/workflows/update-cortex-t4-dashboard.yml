@@ -1,0 +1,39 @@
+name: Update Cortex T4 dashboard
+
+on:
+  workflow_run:
+    workflows:
+      - FAFB T4 automatic validation
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Completed FAFB T4 automatic validation run ID'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: cortex-t4-dashboard
+  cancel-in-progress: false
+
+jobs:
+  update-dashboard:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out trusted main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Update dashboard from completed workflow metadata and JSON artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.run_id || github.event.workflow_run.id }}
+        run: python scripts/update_t4_dashboard.py
