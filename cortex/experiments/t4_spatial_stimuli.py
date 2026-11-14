@@ -19,6 +19,35 @@ def read_rows(path):
     with opener(path, "rt", encoding="utf-8-sig", newline="") as stream:
         yield from csv.DictReader(stream)
 
+def balance_schedules(schedules):
+    """Deterministically equalize input-event counts, preserving frame order.
+
+    This is an experimental matched-drive control, not a biological calibration.
+    Keep original schedules separately for provenance.
+    """
+    if not schedules or any(not frames for frames in schedules.values()):
+        raise ValueError("Nonempty schedules required")
+    totals = {name: sum(len(frame["active_l1_root_ids"]) for frame in frames)
+              for name, frames in schedules.items()}
+    target = min(totals.values())
+    if target == 0:
+        raise ValueError("Cannot balance schedules with zero input events")
+    balanced = {}
+    for name, frames in schedules.items():
+        copied = [{"step": frame["step"],
+                   "active_l1_root_ids": list(frame["active_l1_root_ids"])}
+                  for frame in frames]
+        excess = totals[name] - target
+        while excess:
+            # Trim the fullest frame first; deterministic tie-breaking.
+            index = max(range(len(copied)),
+                        key=lambda i: (len(copied[i]["active_l1_root_ids"]), -i))
+            copied[index]["active_l1_root_ids"].pop()
+            excess -= 1
+        balanced[name] = copied
+    return balanced
+
+
 def generate(annotations, columns, steps=12, stripe_width=1.0):
     if steps < 2 or stripe_width <= 0:
         raise ValueError("steps must be >=2 and stripe_width positive")
