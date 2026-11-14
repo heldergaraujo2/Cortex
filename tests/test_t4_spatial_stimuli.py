@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from cortex.experiments.t4_spatial_stimuli import generate
+from cortex.experiments.t4_spatial_stimuli import generate, balance_schedules
 
 
 class FourDirectionInputsTest(unittest.TestCase):
@@ -39,6 +39,24 @@ class FourDirectionInputsTest(unittest.TestCase):
             self.assertEqual(data["directions"]["q_negative"][0]["active_l1_root_ids"], ["3"])
             self.assertFalse(data["direction_selectivity_validated"])
             self.assertFalse(data["neural_simulation_executed"])
+
+    def test_balancing_is_deterministic_and_preserves_original(self):
+        schedules = {
+            "p_positive": [{"step": 0, "active_l1_root_ids": ["1", "2", "3"]},
+                           {"step": 1, "active_l1_root_ids": ["4", "5"]}],
+            "q_positive": [{"step": 0, "active_l1_root_ids": ["1", "2"]},
+                           {"step": 1, "active_l1_root_ids": ["3", "4"]}],
+        }
+        balanced = balance_schedules(schedules)
+        self.assertEqual(balanced, balance_schedules(schedules))
+        self.assertEqual([sum(len(f["active_l1_root_ids"]) for f in frames)
+                          for frames in balanced.values()], [4, 4])
+        self.assertEqual(len(schedules["p_positive"][0]["active_l1_root_ids"]), 3)
+        self.assertEqual([f["step"] for f in balanced["p_positive"]], [0, 1])
+
+    def test_balancing_rejects_empty_drive(self):
+        with self.assertRaises(ValueError):
+            balance_schedules({"p_positive": [{"step": 0, "active_l1_root_ids": []}]})
 
     def test_invalid_steps(self):
         with self.assertRaises(ValueError):
