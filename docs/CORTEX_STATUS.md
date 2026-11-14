@@ -52,10 +52,21 @@ Registrar sempre data, branch, commit, execução, artefatos, resultado dos gate
 <!-- T4-AUTO-START -->
 ## Atualização automática — validação FAFB T4
 
-- **Execução:** [#43645024398](https://github.com/heldergaraujo2/Cortex/actions/runs/43645024398)
-- **Resultado técnico do workflow:** `failure`
-- **Branch / commit:** `experiment/synthetic-neural-learning-smoke` / `e4225e1dd191`
-- **Atualizado pelo GitHub em:** `2026-11-14T215202Z` (UTC)
+- **Execução:** [#43645122830](https://github.com/heldergaraujo2/Cortex/actions/runs/43645122830)
+- **Resultado técnico do workflow:** `success`
+- **Branch / commit:** `experiment/synthetic-neural-learning-smoke` / `c4660cce6230`
+- **Atualizado pelo GitHub em:** `2026-11-14T215312Z` (UTC)
+- **Relatórios:** [artifact #14133955882](https://github.com/heldergaraujo2/Cortex/actions/runs/43645122830/artifacts/14133955882)
+- **Conexões analisadas:** 64.107
+- **Frames iguais por direção:** True; **eventos de entrada iguais:** True
+- **Gates numéricos:** `all_subtypes_share_winner`=False, `baseline_near_zero`=True, `biological_direction_selectivity_validated`=False, `held_out_physiological_reference_verified`=False, `independent_anatomical_alignment_verified`=False, `normalized_graph`=True, `numerical_finite_integrated`=True, `numerical_finite_traces`=True, `stimulus_equal_frame_counts`=True, `stimulus_equal_total_input_events`=True
+
+| Subtipo | Direção preferida simulada | DSI descritivo |
+| --- | --- | ---: |
+| T4a | p_positive | 0.062691 |
+| T4b | q_positive | 0.059942 |
+| T4c | p_positive | 0.146457 |
+| T4d | p_positive | 0.047260 |
 
 **Limite científico:** sucesso da CI não prova seletividade direcional biológica. Calibração anatômica e comparação fisiológica independente continuam pendentes.
 O histórico anterior permanece no link de cada execução e em seus artifacts.
