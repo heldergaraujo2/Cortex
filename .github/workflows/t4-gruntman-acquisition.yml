@@ -25,3 +25,5 @@ jobs:
           path: data/t4/
           if-no-files-found: warn
           retention-days: 7
+
+# Retrigger acquisition via push on experimental branch (2026-11-14).
