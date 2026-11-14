@@ -4,9 +4,11 @@ import json
 import zipfile
 from pathlib import Path
 
-import numpy as np
-from scipy.io import savemat
+import pytest
 
+np = pytest.importorskip('numpy')
+scipy_io = pytest.importorskip('scipy.io')
+savemat = scipy_io.savemat
 from scripts.probe_t4_mat_variables import probe_v5
 
 def test_probe_v5_reports_shapes_without_claiming_validation(tmp_path: Path):
