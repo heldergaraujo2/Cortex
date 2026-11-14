@@ -20,7 +20,7 @@ START = "<!-- T4-AUTO-START -->"
 END = "<!-- T4-AUTO-END -->"
 
 
-def request(method, path, payload=None, accept="application/vnd.github+json"):
+def request(method, path, payload=None, accept="application/vnd.github+json", binary=False):
     url = "https://api.github.com/repos/" + REPO + "/" + path
     data = None if payload is None else json.dumps(payload).encode()
     headers = {
@@ -32,7 +32,7 @@ def request(method, path, payload=None, accept="application/vnd.github+json"):
     if data is not None:
         headers["Content-Type"] = "application/json"
     with urllib.request.urlopen(urllib.request.Request(url, data=data, headers=headers, method=method), timeout=40) as res:
-        return res.read() if accept == "application/octet-stream" else json.load(res)
+        return res.read() if binary else json.load(res)
 
 
 def safe(value):
@@ -47,7 +47,7 @@ def artifact_data(run):
     if not matching:
         return {}, None
     art = matching[-1]
-    archive = request("GET", f"actions/artifacts/{art['id']}/zip", accept="application/octet-stream")
+    archive = request("GET", f"actions/artifacts/{art['id']}/zip", accept="application/vnd.github+json", binary=True)
     result = {}
     with zipfile.ZipFile(io.BytesIO(archive)) as z:
         for filename in ("t4-normalized-response.json", "t4-validation-gates.json", "t4-direction-selectivity-summary.json"):
