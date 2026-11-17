@@ -1,5 +1,16 @@
 # HANDOFF ATUAL — 17/11/2026 (LEITURA OBRIGATÓRIA ANTES DO HISTÓRICO)
 
+## Sincronização documental — 17/11/2026 (nova sessão)
+
+- **CONFIRMADO:** arquivos `README.md`, `docs/ROADMAP.md`, `docs/PLANEJAMENTO_DO_PROJETO.md` e `docs/ARCHITECTURE.md` receberam aviso de estado vigente e remissão para este handoff e `docs/CORTEX_STATUS.md`. O conteúdo histórico foi preservado, não apagado ou reescrito.
+- **CONFIRMADO:** execução Synthetic Learning Smoke #213 consultada via GitHub API: `success`, commit `107fdca`, branch `experiment/synthetic-neural-learning-smoke`, PR #3. Não foram reexecutados testes.
+- **NÃO VERIFICADO nesta sessão:** conteúdo dos artefatos e logs #213; identificação de respostas fisiológicas e pareamento aos estímulos. Os resultados relatados anteriormente continuam classificados como históricos até inspeção independente.
+- **DECISÃO PENDENTE:** quatro instâncias incluindo coordenador versus quatro especialistas mais gerente. Avisos documentais registram a divergência sem impor mudança arquitetural.
+- **Próxima tarefa única:** inspecionar relatórios e artefatos #213 para identificar medidas neurais reais, dimensões e alinhamento estímulo–resposta, documentando resultados positivos ou negativos.
+
+---
+
+
 > Este bloco prevalece sobre os estados antigos abaixo, que foram preservados como histórico. Fonte: resultados relatados na sessão anterior e painel do repositório; não implica nova leitura dos artefatos binários nesta atualização.
 
 ## Estado mais recente e evidências
