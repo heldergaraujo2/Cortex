@@ -1,5 +1,8 @@
 # Arquitetura Híbrida e Cortex Coletivo
 
+> **Estado vigente — 17/11/2026:** este documento contém planejamento e histórico de 28/10/2026. Para fatos atuais, prevalecem [CONTINUIDADE](CONTINUIDADE.md) e [CORTEX_STATUS](CORTEX_STATUS.md). O piloto FAFB v783/T4 já dispõe de dados estruturais e validações computacionais; a execução Synthetic Learning Smoke #213 (commit `107fdca`) foi aprovada, mas **não** identificou comprovadamente respostas neuronais reais pareadas aos estímulos. A aquisição Gruntman T4 (~2,84 GB) foi relatada como concluída, com retenção do artefato até 21/11/2026. Próximo gate: inspecionar relatório/artefatos #213, localizar medidas fisiológicas e alinhamento estímulo–resposta, ou documentar ausência. **Não há validação fisiológica independente.** A arquitetura permanece pendente de confirmação: quatro instâncias totais incluindo coordenador (documentação original) versus quatro especialistas mais gerente (intenção conversacional recente). Não alterar contagem sem decisão explícita.
+
+
 **Versão:** 1.0 — decisão arquitetural inicial  
 **Data:** 2026-10-28  
 **Estado:** arquitetura aprovada como hipótese de engenharia; ainda não implementada nem validada em execução.  
