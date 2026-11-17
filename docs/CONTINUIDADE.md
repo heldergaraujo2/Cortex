@@ -1,3 +1,36 @@
+# HANDOFF ATUAL — 17/11/2026 (LEITURA OBRIGATÓRIA ANTES DO HISTÓRICO)
+
+> Este bloco prevalece sobre os estados antigos abaixo, que foram preservados como histórico. Fonte: resultados relatados na sessão anterior e painel do repositório; não implica nova leitura dos artefatos binários nesta atualização.
+
+## Estado mais recente e evidências
+
+- Repositório: https://github.com/heldergaraujo2/Cortex; política GitHub-first, sem exigir PC por enquanto.
+- Último commit de investigação informado: `107fdca`, ferramenta de inspeção de amostras dos campos `orientations`, `stimSeqCell`, `stim` e `inputParams` em registros MATLAB.
+- Execuções associadas a esse commit, **confirmadas na sessão anterior em 17/11**: Cortex CI **#363** e Synthetic Learning Smoke **#213**, ambas aprovadas; Python 3.11/3.12/3.13 e verificação de acesso FAFB aprovados. Execução #213: https://github.com/heldergaraujo2/Cortex/actions/runs/43650020855.
+- Aquisição experimental Gruntman T4: execução #187 concluída; artefato `gruntman-t4-physiology`, ~2,84 GB, prazo de retenção informado até **21/11/2026**. https://github.com/heldergaraujo2/Cortex/actions/runs/43648509472. Não presumir disponibilidade depois da expiração.
+- Inventário experimental: 180 entradas, 52 arquivos MATLAB (50 v5, 2 v7.3). Em oito arquivos inspecionados, `protocolStruct` foi encontrado; campos relatados: `orientations`, `stimSeqCell`, `stim`, `repeats`, `randomize`, `inputParams`.
+- Execução #213 indica **sucesso técnico da inspeção**, não comprova que as variáveis de resposta neuronal foram identificadas ou pareadas aos estímulos.
+- Painel `docs/CORTEX_STATUS.md` registra validação computacional de circuito T4 e gates, mas **não** validação fisiológica independente. Preservar essa distinção.
+- Estimativa conversacional de progresso global: **~15%**, apenas aproximação de planejamento, não métrica validada.
+
+## PRÓXIMA TAREFA ÚNICA
+
+1. Abrir os logs e o artefato da execução #213, especialmente o relatório de amostragem de `protocolStruct`; identificar nomes, dimensões, unidades e relações dos campos de **resposta neural** e seus vínculos com os estímulos.
+2. Se o relatório não trouxer as respostas, inspecionar outros objetos/campos dos 52 MATLAB com leitura limitada de memória; registrar claramente resultados negativos. Verificar expiração do artefato e reaproveitar download já disponível sempre que possível.
+3. Só após localizar medidas reais e metadados suficientes, implementar leitor reprodutível com fixtures/testes, parear estímulo–resposta por ensaio e preparar comparação quantitativa contra a simulação.
+4. Registrar execução, hashes/proveniência, variáveis encontradas, critérios de aceitação, limitações e resultados em `docs/CORTEX_STATUS.md` e neste arquivo. Não repetir testes aprovados sem necessidade.
+
+**Critério de aceitação imediato:** tabela de variáveis de resposta observadas com caminho interno no MATLAB, formato/dimensões e evidência de alinhamento aos estímulos; ou relatório explícito do que está ausente, com próximo experimento para resolver. Nunca declarar validação biológica a partir de CI verde.
+
+## Atenção a divergências e decisões
+
+- A documentação histórica (README/ARCHITECTURE) descreve **quatro instâncias totais**, uma delas coordenadora, mais orquestrador convencional; em conversas recentes o objetivo foi descrito como **quatro especialistas + um cérebro gerente** (cinco módulos). **Não presumir equivalência**: confirmar com o responsável antes de alterar arquitetura/roadmap ou implementar instâncias.
+- README e seções antigas desta continuidade contêm estados iniciais ultrapassados (por exemplo, dados ainda não baixados); não usá-los como estado atual.
+- Não confundir Projeto Cortex com Lúmen, Nexo ou outros projetos. Preservar arquivos, branches e resultados; não fazer reset/clean.
+- Ao iniciar novo chat, ler **este bloco**, `docs/CORTEX_STATUS.md`, `docs/ROADMAP.md` e os logs/artefatos da execução #213; então continuar da tarefa única acima.
+
+---
+
 # CONTINUIDADE DO PROJETO CORTEX
 
 > Documento prioritário para retomar o projeto em um novo chat. Leia este arquivo primeiro, depois README.md, docs/ROADMAP.md e docs/PLANEJAMENTO_DO_PROJETO.md. Não presuma que trabalho não listado aqui foi realizado.
