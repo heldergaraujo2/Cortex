@@ -1,5 +1,8 @@
 # Cortex — Núcleo Artificial Inspirado no Connectoma da Mosca
 
+> **Estado vigente — 17/11/2026:** este documento contém planejamento e histórico de 28/10/2026. Para fatos atuais, prevalecem [CONTINUIDADE](docs/CONTINUIDADE.md) e [CORTEX_STATUS](docs/CORTEX_STATUS.md). O piloto FAFB v783/T4 já dispõe de dados estruturais e validações computacionais; a execução Synthetic Learning Smoke #213 (commit `107fdca`) foi aprovada, mas **não** identificou comprovadamente respostas neuronais reais pareadas aos estímulos. A aquisição Gruntman T4 (~2,84 GB) foi relatada como concluída, com retenção do artefato até 21/11/2026. Próximo gate: inspecionar relatório/artefatos #213, localizar medidas fisiológicas e alinhamento estímulo–resposta, ou documentar ausência. **Não há validação fisiológica independente.** A arquitetura permanece pendente de confirmação: quatro instâncias totais incluindo coordenador (documentação original) versus quatro especialistas mais gerente (intenção conversacional recente). Não alterar contagem sem decisão explícita.
+
+
 **Objetivo:** construir, de forma incremental e verificável, um sistema de inteligência artificial cujo núcleo neural computacional seja inspirado na conectividade real do cérebro da mosca-da-fruta (*Drosophila melanogaster*), começando por circuitos pequenos e validados antes de escalar.
 
 O projeto não pretende copiar um cérebro humano nem afirmar que um mapa de conexões, por si só, constitui uma mente. O connectoma fornece principalmente a estrutura das ligações; dinâmica neuronal, sinapses, entradas sensoriais, aprendizagem, memória, objetivos e interfaces computacionais precisam ser modelados e avaliados separadamente.
