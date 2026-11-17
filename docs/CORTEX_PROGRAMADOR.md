@@ -22,3 +22,11 @@ Construir um agente de programação autônomo para software, jogos, Blender, Un
 
 ## Próximas integrações
 Adaptador Qwen/Ollama; executor de testes em contêiner isolado; conectores Blender/Unreal/Roblox/OpenCode; benchmark com casos reais; política de revisão de patches e rollback.
+
+## Integração Qwen/Ollama (protótipo, 17/11/2026)
+
+Implementado `cortex/coding_agent/ollama.py`: adaptador HTTP local para Ollama `/api/generate`, padrão `qwen3:8b` e `127.0.0.1:11434`, sem dependências adicionais. Requisições somente quando chamado; não permite endpoint remoto. Testes usam servidor simulado, portanto **não comprovam que o Qwen está instalado ou funcionando no computador do usuário**. Workflow `.github/workflows/cortex-programador.yml` verifica o adaptador e o agente nas versões Python 3.11–3.13. Verificar execução no Actions antes de declarar testes aprovados.
+
+Exemplo após instalar e iniciar Ollama e baixar o modelo: `python -c "from cortex.coding_agent.ollama import OllamaProvider; print(OllamaProvider()('Responda OK'))"`.
+
+Pendências: teste de integração real no Windows, executor sandbox, validação de qualidade em tarefas reais, revisão de segurança e conexão com Blender/Unreal/Roblox. O Qwen não aprende novos pesos a partir da memória JSON.
