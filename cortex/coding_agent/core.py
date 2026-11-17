@@ -44,9 +44,9 @@ class CodingAgent:
         if not task.strip():
             raise ValueError("Task cannot be empty")
         history = self.store.read()[-5:]
-        prompt = "Write a proposed code solution. Do not execute it.\\nTask: " + task
+        prompt = "Write a proposed code solution. Do not execute it.\nTask: " + task
         if history:
-            prompt += "\\nPrior verified experiences:\\n" + json.dumps(history, ensure_ascii=False)
+            prompt += "\nPrior verified experiences:\n" + json.dumps(history, ensure_ascii=False)
         return Proposal(task=task, candidate=self.generate(prompt))
 
     def evaluate(self, proposal: Proposal, verify: Callable[[str], tuple[bool, str]]) -> bool:
@@ -59,7 +59,7 @@ class CodingAgent:
     def propose_improvement(self, source: str, objective: str) -> Proposal:
         # A proposal only. No direct modification of live agent source.
         prompt = ("Suggest a minimal source patch to improve the following objective. "
-                  "Do not apply changes.\\nObjective: " + objective + "\\nSource:\\n" + source)
+                  "Do not apply changes.\nObjective: " + objective + "\nSource:\n" + source)
         return Proposal(task="self-improvement: " + objective, candidate=self.generate(prompt))
 
     @staticmethod
