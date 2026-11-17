@@ -1,5 +1,9 @@
 # HANDOFF ATUAL — 17/11/2026 (LEITURA OBRIGATÓRIA ANTES DO HISTÓRICO)
 
+## Direção aprovada — Cortex Programador (17/11/2026)
+
+O usuário definiu como missão prioritária programação autônoma (jogos, Blender, Unreal, Roblox e software geral), com aprendizagem contínua, pesquisa assistida e propostas de autoaperfeiçoamento. Qwen 8B pode ser apoio inicial, com independência futura como hipótese não comprovada. Implementação inicial isolada na branch `feat/autonomous-coding-three-stages`: `cortex/coding_agent/`, `tests/test_coding_agent.py`, `docs/CORTEX_PROGRAMADOR.md`. São **protótipos**, sem integração Qwen, execução sandbox real ou testes CI confirmados. Três estágios: geração por provedor injetado; memória JSON e recuperação; proposta de melhoria com gates de teste, pontuação e aprovação. Não confundir com validação biológica. Próximo passo: revisar PR/rodar testes e integrar executor seguro e modelo local.
+
 ## Sincronização documental — 17/11/2026 (nova sessão)
 
 - **CONFIRMADO:** arquivos `README.md`, `docs/ROADMAP.md`, `docs/PLANEJAMENTO_DO_PROJETO.md` e `docs/ARCHITECTURE.md` receberam aviso de estado vigente e remissão para este handoff e `docs/CORTEX_STATUS.md`. O conteúdo histórico foi preservado, não apagado ou reescrito.
