@@ -1,6 +1,14 @@
 # Cortex — Painel de acompanhamento
 
-> Atualizado em 2026-11-14. Este painel registra evidências verificadas, não afirma validação biológica nem representa monitoramento em tempo real.
+> Atualizado em 2026-11-17 (handoff; painel automático preservado). Este painel registra evidências verificadas, não afirma validação biológica nem representa monitoramento em tempo real.
+
+## Atualização de continuidade — 17/11/2026
+
+- **CI #363 e Synthetic Learning Smoke #213:** aprovados conforme verificação registrada na conversa anterior, associados ao commit `107fdca`. [Execução #213](https://github.com/heldergaraujo2/Cortex/actions/runs/43650020855).
+- **Inspeção de estímulos:** execução técnica aprovada; relatório detalhado ainda precisa ser lido para identificar **respostas neuronais medidas** e o pareamento com os estímulos.
+- **Dados Gruntman:** aquisição concluída anteriormente (~2,84 GB); retenção do artefato informada até 21/11/2026.
+- **Próximo gate científico:** localizar variáveis de resposta e metadados de alinhamento; depois construir leitor reprodutível e comparação com Cortex. **Validação biológica ainda pendente.**
+- **Handoff completo:** [docs/CONTINUIDADE.md](CONTINUIDADE.md), bloco datado de 17/11/2026.
 
 ## Estado resumido
 
