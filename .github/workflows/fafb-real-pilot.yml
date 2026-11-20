@@ -1,0 +1,99 @@
+name: FAFB real pilot
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/synthetic-neural-learning-smoke
+    paths:
+      - '.github/workflows/fafb-real-pilot.yml'
+      - 'cortex/experiments/fafb_inspect.py'
+      - 'cortex/experiments/t4_pilot_runner.py'
+      - 'cortex/experiments/t4_selector.py'
+      - 'tests/test_fafb_real_data_pilot.py'
+
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Cortex
+        run: python -m pip install -e .
+      - name: Checkout real FAFB dataset branch
+        uses: actions/checkout@v4
+        with:
+          ref: data/fafb-v783-inputs
+          path: fafb-source
+          sparse-checkout: |
+            data/raw/fafb_v783
+          lfs: true
+      - name: Stage actual FAFB connections and annotations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p para-validacao
+          cp fafb-source/data/raw/fafb_v783/connections_princeton.csv.gz para-validacao/
+          cp fafb-source/data/raw/fafb_v783/consolidated_cell_types.csv.gz para-validacao/
+          test -s para-validacao/connections_princeton.csv.gz
+          test -s para-validacao/consolidated_cell_types.csv.gz
+      - name: Locate and inspect actual FAFB data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from cortex.experiments.fafb_inspect import inspect_csv
+          files = sorted(Path("para-validacao").rglob("*.csv.gz"))
+          print("Found", len(files), "compressed CSVs")
+          for path in files:
+              print(json.dumps({"file": str(path), "columns": inspect_csv(path, sample_rows=0)["columns"]}))
+          connections = [p for p in files if "connections_princeton" in p.name.lower()]
+          annotations = [p for p in files if "consolidated_cell_types" in p.name.lower()]
+          if not connections or not annotations:
+              raise SystemExit("REAL_DATA_BLOCKED: required connections_princeton and consolidated_cell_types CSV.GZ not found in checkout")
+          PY
+      - name: Run real-data T4 pilot when schemas match
+        shell: bash
+        run: |
+          set -euo pipefail
+          TYPES=$(find para-validacao -type f -name '*consolidated_cell_types*.csv.gz' -print -quit)
+          EDGES=$(find para-validacao -type f -name '*connections_princeton*.csv.gz' -print -quit)
+          python - "$TYPES" "$EDGES" <<'PY' | tee fafb-t4-result.json
+          import json
+          import sys
+          from cortex.experiments.fafb_inspect import inspect_csv
+          from cortex.experiments.t4_pilot_runner import run_pilot
+
+          types, edges = sys.argv[1:]
+          a = set(inspect_csv(types, sample_rows=0)["columns"])
+          b = set(inspect_csv(edges, sample_rows=0)["columns"])
+
+          def choose(columns, options, label):
+              for name in options:
+                  if name in columns:
+                      return name
+              raise SystemExit(f"REAL_DATA_SCHEMA_BLOCKED: {label}: observed {sorted(columns)}")
+
+          result = run_pilot(
+              types, edges,
+              cell_id_column=choose(a, ("root_id", "pt_root_id"), "annotation root ID"),
+              cell_type_column=choose(a, ("cell_type", "type", "primary_type"), "cell type"),
+              pre_column=choose(b, ("pre_root_id", "pre_pt_root_id"), "presynaptic ID"),
+              post_column=choose(b, ("post_root_id", "post_pt_root_id"), "postsynaptic ID"),
+              synapse_column=choose(b, ("syn_count", "synapse_count", "size"), "synapse count"),
+          )
+          print(json.dumps(result, indent=2, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fafb-t4-result
+          path: fafb-t4-result.json
+          if-no-files-found: ignore

@@ -1,0 +1,18 @@
+name: T4 response diagnostics targeted
+on:
+  push:
+    branches:
+      - experiment/synthetic-neural-learning-smoke
+    paths:
+      - 'cortex/experiments/t4_response_diagnostics.py'
+      - 'tests/test_t4_response_diagnostics.py'
+      - '.github/workflows/t4-response-diagnostics.yml'
+  workflow_dispatch:
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run targeted diagnostics tests only
+        run: python -m unittest discover -s tests -p 'test_t4_response_diagnostics.py' -v
